@@ -229,11 +229,27 @@ function correctAnis(sections: Map<number, RawParagraph[]>, without: DatabaseSyn
         a[0] + '،', a[1] + '،', a[2] + '،', a[3],
         c[0] + '،', c.slice(1, 3).join('، ') + '،', c.slice(3, 5).join('، ') + '،', c.slice(5, 7).join('، ') + '،', c.slice(7).join('، ') + '،',
       ]
-      const added = lines.map((text, i): RawParagraph => [460 + 2 * i, Kind.Arabic, text])
+      // 4.book has no translation; these were written for this edition (approved by the publisher,
+      // listed in BOOK-CHANGES.md). The line after them in 1.book already translates «وَ عَمَلاً صالِحًا».
+      const translations = [
+        'بخشش‌های گسترده‌ات،',
+        'و عطاهای برتر و زیبا و شکوهمندت در جود بزرگت اثری نمی‌گذارد،',
+        'و از سختیِ تنگدستی نمی‌هراسی تا [از بخشش] باز ایستی،',
+        'و بیمِ نداری به تو نمی‌رسد تا فیضِ فضلت از جودت بکاهد.',
+        'خدایا، دلی خاشع و فروتن و زاری‌کننده روزی‌ام کن،',
+        'و بدنی شکیبا، و زبانی یادکننده و ستایشگر،',
+        'و یقینی راستین، و روزی‌ای گسترده،',
+        'و دانشی سودمند، و فرزندی شایسته،',
+        'و عمری دراز، و همسری شایسته،',
+      ]
+      const added = lines.flatMap((text, i): RawParagraph[] => [
+        [460 + 2 * i, Kind.Arabic, text],
+        [461 + 2 * i, Kind.Translation, translations[i]],
+      ])
       const start = list.findIndex((p) => p[0] === 460)
       const end = list.findIndex((p) => p[0] === 477)
       list.splice(start, end - start + 1, ...added)
-      log.push(`368: repeated parts 460–477 replaced by ${lines.length} phrases from ${ANIS_PARAGRAPHS_SOURCE}.book`)
+      log.push(`368: repeated parts 460–477 replaced by ${lines.length} phrases from ${ANIS_PARAGRAPHS_SOURCE}.book, with translations`)
     }
   }
 
@@ -248,6 +264,18 @@ function correctAnis(sections: Map<number, RawParagraph[]>, without: DatabaseSyn
       log.push(`88: ${notes.length} footnotes added from ${ANIS_PARAGRAPHS_SOURCE}.book`)
     }
   }
+  // A comma typed straight against the next word («اَمانَتی،اَوْ») runs the two together; 9 places.
+  let commas = 0
+  for (const list of sections.values()) {
+    list.forEach((p, i) => {
+      const fixed = p[2].replace(/([،,])(?=[ء-يٮ-ۓۺ-ۿ])/g, '$1 ')
+      if (fixed !== p[2]) {
+        commas += fixed.length - p[2].length
+        list[i] = [p[0], p[1], fixed, ...p.slice(3)] as RawParagraph
+      }
+    })
+  }
+  if (commas) log.push(`spaces added after ${commas} commas`)
   return log
 }
 

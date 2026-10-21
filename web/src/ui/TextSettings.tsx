@@ -4,7 +4,7 @@ import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, THEMES, setSetting, settingsStore,
 import { Chip, Segmented, SwitchRow } from './common'
 
 /** Theme, fonts and sizes with a live preview; used in the reader's sheet and on the settings page. */
-export function TextSettingsPanel({ showTranslationToggle }: { showTranslationToggle: boolean }) {
+export function TextSettingsPanel() {
   const s = useStore(settingsStore)
   return (
     <div class="text-settings">
@@ -36,9 +36,6 @@ export function TextSettingsPanel({ showTranslationToggle }: { showTranslationTo
       <SizeSlider label="فاصلهٔ سطرها" value={s.lineHeight} range={RANGES.lineHeight} decimals onChange={(v) => setSetting('lineHeight', v)} />
 
       <SwitchRow label="تراز دوطرفه" checked={s.justify} onChange={(v) => setSetting('justify', v)} />
-      {showTranslationToggle && (
-        <SwitchRow label="نمایش ترجمه" checked={s.showTranslation} onChange={(v) => setSetting('showTranslation', v)} />
-      )}
     </div>
   )
 }

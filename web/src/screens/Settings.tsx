@@ -13,7 +13,7 @@ export function SettingsScreen() {
       <TopBar title="تنظیمات" />
       <div class="content settings">
         <SectionLabel>متن</SectionLabel>
-        <TextSettingsPanel showTranslationToggle />
+        <TextSettingsPanel />
 
         <hr />
         <SectionLabel>مطالعه</SectionLabel>

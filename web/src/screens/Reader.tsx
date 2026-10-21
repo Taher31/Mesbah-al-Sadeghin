@@ -23,7 +23,7 @@ import {
   type UserData,
 } from '../lib/store'
 import { APP_NAME, copyText, shareText, toast } from '../lib/util'
-import { ActionRow, EmptyState, IconButton, LoadError, Loading, Ornament, Sheet, Switch, TopBar } from '../ui/common'
+import { ActionRow, EmptyState, IconButton, LoadError, Loading, Ornament, Sheet, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
 import { TextSettingsPanel } from '../ui/TextSettings'
 
@@ -337,13 +337,6 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
     <>
       <ActionRow icon="list" label="فهرست مطالب" onClick={() => (setSheet(null), navigate(routes.toc(current.book)))} />
       <ActionRow icon="search" label="جستجو در این کتاب" onClick={() => (setSheet(null), navigate(routes.search(current.book)))} />
-      {book.paired && (
-        <label class="action-row">
-          <Icon name="translate" />
-          <span>نمایش ترجمه</span>
-          <Switch checked={settings.showTranslation} onChange={(v) => setSetting('showTranslation', v)} label="نمایش ترجمه" />
-        </label>
-      )}
       <ActionRow
         icon="copy"
         label="کپی کل این بخش"
@@ -379,6 +372,22 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         class="reader-bar"
         actions={
           <>
+            {book.paired && (
+              // Anis reads phrase by phrase with its translation, or as flowing Arabic without it.
+              <button
+                type="button"
+                class={'tr-toggle' + (settings.showTranslation ? ' is-on' : '')}
+                aria-pressed={settings.showTranslation}
+                title={settings.showTranslation ? 'پنهان کردن ترجمه' : 'نمایش ترجمه'}
+                onClick={() => {
+                  setSetting('showTranslation', !settings.showTranslation)
+                  toast(settings.showTranslation ? 'بدون ترجمه' : 'با ترجمه')
+                }}
+              >
+                {settings.showTranslation && <Icon name="check" size={16} />}
+                ترجمه
+              </button>
+            )}
             <IconButton
               icon={favorite ? 'star' : 'starOutline'}
               class={favorite ? 'gold' : ''}
@@ -456,7 +465,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
 
       {sheet === 'text' && (
         <Sheet label="تنظیمات متن" onClose={() => setSheet(null)}>
-          <TextSettingsPanel showTranslationToggle={book.paired} />
+          <TextSettingsPanel />
         </Sheet>
       )}
       {sheet === 'menu' && (
