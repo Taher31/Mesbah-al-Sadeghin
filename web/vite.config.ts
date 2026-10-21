@@ -56,7 +56,8 @@ function serviceWorker(): Plugin {
 }
 
 export default defineConfig({
-  base: '/',
+  // Site root by default (the cPanel subdomain). GitHub Pages serves from /<repo>/: BASE_PATH=/<repo>/ npm run build
+  base: process.env.BASE_PATH || '/',
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
   },

@@ -80,6 +80,13 @@
 - نسخهٔ اندروید (APK) در نشانی `/download/mesbah-sadeghin.apk` انتظار می‌رود؛ آن را کنار سایت در پوشهٔ `download/`
   قرار دهید. دکمهٔ «دانلود نسخهٔ اندروید» فقط در گوشی‌های اندروید نشان داده می‌شود و این فایل در حافظهٔ آفلاین ذخیره نمی‌شود.
 
+### نسخهٔ آزمایشی روی GitHub Pages
+
+با هر push به شاخهٔ `main` که `web/` یا فایل‌های `.book` را تغییر دهد، گردش‌کار
+[`pages.yml`](../.github/workflows/pages.yml) برنامه را می‌سازد و در `https://taher31.github.io/Mesbah-al-Sadeghin/`
+منتشر می‌کند (برای آزمایش روی آیفون و گوشی‌های دیگر). در این حالت برنامه برای زیرمسیر `/Mesbah-al-Sadeghin/` ساخته
+می‌شود: `BASE_PATH=/Mesbah-al-Sadeghin/ npm run build`. پیکربندی یک‌باره: Settings › Pages › Source: «GitHub Actions».
+
 ### هاست cPanel (Apache)
 
 فایل `.htaccess` همراه خروجی است و همهٔ موارد بالا را تنظیم می‌کند: انتقال به HTTPS، نوع فایل‌های `webmanifest` و `apk`،
