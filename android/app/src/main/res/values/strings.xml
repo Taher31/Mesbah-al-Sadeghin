@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">مصباح الصادقین</string>
+    <string name="app_tagline">آثار و سیرهٔ عالم ربانی آیت‌الله حاج سیّد حسین یعقوبی قائنی (قدّس‌سرّه)</string>
+
+    <string name="preparing_books">در حال آماده‌سازی کتاب‌ها…</string>
+    <string name="preparing_failed">آماده‌سازی کتاب‌ها ناموفق بود</string>
+    <string name="retry">تلاش دوباره</string>
+
+    <string name="book_anis">انیس الصادقین</string>
+    <string name="book_anis_desc">رهنمودهای آن عالم ربانی در زمینهٔ ادعیه و اذکار</string>
+    <string name="book_safineh">سفینة الصادقین</string>
+    <string name="book_safineh_desc">شرح احوال و زندگی‌نامهٔ آن بزرگوار</string>
+    <string name="edition_with_translation">با ترجمه</string>
+    <string name="edition_without_translation">بدون ترجمه</string>
+    <string name="edition_persian">فارسی</string>
+    <string name="edition_arabic">عربی</string>
+
+    <string name="continue_reading">ادامهٔ مطالعه</string>
+    <string name="start_reading">شروع مطالعه</string>
+
+    <string name="favorites">منتخب من</string>
+    <string name="favorites_subtitle">دعاها و بخش‌هایی که همیشه دم دستتان است</string>
+    <string name="favorites_see_all">همه و ترتیب</string>
+    <string name="favorites_read_all">خواندن پشت‌سرهم</string>
+    <string name="favorites_empty_title">هنوز چیزی منتخب نکرده‌اید</string>
+    <string name="favorites_empty_body">هنگام مطالعهٔ هر دعا، ستارهٔ بالای صفحه را بزنید تا اینجا بیاید؛ مثلاً دعاهایی که هر روز می‌خوانید.</string>
+    <string name="favorites_hint_card">دعاهای روزانه‌تان را با ستاره ☆ منتخب کنید تا همیشه یک لمس فاصله داشته باشند.</string>
+    <string name="favorite_add">افزودن به منتخب</string>
+    <string name="favorite_remove">حذف از منتخب</string>
+    <string name="favorite_added">به «منتخب من» اضافه شد</string>
+    <string name="favorite_removed">از «منتخب من» حذف شد</string>
+    <string name="favorites_reorder_hint">برای جابه‌جایی، از دکمه‌های بالا و پایین استفاده کنید.</string>
+    <string name="move_up">بالاتر</string>
+    <string name="move_down">پایین‌تر</string>
+    <string name="frequent">پرکاربرد</string>
+    <string name="frequent_subtitle">بخش‌هایی که بیشتر از همه سراغشان می‌روید</string>
+    <string name="frequent_count">%1$s بار</string>
+    <string name="settings_clear_frequent">پاک کردن فهرست پرکاربردها</string>
+    <string name="frequent_cleared">فهرست پرکاربردها پاک شد</string>
+    <string name="open_book">فهرست کتاب</string>
+    <string name="library">کتابخانه</string>
+    <string name="search">جستجو</string>
+    <string name="search_hint">جستجو در متن کتاب‌ها…</string>
+    <string name="search_in_book_hint">جستجو در این کتاب…</string>
+    <string name="search_all_books">همهٔ کتاب‌ها</string>
+    <string name="search_empty_title">عبارتی برای جستجو بنویسید</string>
+    <string name="search_empty_body">اعراب، «ی/ي» و «ک/ك» در جستجو اهمیتی ندارند.</string>
+    <string name="search_no_results">نتیجه‌ای پیدا نشد</string>
+    <string name="search_results_count">%1$s نتیجه</string>
+    <string name="search_results_capped">بیش از %1$s نتیجه — عبارت دقیق‌تری بنویسید</string>
+
+    <string name="bookmarks">نشانه‌ها</string>
+    <string name="bookmarks_empty_title">هنوز نشانه‌ای ندارید</string>
+    <string name="bookmarks_empty_body">در صفحهٔ مطالعه، روی یک بند نگه دارید و «نشانه‌گذاری» را بزنید.</string>
+    <string name="bookmark_added">نشانه اضافه شد</string>
+    <string name="bookmark_removed">نشانه حذف شد</string>
+    <string name="undo">بازگردانی</string>
+    <string name="edit_note">یادداشت</string>
+    <string name="note_hint">یادداشت شما دربارهٔ این بند…</string>
+    <string name="save">ذخیره</string>
+    <string name="cancel">انصراف</string>
+    <string name="delete">حذف</string>
+
+    <string name="settings">تنظیمات</string>
+    <string name="about">دربارهٔ برنامه</string>
+    <string name="channel">کانال صادقین در ایتا</string>
+
+    <string name="toc">فهرست مطالب</string>
+    <string name="toc_filter_hint">جستجو در عناوین…</string>
+    <string name="toc_no_match">عنوانی با این عبارت نیست</string>
+
+    <string name="reader_prev">قبلی</string>
+    <string name="reader_next">بعدی</string>
+    <string name="reader_text_settings">تنظیمات متن</string>
+    <string name="reader_show_translation">نمایش ترجمه</string>
+    <string name="reader_copy">کپی</string>
+    <string name="reader_share">اشتراک‌گذاری</string>
+    <string name="reader_bookmark_paragraph">نشانه‌گذاری این بند</string>
+    <string name="reader_remove_bookmark">حذف نشانه</string>
+    <string name="reader_copy_section">کپی کل این بخش</string>
+    <string name="reader_share_section">اشتراک‌گذاری این بخش</string>
+    <string name="reader_copied">کپی شد</string>
+    <string name="reader_page">صفحهٔ %1$s</string>
+    <string name="reader_empty_section">این بخش متنی ندارد</string>
+    <string name="share_via">اشتراک‌گذاری با…</string>
+
+    <string name="settings_appearance">ظاهر</string>
+    <string name="settings_theme">پوسته</string>
+    <string name="theme_system">خودکار</string>
+    <string name="theme_light">روشن</string>
+    <string name="theme_sepia">کاغذی</string>
+    <string name="theme_dark">شب</string>
+    <string name="settings_text">متن</string>
+    <string name="settings_persian_font">قلم فارسی</string>
+    <string name="settings_arabic_font">قلم عربی (ادعیه)</string>
+    <string name="settings_text_size">اندازهٔ متن</string>
+    <string name="settings_arabic_size">اندازهٔ متن عربی</string>
+    <string name="settings_line_height">فاصلهٔ سطرها</string>
+    <string name="settings_justify">تراز دوطرفه</string>
+    <string name="settings_reading">مطالعه</string>
+    <string name="settings_keep_screen_on">روشن ماندن صفحه هنگام مطالعه</string>
+    <string name="settings_preview_arabic">اَللّٰهُمَّ صَلِّ عَلیٰ مُحَمَّدٍ وَ آلِ مُحَمَّدٍ وَ عَجِّلْ فَرَجَهُم.</string>
+    <string name="settings_preview_persian">خدایا، بر محمد و آل محمد صلوات فرست و فرج آنان را نزدیک گردان.</string>
+    <string name="settings_reset">بازگشت به پیش‌فرض</string>
+
+    <string name="about_version">نسخهٔ %1$s</string>
+    <string name="about_contact">راه‌های ارتباطی</string>
+    <string name="about_channel_admin">مدیر کانال</string>
+    <string name="about_developer">برنامه‌نویس</string>
+    <string name="back">بازگشت</string>
+    <string name="more">بیشتر</string>
+    <string name="clear">پاک کردن</string>
+</resources>

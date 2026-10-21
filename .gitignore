@@ -1,0 +1,25 @@
+# B4A build output and IDE state
+Objects/
+*.meta
+Thumbs.db
+
+# Built apps and signing keys — keys go in GitHub secrets, never in the repo
+*.apk
+*.aab
+*.keystore
+*.jks
+apk/
+android/keystore.properties
+
+# Android / Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.kotlin/
+.idea/
+*.iml
+
+# Web
+web/node_modules/
+web/dist/

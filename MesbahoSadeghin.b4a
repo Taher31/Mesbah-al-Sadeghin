@@ -1,0 +1,1379 @@
+﻿Build1=Default,MesbahoSadeghin.App
+Build2=New_1,Anis.Enjil.Barnaba
+File1=1.book
+File10=anaskhb.ttf
+File100=w_Zar.ttf
+File101=wm_Naskh Qurani.ttf
+File102=wm_Naskh QuraniE.ttf
+File11=anaskhbe.ttf
+File12=anaskhe.ttf
+File13=anis.jpg
+File14=anis1.jpg
+File15=anisb.png
+File16=anisB1.png
+File17=aUtaha.ttf
+File18=aUtahaE.ttf
+File19=backSubMenu.bal
+File2=1-3.png
+File20=book.png
+File21=bookmark.png
+File22=bookmarkclear.png
+File23=bookmark-outline.png
+File24=bseetting.png
+File25=bu3.png
+File26=ccp.png
+File27=cellitem.bal
+File28=CellItemMatn.bal
+File29=clear.png
+File3=2.book
+File30=clear1.png
+File31=content-copy.png
+File32=dmode.png
+File33=eata.png
+File34=fmm.png
+File35=fpp.png
+File36=iconAgha.png
+File37=keyboard-arrow-left.png
+File38=keyboard-arrow-right.png
+File39=l_matnha.bal
+File4=3.book
+File40=l3.png
+File41=lastread.png
+File42=line.jpg
+File43=ltor.png
+File44=MarkNeshan.bal
+File45=matnCell.bal
+File46=MatnView.bal
+File47=mbeyt.png
+File48=menu_btn3s.png
+File49=midback.jpg
+File5=4.book
+File50=mlongclick.bal
+File51=nDel.png
+File52=nesh.png
+File53=neshane.png
+File54=nMenu.bal
+File55=nMenuNew.bal
+File56=nMenuNew1.bal
+File57=NMode.png
+File58=panellong.png
+File59=pavaraghi.png
+File6=about.png
+File60=popup.png
+File61=pPanel.bal
+File62=rtol.png
+File63=safar.jpg
+File64=saffr.jpg
+File65=safinehb.png
+File66=safinehB1.png
+File67=search.png
+File68=SearchL.bal
+File69=selbut.png
+File7=about1.txt
+File70=selbut1.png
+File71=settings-applications.png
+File72=share.png
+File73=Stopsearch.png
+File74=Thumbs.db
+File75=vazirmatn-bold.ttf
+File76=Vazirmatn-Light.ttf
+File77=Vazirmatn-Regular.ttf
+File78=Vazirmatn-SemiBold.ttf
+File79=w_Aziz Bold.ttf
+File8=aghaback.jpg
+File80=w_Aziz BoldE.ttf
+File81=w_Aziz.ttf
+File82=w_AzizE.ttf
+File83=w_Badr Bold.ttf
+File84=w_Badr BoldE.ttf
+File85=w_Badr.ttf
+File86=w_BadrE.ttf
+File87=w_Lotus Bold.ttf
+File88=w_Lotus BoldE.ttf
+File89=w_Lotus.ttf
+File9=anaskh.ttf
+File90=w_LotusE.ttf
+File91=w_Mitra Bold.ttf
+File92=w_Mitra BoldE.ttf
+File93=w_Mitra.ttf
+File94=w_MitraE.ttf
+File95=w_Nazanin Bold.ttf
+File96=w_Nazanin BoldE.ttf
+File97=w_Nazanin.ttf
+File98=w_NazaninE.ttf
+File99=w_Zar Bold.ttf
+FileGroup1=Default Group
+FileGroup10=Default Group
+FileGroup100=Default Group
+FileGroup101=Default Group
+FileGroup102=Default Group
+FileGroup11=Default Group
+FileGroup12=Default Group
+FileGroup13=Default Group
+FileGroup14=Default Group
+FileGroup15=Default Group
+FileGroup16=Default Group
+FileGroup17=Default Group
+FileGroup18=Default Group
+FileGroup19=Default Group
+FileGroup2=Default Group
+FileGroup20=Default Group
+FileGroup21=Default Group
+FileGroup22=Default Group
+FileGroup23=Default Group
+FileGroup24=Default Group
+FileGroup25=Default Group
+FileGroup26=Default Group
+FileGroup27=Default Group
+FileGroup28=Default Group
+FileGroup29=Default Group
+FileGroup3=Default Group
+FileGroup30=Default Group
+FileGroup31=Default Group
+FileGroup32=Default Group
+FileGroup33=Default Group
+FileGroup34=Default Group
+FileGroup35=Default Group
+FileGroup36=Default Group
+FileGroup37=Default Group
+FileGroup38=Default Group
+FileGroup39=Default Group
+FileGroup4=Default Group
+FileGroup40=Default Group
+FileGroup41=Default Group
+FileGroup42=Default Group
+FileGroup43=Default Group
+FileGroup44=Default Group
+FileGroup45=Default Group
+FileGroup46=Default Group
+FileGroup47=Default Group
+FileGroup48=Default Group
+FileGroup49=Default Group
+FileGroup5=Default Group
+FileGroup50=Default Group
+FileGroup51=Default Group
+FileGroup52=Default Group
+FileGroup53=Default Group
+FileGroup54=Default Group
+FileGroup55=Default Group
+FileGroup56=Default Group
+FileGroup57=Default Group
+FileGroup58=Default Group
+FileGroup59=Default Group
+FileGroup6=Default Group
+FileGroup60=Default Group
+FileGroup61=Default Group
+FileGroup62=Default Group
+FileGroup63=Default Group
+FileGroup64=Default Group
+FileGroup65=Default Group
+FileGroup66=Default Group
+FileGroup67=Default Group
+FileGroup68=Default Group
+FileGroup69=Default Group
+FileGroup7=Default Group
+FileGroup70=Default Group
+FileGroup71=Default Group
+FileGroup72=Default Group
+FileGroup73=Default Group
+FileGroup74=Default Group
+FileGroup75=Default Group
+FileGroup76=Default Group
+FileGroup77=Default Group
+FileGroup78=Default Group
+FileGroup79=Default Group
+FileGroup8=Default Group
+FileGroup80=Default Group
+FileGroup81=Default Group
+FileGroup82=Default Group
+FileGroup83=Default Group
+FileGroup84=Default Group
+FileGroup85=Default Group
+FileGroup86=Default Group
+FileGroup87=Default Group
+FileGroup88=Default Group
+FileGroup89=Default Group
+FileGroup9=Default Group
+FileGroup90=Default Group
+FileGroup91=Default Group
+FileGroup92=Default Group
+FileGroup93=Default Group
+FileGroup94=Default Group
+FileGroup95=Default Group
+FileGroup96=Default Group
+FileGroup97=Default Group
+FileGroup98=Default Group
+FileGroup99=Default Group
+Group=Default Group
+Library1=astabmenu
+Library10=loadingindicators
+Library11=nimage
+Library12=phone
+Library13=reflection
+Library14=richstring
+Library15=sql
+Library16=stringutils
+Library17=teameightjustifybeta
+Library18=teameightjustifysupport
+Library19=xcustomlistview
+Library2=clipboard
+Library20=xui
+Library3=contentresolver
+Library4=core
+Library5=dialogs
+Library6=fileprovider
+Library7=gesturedetector
+Library8=ime
+Library9=javaobject
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="35"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~'End of default text.~\n~~\n~'CreateResourceFromFile(Macro, Themes.DarkTheme)~\n~SetApplicationAttribute(android:theme, "@style/LightTheme")~\n~  CreateResource(values, colors.xml,~\n~ <resources>~\n~   <color name="actionbar">#ffCECCE7</color>~\n~   <color name="statusbar">#FF021418</color>~\n~   <color name="textColorPrimary">#ff30323E</color>~\n~   <color name="navigationBar">#FF021418</color>~\n~   ~\n~   <color name="statusbard">#FF11100e</color>~\n~   <color name="navigationBard">#FF11100e</color>~\n~   <color name="TopbackColor">#FF11100e</color>~\n~  </resources>~\n~ )~\n~CreateResource(values-v20, theme.xml,~\n~<resources>~\n~    <style name="LightTheme" parent="@android:style/Theme.Material">~\n~		<item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>~\n~        <item name="android:colorPrimary">@color/actionbar</item>~\n~        <item name="android:colorPrimaryDark">@color/statusbar</item>~\n~        <item name="android:textColorPrimary">@color/textColorPrimary</item>~\n~        <item name="android:navigationBarColor">@color/navigationBar</item>~\n~		<item name="android:alertDialogTheme">@style/AlertDialogCustom</item>~\n~	</style>~\n~~\n~    <style name="AlertDialogCustom" parent="@android:style/Theme.Material.Light.Dialog.Alert">~\n~      <item name="android:colorPrimary">@color/TopbackColor</item>~\n~      <item name="android:colorAccent">@color/TopbackColor</item>~\n~    </style>~\n~</resources>~\n~)~\n~~\n~~\n~~\n~AddApplicationText(~\n~  <provider~\n~  android:name="android.support.v4.content.FileProvider"~\n~  android:authorities="$PACKAGE$.provider"~\n~  android:exported="false"~\n~  android:grantUriPermissions="true">~\n~  <meta-data~\n~  android:name="android.support.FILE_PROVIDER_PATHS"~\n~  android:resource="@xml/provider_paths"/>~\n~  </provider>~\n~)~\n~CreateResource(xml, provider_paths,~\n~   <files-path name="name" path="shared" />~\n~)~\n~~\n~~\n~~\n~~\n~~\n~'SetApplicationAttribute(android:theme, "@style/MyAppTheme")~\n~'CreateResource(values, colors.xml,~\n~'<resources>~\n~'    <color name="actionbar">#ff000000</color>~\n~'   <color name="statusbar">#ff000000</color>~\n~'   <color name="textColorPrimary">#ffffffff</color>~\n~'   <color name="navigationBar">#ff000000</color>~\n~'</resources>~\n~')~\n~''SetActivityAttribute(Mp3View, android:screenOrientation, "landscape")~\n~'CreateResource(values, theme.xml,~\n~'<resources>~\n~'    <style name="MyAppTheme" parent="Theme.AppCompat">~\n~'        <item name="colorPrimary">@color/actionbar</item>~\n~'        <item name="colorPrimaryDark">@color/statusbar</item>~\n~'		<item name="android:textColorPrimary">@color/textColorPrimary</item>~\n~'		<item name="android:navigationBarColor">@color/navigationBar</item>~\n~'		<item name="windowNoTitle">true</item>~\n~'		<item name="windowActionBar">false</item>~\n~'		<item name="windowActionModeOverlay">true</item>~\n~'    </style>~\n~'</resources>~\n~')~\n~''AddPermission(android.permission.MANAGE_EXTERNAL_STORAGE)~\n~''SetApplicationAttribute(android:requestLegacyExternalStorage, true)~\n~''AddManifestText(<uses-permission~\n~''	android:name="android.permission.WRITE_EXTERNAL_STORAGE"~\n~''	android:maxSdkVersion="18" />~\n~'')
+Module1=AutoTextSizeLabel
+Module10=Starter
+Module2=ImageShow
+Module3=Markha
+Module4=matnha
+Module5=Motoon
+Module6=myf
+Module7=NeshaneHa
+Module8=onvanha
+Module9=SearchM
+NumberOfFiles=102
+NumberOfLibraries=20
+NumberOfModules=10
+Version=13.4
+@EndOfDesignText@
+'#AdditionalJar: android-support-v7-appcompat
+#BridgeLogger: True
+#Region Module Attributes
+	#ApplicationLabel: مصباح الصادقین
+	#VersionCode: 3
+	#VersionName: نسخهٔ 1.1
+	#SupportedOrientations: portrait
+	#CanInstallToExternalStorage: true
+#End Region
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: False
+#End Region
+'#Extends: android.support.v7.app.AppCompatActivity
+#MultiDex: true
+'Activity module
+#If JAVA
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+
+@Override
+protected void attachBaseContext(Context newBase) {
+    Resources res = newBase.getResources();
+    Configuration config = new Configuration(res.getConfiguration());
+
+    // ۱. تنظیم فونت اسکیل روی ۱۰۰٪ (نادیده گرفتن تنظیمات "متن بزرگ")
+    config.fontScale = 1.0f;
+
+    // ۲. تثبیت چگالی (DPI) روی مقدار پیش‌فرض دستگاه
+    // این کار از به هم ریختن چیدمان به دلیل تغییر اندازه نمایشگر" جلوگیری می‌کند
+    config.densityDpi = res.getDisplayMetrics().densityDpi;
+
+    Context context = newBase.createConfigurationContext(config);
+    super.attachBaseContext(context);
+}
+#End If
+
+Sub Process_Globals
+	Dim change1book As Boolean = True
+	Dim change2book As Boolean = True
+	Dim change3book As Boolean = True
+	Dim change4book As Boolean = True
+	Type AppSetting (backColor As Int,TopbackColor As Int ,txtFont As Int,lineSpace As Double,Menufontsize As Int,fontSize As Int, BfontSize As Int, JSTType As Int, nmode As Boolean, ErColor As Boolean, Justify As Boolean)
+	Dim s1 As SQL
+	Dim FirstStart As Boolean
+'	Dim tm1 As Timer
+'	Dim toastTm As Timer
+'	Dim logoView As Boolean = True
+	
+	
+	Private xui As XUI
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+'	Dim pageSel As Int
+'	Private Downloader As RangeDownloader
+'	Private imgidx As Int
+'	Dim PlayTimer,DmTimer As Timer
+'	Dim pos As Long
+'	Dim changepos As Boolean
+'	Dim fileHttpPath As String
+'	Private ifSts As IFStatus
+'	Private SPPing As Ping
+End Sub
+
+Sub Globals
+'	Private Button1,Button2,Button3,Button4,Button5,Button6 As Button
+	Dim SetData As AppSetting
+'	Dim MES As ManageExternalStorage
+'	Dim device As Phone
+
+	'These global variables will be redeclared each time the activity is created.
+	'These variables can only be accessed from this module.
+'	Private iprev,ishare,inext  As Button
+'	Private ImageView1,ImageView2  As ImageView
+	Dim booklst As List
+'	Dim p,p1 As Panel
+'	Private bookName As Label
+'	Private bookPic As ImageView
+'	Private AsarPanel As Panel
+'	Private bookD As Label
+'	Dim SetData As AppSetting
+'	Private Playb As Button
+'	Private PlayBar As SeekBar
+'	Dim mp As MediaPlayer
+'	Private LIV1 As LoadingIndicatorView
+'	Dim mp3fileName As String
+'	Dim MatnStr As String
+'	Private downloadBar As ProgressBar
+'	Private prLabel As Label
+'	Dim dowloading As Boolean
+'	Dim tracker As RangeDownloadTracker
+	
+'	Dim trCount As Int
+'	Private SimpleExoPlayerView1 As SimpleExoPlayerView
+'	Private player1 As SimpleExoPlayer
+'	Dim mp4Playing As Boolean
+'	Private FS As Label
+	Private Panel1 As Panel
+'	Private WebView1 As WebView
+	Private Agha As ImageView
+	Private Provider As FileProvider
+'	Private Panel2 As Panel
+'	Private p2 As Panel
+'	Private Button1 As Button
+'	Private Img1 As ImageView
+	Private aboutIcon As Button
+	Private eata As Button
+	Private anisBut As ImageView
+	Private safineBut As ImageView
+	Private bookSetting As Button
+	Private anisImage As ImageView
+	Private safineImage As ImageView
+	Private selAnBname As Label
+	Private selSafBname As Label
+	Private popupView As Boolean = False
+	Private popupView1 As Boolean = False
+		
+	Private popupIndex As Int 
+	Private safSelIdx As Int
+	Private AnisSelIdx As Int
+	Private AnisSelStatus As Label
+	Private SafSelStetus As Label
+	Private aLastR As Button
+	Private sLastR As Button
+	Private VersionN As AutoTextSizeLabel
+	Private LastR As Button
+	Private anisbookImage As ImageView
+	Private safinebookImage As ImageView
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	'Do not forget to load the layout file created with the visual designer. For example:
+'	pageSel = 5
+	Activity.RemoveAllViews
+	myf.Loading(SetData)
+'	ifSts.Initialize(Me, "SPIFStatus")
+'	SPPing.Initialize(Me, "SPPing")
+	
+	Provider.Initialize
+'	matnha.klmc = False
+'	trCount = 0
+'	PlayTimer.Enabled = False
+'	DmTimer.Enabled = False
+	
+	If File.Exists(File.DirInternal,"AnisSelIdx") Then
+		AnisSelIdx = File.ReadString(File.DirInternal,"AnisSelIdx")
+	Else
+		AnisSelIdx = 1
+		File.WriteString(File.DirInternal,"AnisSelIdx",AnisSelIdx)
+	End If
+
+	If File.Exists(File.DirInternal,"safSelIdx") Then
+		safSelIdx = File.ReadString(File.DirInternal,"safSelIdx")
+	Else
+		safSelIdx = 1
+		File.WriteString(File.DirInternal,"safSelIdx",safSelIdx)
+	End If
+	
+	Activity.LoadLayout("backSubMenu")
+	
+	VersionN.Text = Application.VersionName
+
+	If AnisSelIdx = 1 Then
+		AnisSelStatus.Text = "(با ترجمه)"
+		anisBut.SetBackgroundImage(LoadBitmap(File.DirAssets,"anisB1.png"))
+	Else
+		AnisSelStatus.Text = "(بدون ترجمه)"
+		anisBut.SetBackgroundImage(LoadBitmap(File.DirAssets,"anisB.png"))
+	End If
+
+	If safSelIdx = 1 Then
+		SafSelStetus.Text = "(فارسی)"
+		safineBut.SetBackgroundImage(LoadBitmap(File.DirAssets,"safinehB1.png"))
+	Else
+		SafSelStetus.Text = "(عربی)"
+		safineBut.SetBackgroundImage(LoadBitmap(File.DirAssets,"safinehB.png"))
+	End If
+	
+		
+	
+		
+	myf.Loading(SetData)
+
+	myf.booklibAddress = File.DirInternal & "/ASSAR/"
+		
+		
+	booklst.Initialize
+	Wait For (File.ListFilesAsync(myf.booklibAddress)) Complete (Success As Boolean, Files As List)
+	booklst.AddAll(Files)
+		
+	Dim i As Int = 0
+	Do While i < booklst.Size
+		Dim path As String = booklst.Get(i)
+		If path.SubString(path.Length-5) = ".book" Then
+			i = i+1
+		Else
+			booklst.RemoveAt(i)
+		End If
+	Loop
+	booklst.Sort(True)
+	File.WriteList(File.DirInternalCache,"booklst.txt",booklst)
+	
+End Sub
+Private Sub AdjustLblSize(lbl As Label)
+	Dim w As Int
+	Dim h As Int
+	Dim su As StringUtils
+	Dim cvs As B4XCanvas
+	Dim lines() As String = Regex.Split(CRLF, lbl.Text)
+	Dim fnt As B4XFont = xui.CreateFont(lbl.Typeface, lbl.TextSize)
+    
+	h = su.MeasureMultilineTextHeight(lbl, lbl.Text) + lbl.Padding(1) + lbl.Padding(3)
+    
+	cvs.Initialize(lbl)
+	w = 0
+	For idx = 0 To lines.Length - 1
+		Dim wLine As Int = cvs.MeasureText(lines(idx), fnt).Width + lbl.Padding(0) + lbl.Padding(2) + 5dip
+		If w < wLine Then w = wLine
+	Next
+	cvs.Release
+    
+	lbl.Width = w
+	lbl.Height = h
+End Sub
+'Private Sub Track (tracker1 As RangeDownloadTracker)
+'	downloadBar.Visible = True
+'	Do While tracker1.Completed = False
+'		Sleep(100)
+'		prLabel.Text = "در حال دانلود فایل  ......  " & $"$1.2{tracker1.CurrentLength / 1024 / 1024}MB / $1.2{tracker1.TotalLength / 1024 / 1024}MB"$
+'		downloadBar.Progress = tracker1.CurrentLength / tracker1.TotalLength * 100
+'	Loop
+'End Sub
+'Sub Activity_Touch (Action As Int, X As Float, Y As Float)	
+'	If Action = Activity.ACTION_DOWN Then
+'		x2 = X
+'		x3 = 0
+'	
+'	Else if Action = Activity.ACTION_MOVE Then
+'		x3 = x - x2
+'		Log(x3)
+'	Else if Action = Activity.ACTION_UP Then
+'		x3 = x - x2
+'		Log(x3)
+'		If x3 > 25%x Then	
+'			If imgidx < 12 Then imgidx = imgidx+1
+'		Else if x3 < -25%x Then
+'			If imgidx > 1 Then imgidx = imgidx-1
+'		End If
+'		ImageView1.SetBackgroundImage(LoadBitmap(File.DirAssets,imgidx & ".jpg"))
+''		If p.Left > 250 Then
+''			p.Enabled = False
+'''			p.SetLayoutAnimated(400,p.Width,0,p.Width,p.Height)
+'''			Sleep(400)
+'''			Activity.Finish
+''		Else
+''		p.SetLayoutAnimated(400,0,0,p.Width,p.Height)
+''		End If
+'		
+'	End If
+'	
+'End Sub
+'Sub iprev_Click
+'	ImageView1.SetBackgroundImage(LoadBitmap(File.DirAssets,imgidx & ".jpg"))
+'	ImageView2.SetBackgroundImage(LoadBitmap(File.DirAssets,imgidx & ".jpg"))
+'	ImageView1.Width = 100%x
+'	ImageView2.Width = 100%x
+'	ImageView1.Left = 0
+'	ImageView2.Left = 0
+'	If imgidx > 1 Then imgidx = imgidx-1
+'	If imgidx = 1 Then iprev.Visible = False
+'	inext.Visible = True
+'	ImageView2.SetBackgroundImage(LoadBitmap(File.DirAssets,imgidx & ".jpg"))
+'	ImageView1.SetLayoutAnimated(300,0,50%y-75.048828125%x,1%x,150.09765625%x)
+'	Sleep(300)
+'	ImageView1.Width = 0
+'End Sub
+
+
+'Sub ishare_Click
+'	Dim FileName As String = imgidx & ".jpg"
+'	File.Copy(File.DirAssets, FileName, Provider.SharedFolder, FileName)
+'	Dim in As Intent
+'	in.Initialize(in.ACTION_SEND, "")
+'	in.SetType("image/jpg")
+'	in.PutExtra("android.intent.extra.STREAM", Provider.GetFileUri(FileName))
+'	in.Flags = 1 'FLAG_GRANT_READ_URI_PERMISSION
+'	StartActivity(in)
+'End Sub
+'
+'Sub inext_Click
+'	ImageView1.SetBackgroundImage(LoadBitmap(File.DirAssets,imgidx & ".jpg"))
+'	ImageView2.SetBackgroundImage(LoadBitmap(File.DirAssets,imgidx & ".jpg"))
+'	ImageView1.Width = 0
+'	ImageView2.Width = 100%x
+'	ImageView1.Left = 0
+'	ImageView2.Left = 0
+'	If imgidx < 12 Then imgidx = imgidx+1
+'	If imgidx = 12 Then inext.Visible = False
+'	iprev.Visible = True
+'	ImageView1.SetBackgroundImage(LoadBitmap(File.DirAssets,imgidx & ".jpg"))
+'	ImageView1.SetLayoutAnimated(300,0,50%y-75.048828125%x,100%x,150.09765625%x)
+'End Sub
+Sub Anis1_Click
+	myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(0),True)
+	File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+	File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(0))
+	File.WriteString(File.DirInternalCache,"booktype.txt","4")
+	StartActivity(onvanha)
+	myf.SetAnimation("right_left1","right_left")
+	Activity.Finish
+End Sub
+Sub Anis2_Click
+	myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(3),True)
+	File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+	File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(3))
+	File.WriteString(File.DirInternalCache,"booktype.txt","4")
+	StartActivity(onvanha)
+	myf.SetAnimation("right_left1","right_left")
+	Activity.Finish
+End Sub
+Sub SafAr_Click
+	myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(1),True)
+	File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+	File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(1))
+	File.WriteString(File.DirInternalCache,"booktype.txt","8")
+	StartActivity(onvanha)
+	myf.SetAnimation("right_left1","right_left")
+	Activity.Finish
+End Sub
+Sub SafFr_Click
+	myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(2),True)
+	File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+	File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(2))
+	File.WriteString(File.DirInternalCache,"booktype.txt","8")
+	StartActivity(onvanha)
+	myf.SetAnimation("right_left1","right_left")
+	Activity.Finish
+End Sub
+Sub Activity_Resume
+'	Activity_Create(False)
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+Sub Activity_KeyPress (KeyCode As Int) As Boolean 'Return True to consume the event
+	If KeyCode = KeyCodes.KEYCODE_BACK Then
+		If popupView Then
+			bookSetting_Click
+			Return True
+		Else If popupView1 Then
+			LastR_Click
+			Return True
+		Else
+			Activity.Finish
+			Return True
+		End If
+	End If
+	Return False
+End Sub
+'Sub klmch_Click
+'	myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(0),True)
+'	File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+'	File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(0))
+'	File.WriteString(File.DirInternalCache,"booktype.txt","8")
+'	Dim cur=s1.ExecQuery("select * from table1 ") As Cursor
+'	cur.Position = 0
+'	onvanha.onvanSel = cur.GetString2(0)
+'	onvanha.idonvan = 1
+'	File.WriteString(File.DirInternalCache,"onvanha.txt",onvanha.idonvan)
+'	cur.Close
+'	matnha.edameh = False
+'	matnha.klmc = True
+'	StartActivity(matnha)
+'	myf.SetAnimation("right_left1","right_left")
+'	Activity.Finish
+''	myf.SetAnimation("left_right","zoom_exit")
+'End Sub
+'Sub F_Matni_Click
+'	myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(1),True)
+'	File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+'	File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(1))
+'	File.WriteString(File.DirInternalCache,"booktype.txt","8")
+'	StartActivity(onvanha)
+'	myf.SetAnimation("right_left1","right_left")
+'	Activity.Finish
+''	myf.SetAnimation("left_right","zoom_exit")
+'End Sub
+'Sub clv1_ItemClick (Index As Int, Value As Object)
+'	If pageSel = 2 Then
+'		If Index = 0 Then
+'			F_Matni_Click
+'		else if Index = 1 Then
+'			klmch_Click
+'		End If
+'	else If pageSel = 5 Then
+'		If Index = 0 Then
+'			Anis1_Click
+'		else if Index = 1 Then
+'			SafFr_Click
+'		else if Index = 2 Then
+'			SafAr_Click
+'		End If
+'	else if pageSel = 7 Then
+'		F_Soti_Click((201+Index) & ".book")
+'	else if pageSel = 8 Then
+'		F_Soti_Click((203+Index) & ".book")
+'		
+'	else if pageSel = 9 Then
+'		F_Tasviri_Click((301+Index) & ".book")
+'	End If
+'End Sub
+'Private Sub F_Tasviri_Click(dbname As String)
+'	myf.booklibAddress = File.DirInternal & "/F.Tasviri/"
+'	File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+'	File.WriteString(File.DirInternalCache,"booksel.txt",dbname)
+'	File.WriteString(File.DirInternalCache,"booktype.txt","8")
+'	StartActivity(onvanha)
+'	myf.SetAnimation("right_left1","right_left")
+'	Activity.Finish
+'End Sub
+'Private Sub F_Soti_Click(dbname As String)
+'	myf.booklibAddress = File.DirInternal & "/F.Soti/"
+'	File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+'	File.WriteString(File.DirInternalCache,"booksel.txt",dbname)
+'	File.WriteString(File.DirInternalCache,"booktype.txt","8")
+'	StartActivity(onvanha)
+'	myf.SetAnimation("right_left1","right_left")
+'	Activity.Finish
+'End Sub
+'Private Sub PlayBar_ValueChanged (Value As Int, UserChanged As Boolean)
+'	If UserChanged Then
+'		mp.Position = Value
+'		Dim min1,sec1,min3,sec3 As String
+'		Dim min2,sec2,min4,sec4 As Int
+'		min2 = mp.Position / 60000
+'		If min2 < 10 Then
+'			min1 = "0" & min2
+'		Else
+'			min1 = min2
+'		End If
+'		sec2 = (mp.Position/1000) Mod 60
+'		If sec2 < 10 Then
+'			sec1 = "0" & sec2
+'		Else
+'			sec1 = sec2
+'		End If
+'		min4 = mp.Duration / 60000
+'		If min4 < 10 Then
+'			min3 = "0" & min4
+'		Else
+'			min3 = min4
+'		End If
+'		sec4 = (mp.Duration/1000) Mod 60
+'		If sec4 < 10 Then
+'			sec3 = "0" & sec4
+'		Else
+'			sec3 = sec4
+'		End If
+'		prLabel.Text = min1 & ":" & sec1 & " / " & min3 & ":" & sec3
+'		prLabel.Width = -2
+'	End If
+'End Sub
+
+'Private Sub PlayTimer_Tick
+'	If pageSel = 3 Then
+'		If mp.IsPlaying Then
+'			PlayBar.Value = mp.Position
+'			Dim min1,sec1,min3,sec3 As String
+'			Dim min2,sec2,min4,sec4 As Int
+'			min2 = mp.Position / 60000
+'			If min2 < 10 Then
+'				min1 = "0" & min2
+'			Else
+'				min1 = min2
+'			End If
+'			sec2 = (mp.Position/1000) Mod 60
+'			If sec2 < 10 Then
+'				sec1 = "0" & sec2
+'			Else
+'				sec1 = sec2
+'			End If
+'			min4 = mp.Duration / 60000
+'			If min4 < 10 Then
+'				min3 = "0" & min4
+'			Else
+'				min3 = min4
+'			End If
+'			sec4 = (mp.Duration/1000) Mod 60
+'			If sec4 < 10 Then
+'				sec3 = "0" & sec4
+'			Else
+'				sec3 = sec4
+'			End If
+'			prLabel.Text = min1 & ":" & sec1 & " / " & min3 & ":" & sec3
+'			prLabel.Width = -2
+'		Else
+'			mp.Pause
+'			Playb.SetBackgroundImage(LoadBitmap(File.DirAssets,"play.png"))
+'			PlayTimer.Enabled = False
+'			PlayBar.Value = 0
+'		End If
+'	else if pageSel = 4 Then
+'		If player1.IsPlaying And dowloading = False Then
+'			Dim min1,sec1,min3,sec3 As String
+'			Dim min2,sec2,min4,sec4 As Int
+'			min2 = player1.Position / 60000
+'			If min2 < 10 Then
+'				min1 = "0" & min2
+'			Else
+'				min1 = min2
+'			End If
+'			sec2 = (mp.Position/1000) Mod 60
+'			If sec2 < 10 Then
+'				sec1 = "0" & sec2
+'			Else
+'				sec1 = sec2
+'			End If
+'			min4 = player1.Duration / 60000
+'			If min4 < 10 Then
+'				min3 = "0" & min4
+'			Else
+'				min3 = min4
+'			End If
+'			sec4 = (player1.Duration/1000) Mod 60
+'			If sec4 < 10 Then
+'				sec3 = "0" & sec4
+'			Else
+'				sec3 = sec4
+'			End If
+'			prLabel.Text = min1 & ":" & sec1 & " / " & min3 & ":" & sec3
+'			prLabel.Width = -2
+'		End If
+'	End If
+'
+'End Sub
+'Private Sub DmTimer_Tick
+'	If Starter.dowloading Then
+'		If Starter.fileHttpPath = fileHttpPath And Starter.mp3fileName = mp3fileName Then
+'			prLabel.Text = Starter.downStatus
+'			If pageSel = 4 Then prLabel.Color = 0X55000000
+'			prLabel.Width = -2
+'			downloadBar.Visible = True
+'		Else
+'			prLabel.Visible = True
+'			prLabel.Text = "  در حال دانلود فایل قبلی  "
+'			If pageSel = 4 Then prLabel.Color = 0X55000000
+'			prLabel.Width = -2
+'		End If
+'	Else
+'		Activity.RemoveAllViews
+'		Activity_Create(False)
+'	End If
+'End Sub
+'Private Sub Playb_Click
+'	If dowloading Then
+'		If Starter.conState Then	
+'			dowloading = True
+'			If Starter.dowloading = False Then
+'				downloadBar.Visible = True
+'				Starter.dowloading = True
+'				Starter.fileHttpPath = fileHttpPath
+'				Starter.mp3fileName = mp3fileName
+'				If pageSel = 3 Then
+'					Starter.trStr = File.DirRootExternal & "/Sadeghin/" & "/mp3/"
+'				else if pageSel = 4 Then
+'					Starter.trStr = File.DirRootExternal & "/Sadeghin/" & "/mp4/"
+'				End If
+'				Starter.DmTimer.Enabled = True
+'				DmTimer.Initialize("DmTimer",1000)
+'				DmTimer.Enabled = True
+'				Starter.onvan = onvanha.onvanSel
+'				prLabel.Visible = True
+'			End If
+'			
+'		Else
+'			prLabel.Visible = True
+'			prLabel.Text = "  اینترنت در دسترس نیست  "
+'			If pageSel = 4 Then prLabel.Color = 0X55000000
+'			prLabel.Width = -2
+'		End If
+'	Else
+'		If pageSel = 3 Then
+'			Try
+'				If mp.IsPlaying Then
+'					mp.Pause
+'					Playb.SetBackgroundImage(LoadBitmap(File.DirAssets,"play.png"))
+'					PlayTimer.Enabled = False
+'				Else
+'					mp.Play
+'					Playb.SetBackgroundImage(LoadBitmap(File.DirAssets,"stop.png"))
+'					PlayTimer.Enabled = True
+'				End If
+'		
+'			Catch
+'				Log(LastException)
+'			End Try
+'		End If
+'	End If
+'End Sub
+
+
+'Sub Player_Ready
+'	Log("Ready")
+'End Sub
+'
+'Sub Player_Error (Message As String)
+'	Log("Error: " & Message)
+'End Sub
+'
+'Sub Player_Complete
+'	Log("complete")
+'End Sub
+
+'Private Sub FS_Click
+'	changepos = False
+'	Mp3View.pos = player1.Position
+'	player1.Pause
+'	player1.Release
+'	StartActivity(Mp3View)
+'	Activity.Finish
+''	Dim jo As JavaObjectac
+''	Dim FullScreenIsDestination As Boolean = True
+''	Dim player As Object = player1
+''	jo.InitializeStatic("androidx.media.ui.PlayerView")
+''	jo.RunMethod("switchTargetView", Array(player, IIf(FullScreenIsDestination,player1, SimpleExoPlayerView1), IIf(FullScreenIsDestination, SimpleExoPlayerView1, player1)))
+''	Dim x As B4XView = Panel1
+''	x.Rotation = 90
+''	x.Left = 0
+''	x.Width = 100%x
+''	x.Top = 0
+''	x.Height = 100%y
+''	Dim player As JavaObject = player1
+''	player.InitializeStatic("androidx.media3.ui.PlayerView")
+''	player.RunMethod("switchTargetView", Array(player, IIf(FullScreenIsDestination, player1, SimpleExoPlayerView1), IIf(FullScreenIsDestination, SimpleExoPlayerView1, player1)))
+'End Sub
+
+'Private Sub clv1_ScrollChanged (Offset As Int)
+'	If pageSel = 3 Or pageSel = 4 Then
+'		If Offset = (clv1.sv.ScrollViewContentHeight-Panel2.Height+2%y+1) Then
+'			p1.Visible = False
+'		Else
+'			p1.Visible = True
+'		End If
+'		If Offset = 0 Then
+'			p2.Visible = False
+'		Else
+'			p2.Visible = True
+'		End If
+'	End If
+'
+'End Sub
+
+'Private Sub Button1_Click
+'	If Starter.conState Then
+'		Downloader.Initialize
+'		dowloading = True
+'		DmTimer.Initialize("DmTimer",1000)
+'		DmTimer.Enabled = True
+'	Else
+'		ToastMessageShow("اینترنت در دسترس نیست",False)
+'	End If
+''	If Not (ifSts.IPs.IsIfConnected) Then
+''		ifSts.GetIfChanged(True)
+''		ifSts.Start(0)
+''		Log("no network")
+''		ToastMessageShow("NO connection",False)
+''	Else
+''		ifSts.GetIfChanged(True)
+''		Log(SPPing.pingResult.Success)
+''		ToastMessageShow("connected",False)
+''	End If
+'
+'End Sub
+'Private Sub SPPing_PingStarted
+'
+'End Sub
+'
+'Private Sub SPPing_PingFinished
+'	If SPPing.pingResult.Success Then
+'		Log("--- Ping info ---")
+'		Log("Ping Success: " & SPPing.pingResult.Success)
+'		Log("Ping To host: " & SPPing.pingResult.toHost)
+'		Log("Ping To IP: " & SPPing.pingResult.toIP)
+'		Log("Ping From host: " & SPPing.pingResult.fromDest)
+'		For Each bteKey As Byte In SPPing.pingResult.mapResponse.Keys
+'			Dim seqMap As Map = SPPing.pingResult.mapResponse.Get(bteKey)
+'			Log("Ping Sequence " & bteKey & " - TTL : " & seqMap.Get("ttl") & " - Time : " & seqMap.Get("time"))
+'		Next
+'		Dim stats As Map = SPPing.pingResult.mapStatistics
+'		Log("Internet connected?: " & SPPing.pingResult.Success)
+'		Log("Ping Packets transmitted: " & stats.Get("packets transmitted"))
+'		Log("Ping Packets received: " & stats.Get("received"))
+'		Log("Ping Packets loss: " & stats.Get("packet loss"))
+'		Log("Ping Round Trip Time (Minimum): " & stats.Get("rtt min"))
+'		Log("Ping Round Trip Time (Average): " & stats.Get("rtt agv"))
+'		Log("Ping Round Trip Time (Maximum): " & stats.Get("rtt max"))
+'		Log("Ping Round Trip Time (Mean Deviation): " & stats.Get("rtt mdev"))
+'	End If
+'End Sub
+'
+'Private Sub SPPing_PingError(Msg As String)
+'	Log(Msg)
+'End Sub
+'
+'Private Sub SPIFStatus_SocketStarted (Port As Int)
+'
+'End Sub
+'
+'Private Sub SPIFStatus_SocketClosed
+'
+'End Sub
+'
+'Private Sub SPIFStatus_ConnectionStatusChanged (IPStatus As tpeIPs)
+'	If ifSts.IPs.IsIfConnected Then
+'		Log("--- Interface General info ---")
+'		Log("Interface connected?: " & ifSts.IPs.IsIFConnected)
+'		Log("Connection type: " & ifSts.IPs.ConnType)
+'		Log("Local IP: " & ifSts.IPs.IP)
+'		SPPing.Destination = "https://mesbah-sadeghin_ir/"
+'		SPPing.Attempts = 1
+'		SPPing.Timeout = 200
+'		SPPing.Start
+'	End If
+'End Sub
+'
+'Private Sub SPIFStatus_Error (Msg As String)
+'
+'End Sub
+
+
+Private Sub eata_Click
+	Dim b1 As Button = eata
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W-3%x,b1H-1%x)
+	Sleep(150)
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	Dim browserIntent As Intent
+	browserIntent.Initialize(browserIntent.ACTION_VIEW, "https://eitaa.com/sadeghin_ir")
+	StartActivity(browserIntent)
+End Sub
+
+Private Sub safineImage_Click
+	Dim b1 As ImageView = safineImage
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W+1%x,b1H+1%x)
+
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	If safSelIdx = 0 Then
+		safSelIdx = 1
+		File.WriteString(File.DirInternal,"safSelIdx",safSelIdx)
+		safineImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"selbut.png"))
+	Else
+		safSelIdx = 0
+		File.WriteString(File.DirInternal,"safSelIdx",safSelIdx)
+		safineImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"selbut1.png"))
+	End If
+	If safSelIdx = 1 Then
+		SafSelStetus.Text = "(فارسی)"
+		selSafBname.Text = "فارسی"
+		safineBut.SetBackgroundImage(LoadBitmap(File.DirAssets,"safinehB1.png"))
+	Else
+		SafSelStetus.Text = "(عربی)"
+		selSafBname.Text = "عربی"
+		safineBut.SetBackgroundImage(LoadBitmap(File.DirAssets,"safinehB.png"))
+	End If
+	
+	
+	
+	
+End Sub
+
+Private Sub anisImage_Click
+	Dim b1 As ImageView = Sender
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W+1%x,b1H+1%x)
+
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	If AnisSelIdx = 0 Then
+		AnisSelIdx = 1
+		File.WriteString(File.DirInternal,"AnisSelIdx",AnisSelIdx)
+		anisImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"selbut.png"))
+	Else
+		AnisSelIdx = 0
+		File.WriteString(File.DirInternal,"AnisSelIdx",AnisSelIdx)
+		anisImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"selbut1.png"))
+	End If
+	If AnisSelIdx = 1 Then
+		AnisSelStatus.Text = "(با ترجمه)"
+		selAnBname.Text = "با ترجمه"
+		anisBut.SetBackgroundImage(LoadBitmap(File.DirAssets,"anisB1.png"))
+	Else
+		AnisSelStatus.Text = "(بدون ترجمه)"
+		selAnBname.Text = "بدون ترجمه"
+		anisBut.SetBackgroundImage(LoadBitmap(File.DirAssets,"anisB.png"))
+	End If
+	
+End Sub
+Private Sub bookSetting_Click
+	If Not(popupView1) Then
+		Dim b1 As Button = bookSetting
+		Dim b1W As Int = b1.Width
+		Dim b1H As Int = b1.Height
+		b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W+2%x,b1H+2%x)
+		Sleep(150)
+		b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	
+	
+		If popupView Then
+			popupView = False
+			Activity.RemoveViewAt(popupIndex)
+			anisBut.SetVisibleAnimated(150,True)
+			safineBut.SetVisibleAnimated(150,True)
+			AnisSelStatus.SetVisibleAnimated(150,True)
+			SafSelStetus.SetVisibleAnimated(150,True)
+		Else
+			popupView = True
+			popupIndex = Activity.NumberOfViews
+			anisBut.SetVisibleAnimated(150,False)
+			safineBut.SetVisibleAnimated(150,False)
+			AnisSelStatus.SetVisibleAnimated(150,False)
+			SafSelStetus.SetVisibleAnimated(150,False)
+'		Sleep(80)
+			Dim p As Panel
+			p.Initialize("")
+			p.LoadLayout("nMenuNew")
+
+			Activity.AddView(p,2%x,bookSetting.Top - 70%x,80%x,70%x)
+			p.Left = 50%x
+			p.Top = bookSetting.Top - 35%x
+			p.Width = 0
+			p.Height = 0
+			p.SetLayoutAnimated(150,2%x,bookSetting.Top - 70%x,80%x,70%x)
+
+			If AnisSelIdx = 1 Then
+				selAnBname.Text = "با ترجمه"
+				anisImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"selbut.png"))
+			Else
+				anisImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"selbut1.png"))
+				selAnBname.Text = "بدون ترجمه"
+			End If
+
+			If safSelIdx = 1 Then
+				safineImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"selbut.png"))
+				selSafBname.Text = "فارسی"
+			Else
+				safineImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"selbut1.png"))
+				selSafBname.Text = "عربی"
+			End If
+		End If
+	Else
+		LastR_Click
+	End If
+End Sub
+
+Private Sub aboutIcon_Click
+	Dim b1 As Button = aboutIcon
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W+2%x,b1H+2%x)
+	Sleep(150)
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	Dim message As String
+	message =CRLF& File.ReadString(File.DirAssets,"about1.txt")&CRLF
+	'"بسم الله الرحمن الرحیم"&CRLF& "برنامهٔ صادقین (نسخهٔ ۱)"&CRLF&"این برنامه به منظور حفظ، نشر و ترویج آثار و سیره‌ی عالم ربانی حضرت آیت‌الله حاج سید حسین یعقوبی قائنی (قدّس‌سرّه الشریف)، تدوین شده که تقدیم حضور علاقه‌مندان و ارادتمندان ایشان می‌‌گردد."&CRLF&"این نرم افزار دربردارنده دو اثر ارزشمند زیر می‌باشد:"&CRLF&"کتاب انیس الصادقین: مجموعه‌ای ارزشمند از رهنمودهای آن عالم ربانی در زمینهٔ ادعیه و اذکار، که ثمرهٔ سال‌ها سلوک معنوی و تجربهٔ عبادی ایشان است."&CRLF&"کتاب سفینه الصادقین: شرح احوال و زندگینامه‌یٔ آن بزرگوار، که گوشه‌هایی از سیرهٔ عملی و اخلاقی ایشان را در معرض دید علاقه‌مندان قرار می‌دهد."&CRLF&"این اثر به سفارش کانال صادقین (sadeghin_ir) تهیه شده و از شهریورماه ۱۴۰۵ هجری شمسی، به‌صورت رایگان در اختیار عموم علاقه‌مندان قرار می‌گیرد."&CRLF&CRLF&	"امیدواریم با ارائهٔ نظرات، پیشنهادات و انتقادات سازنده‌ی خویش، ما را در مسیر ارتقا و بهینه‌سازی هرچه بیشتر این اثر یاری فرمایید."&CRLF&CRLF&"راه‌های ارتباطی:"&CRLF&"-مدیر کانال: [Yaghobi01@gmail.com]"&CRLF&"-برنامه‌نویس: [Anisbook@iran.ir]"&CRLF&CRLF&CRLF&CRLF
+	
+
+
+
+	Dim dia As CustomDialog2
+	Dim sv As ScrollView
+	Dim lbl As Label
+	Dim pnl As Panel
+
+	' --- ساخت پنل داخلی برای Label (تا ScrollView بتواند محتوا را بفهمد) ---
+	pnl.Initialize("pnl")
+
+	' --- ساخت لیبل ---
+	lbl.Initialize("lbl")
+	lbl.Typeface = Typeface.LoadFromAssets("Vazirmatn-Regular.ttf")
+	lbl.Text = message
+	lbl.TextSize = 18
+	lbl.Width = 70%x
+	myf.setLineSpace(lbl, 1.25)
+	lbl.Gravity = Gravity.RIGHT
+	lbl.TextColor = 0xffcaa57c'a7d371
+
+	sv.Initialize(1350dip)
+	Dim gd As GradientDrawable
+	' با استفاده از GradientDrawable، رنگ پس‌زمینه و شعاع گوشه را تعیین می‌کنیم
+	gd.Initialize("TL_BR", Array As Int( 0xFF021c1a, 0xff052324))
+	sv.Panel.Background = gd
+	sv.Panel.AddView(lbl, 10%x, 0%x, lbl.Width+10%x, lbl.Height)
+	
+	Dim jo = sv As JavaObject
+	jo.RunMethod("setVerticalScrollbarPosition", Array As Object (1))   ' position left
+	jo.RunMethod("setScrollBarSize", Array(DipToCurrent(10)))
+	
+	Dim r As Reflector
+	r.Target = sv
+	r.Target = r.GetField("mScrollCache")
+	r.Target = r.GetField("scrollBar")
+	Dim cd As ColorDrawable
+	cd.Initialize(0xffe0bb92, 5dip)
+	myf.ChangeScrollbarColor(sv, cd)
+	
+
+	dia.AddView(sv, 95%x, 100%y)
+	dia.Show("", "", "", "", Null)
+'	Dim dia As CustomDialog2
+'	Dim lbl As Label
+'	lbl.Initialize("lbl")
+'	lbl.Typeface = Typeface.LoadFromAssets("Vazirmatn-Light.ttf")
+'	lbl.Text = message
+'	lbl.TextSize = 18
+'	myf.setLineSpace(lbl,1)
+'	lbl.Gravity = Gravity.CENTER
+'	dia.AddView(lbl, 88%x,100%y)
+'	dia.Show("بسم الله الرحمن الرحیم", "", "", "", Application.Icon)
+	
+	
+'	Dim sf As Object = Msgbox2Async(message,title, "", "", "", Application.Icon,True)
+'	FixMsgboxColor(sf, 0xffa7d371) ' رنگ پس‌زمینه را اینجا تعیین کنید
+'	SetTextColor(sf, Colors.Black, Colors.Black, Colors.Black)
+End Sub
+
+'Sub FixMsgboxColor(sf As Object, color As Int)
+'	Dim jo As JavaObject = sf
+'	Dim cd As ColorDrawable
+'	cd.Initialize2(color, 10dip, 0dip, Colors.ARGB(45,0,0,0)) ' گوشه‌های گرد و سایه
+'	jo.RunMethodJO("getWindow", Null).RunMethod("setBackgroundDrawable", Array(cd))
+'End Sub
+'
+'Sub SetTextColor(sf As Object, TitleTextcolor As Int, MessageTextcolor As Int, ButtonTextcolor As Int)
+'	Dim jo As JavaObject = sf
+'	Dim context As JavaObject = jo.RunMethod("getContext", Null)
+'	Dim res As JavaObject = context.RunMethod("getResources", Null)
+'
+'	' 1. تغییر رنگ متن پیام (Message)
+'	' android.R.id.message معادل 16908299 است
+'	ChangeTextColor(jo.RunMethodJO("findViewById", Array(16908299)), MessageTextcolor)
+'
+'	' 2. تغییر رنگ عنوان (Title)
+'	' پیدا کردن id عنوان به صورت داینامیک
+'	Dim titleId As Int = res.RunMethod("getIdentifier", Array("alertTitle", "id", "android"))
+'	ChangeTextColor(jo.RunMethodJO("findViewById", Array(titleId)), TitleTextcolor)
+'
+'	' 3. تغییر رنگ متن دکمه‌ها (Buttons)
+'	' دکمه‌ها در AlertDialog با id های پیش‌فرض پیدا می‌شوند
+'	' android.R.id.button1 = 16908313 (مثبت)
+'	' android.R.id.button2 = 16908314 (منفی)
+'	' android.R.id.button3 = 16908315 (خنثی)
+'	ChangeTextColor(jo.RunMethodJO("findViewById", Array(16908313)), ButtonTextcolor)
+'	ChangeTextColor(jo.RunMethodJO("findViewById", Array(16908314)), ButtonTextcolor)
+'	ChangeTextColor(jo.RunMethodJO("findViewById", Array(16908315)), ButtonTextcolor)
+'End Sub
+
+'Sub ChangeTextColor(view As JavaObject, color As Int)
+'	Dim r As Reflector
+'	r.Target = view
+'	r.RunMethod2("setTextColor", color, "java.lang.int")
+'End Sub
+
+Private Sub safineBut_Click
+	Dim b1 As ImageView = Sender
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(100,b1.Left,b1.Top,b1W+3%x,b1H+1%x)
+	Sleep(100)
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	Sleep(100)
+	If safSelIdx = 1 Then
+		SafFr_Click
+	Else
+		SafAr_Click
+	End If
+End Sub
+
+Private Sub anisBut_Click
+	Dim b1 As ImageView = Sender
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(100,b1.Left,b1.Top,b1W+3%x,b1H+1%x)
+	Sleep(100)
+	b1.SetLayoutAnimated(100,b1.Left,b1.Top,b1W,b1H)
+	Sleep(100)
+	If AnisSelIdx = 1 Then
+		Anis1_Click
+	Else
+		Anis2_Click
+	End If
+	
+End Sub
+
+
+Private Sub aLastR_Click
+	Dim b1 As Button = aLastR
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W+2%x,b1H+2%x)
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	Sleep(150)
+End Sub
+
+Private Sub LastR_Click
+	If Not(popupView) Then
+		Dim b1 As Button = LastR
+		Dim b1W As Int = b1.Width
+		Dim b1H As Int = b1.Height
+		b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W+2%x,b1H+2%x)
+		Sleep(150)
+		b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	
+
+		If popupView1 Then
+			popupView1 = False
+			Activity.RemoveViewAt(popupIndex)
+			anisBut.SetVisibleAnimated(150,True)
+			safineBut.SetVisibleAnimated(150,True)
+			AnisSelStatus.SetVisibleAnimated(150,True)
+			SafSelStetus.SetVisibleAnimated(150,True)
+		Else
+			popupView1 = True
+			popupIndex = Activity.NumberOfViews
+			anisBut.SetVisibleAnimated(150,False)
+			safineBut.SetVisibleAnimated(150,False)
+			AnisSelStatus.SetVisibleAnimated(150,False)
+			SafSelStetus.SetVisibleAnimated(150,False)
+'		Sleep(80)
+			Dim p As Panel
+			p.Initialize("")
+			p.LoadLayout("nMenuNew1")
+			If safSelIdx = 1 Then
+				safinebookImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"saffr.jpg"))
+			Else
+				safinebookImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"safar.jpg"))
+			End If
+			If AnisSelIdx = 1 Then
+				anisbookImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"anis1.jpg"))
+			Else
+				anisbookImage.SetBackgroundImage(LoadBitmap(File.DirAssets,"anis.jpg"))
+			End If
+			Activity.AddView(p,18%x,LastR.Top - 70%x,80%x,70%x)
+			p.Left = 50%x
+			p.Top = bookSetting.Top - 35%x
+			p.Width = 0
+			p.Height = 0
+			p.SetLayoutAnimated(150,18%x,LastR.Top - 70%x,80%x,70%x)
+		End If
+	Else
+		bookSetting_Click
+	End If
+End Sub
+
+Private Sub safinebookImage_Click
+	Dim b1 As ImageView = safinebookImage
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W+2%x,b1H+4%x)
+	Sleep(150)
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	If safSelIdx = 1 Then
+		myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(2),True)
+		File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+		File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(2))
+		File.WriteString(File.DirInternalCache,"booktype.txt","8")
+		
+	Else
+		myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(1),True)
+		File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+		File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(1))
+		File.WriteString(File.DirInternalCache,"booktype.txt","8")
+	End If
+	
+	Dim cur As Cursor = s1.ExecQuery("select * from Edameh")
+	If cur.RowCount = 1 Then
+		cur.Position = 0
+		onvanha.search = False
+		onvanha.idonvan = cur.GetInt("idonvan")
+		onvanha.onvanSel = cur.GetString("onvanSel")
+		matnha.edameh = True
+		matnha.startItem = cur.GetInt("ItemNumber")
+		cur.Close
+		File.WriteString(File.DirInternalCache,"onvanha.txt",onvanha.idonvan)
+		File.WriteString(File.DirInternalCache,"onvanSel.txt",onvanha.onvanSel)
+		StartActivity(matnha)
+		myf.SetAnimation("right_left1","right_left")
+		LastR_Click
+	else if cur.RowCount = 0 Then
+		ToastMessageShow("این کتاب قبلا مطالعه نشده است",False)
+	End If
+End Sub
+
+Private Sub anisbookImage_Click
+	Dim b1 As ImageView = anisbookImage
+	Dim b1W As Int = b1.Width
+	Dim b1H As Int = b1.Height
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W+2%x,b1H+4%x)
+	Sleep(150)
+	b1.SetLayoutAnimated(150,b1.Left,b1.Top,b1W,b1H)
+	If AnisSelIdx = 1 Then
+		myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(0),True)
+		File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+		File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(0))
+		File.WriteString(File.DirInternalCache,"booktype.txt","4")
+		Dim cur As Cursor = s1.ExecQuery("select * from Edameh")
+	Else
+		myf.DatabesOpen(s1,myf.booklibAddress,booklst.Get(3),True)
+		File.WriteString(File.DirInternalCache,"bookAddr.txt",myf.booklibAddress)
+		File.WriteString(File.DirInternalCache,"booksel.txt",booklst.Get(3))
+		File.WriteString(File.DirInternalCache,"booktype.txt","4")
+		Dim cur As Cursor = s1.ExecQuery("select * from Edameh")
+	End If
+	
+	If cur.RowCount = 1 Then
+		cur.Position = 0
+		onvanha.search = False
+		onvanha.idonvan = cur.GetInt("idonvan")
+		onvanha.onvanSel = cur.GetString("onvanSel")
+		Motoon.edameh = True
+		Motoon.startItem = cur.GetInt("ItemNumber")
+		cur.Close
+		File.WriteString(File.DirInternalCache,"onvanha.txt",onvanha.idonvan)
+		File.WriteString(File.DirInternalCache,"onvanSel.txt",onvanha.onvanSel)
+		LastR_Click
+		StartActivity(Motoon)
+		myf.SetAnimation("right_left1","right_left")
+	else if cur.RowCount = 0 Then
+		ToastMessageShow("این کتاب قبلا مطالعه نشده است",False)
+	End If
+	
+End Sub

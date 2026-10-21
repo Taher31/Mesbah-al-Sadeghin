@@ -1,0 +1,136 @@
+name: Build and deploy
+
+# Builds the Android APK and the web app (PWA), then uploads the site to the cPanel subdomain over
+# FTPS — the same setup as the Asperlos website. Every push to main publishes.
+#
+# Repository secrets:
+#   FTP_SERVER, FTP_USERNAME, FTP_PASSWORD   cPanel FTP account (deploy is skipped while unset)
+#   FTP_SERVER_DIR                           subdomain document root, e.g. mesbah.esperlos.sbs/
+#   ANDROID_KEYSTORE_BASE64                  release keystore, base64 (APK is skipped while unset)
+#   ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Test the FTP connection only; upload nothing'
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    env:
+      HAS_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip notice
+        if: env.HAS_KEYSTORE != 'true'
+        run: echo "::notice::ANDROID_KEYSTORE_BASE64 is not set; the APK is not built or published."
+
+      - uses: actions/setup-java@v4
+        if: env.HAS_KEYSTORE == 'true'
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        if: env.HAS_KEYSTORE == 'true'
+
+      - name: Build signed release APK
+        if: env.HAS_KEYSTORE == 'true'
+        working-directory: android
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > "$ANDROID_KEYSTORE_PATH"
+          chmod +x gradlew
+          ./gradlew :app:assembleRelease --no-daemon
+          mkdir -p ../apk
+          cp app/build/outputs/apk/release/app-release.apk ../apk/mesbah-sadeghin.apk
+
+      - uses: actions/upload-artifact@v4
+        if: env.HAS_KEYSTORE == 'true'
+        with:
+          name: apk
+          path: apk/mesbah-sadeghin.apk
+          retention-days: 30
+
+  web:
+    needs: android
+    # Publish the site even when no APK was built.
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    env:
+      HAS_FTP: ${{ secrets.FTP_SERVER != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for the web app
+        id: web
+        run: |
+          if [ -f web/package-lock.json ]; then echo "present=true" >> "$GITHUB_OUTPUT"
+          else echo "::notice::web/ is not in the repository yet; nothing to deploy."; fi
+
+      - uses: actions/setup-node@v4
+        if: steps.web.outputs.present == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build web app
+        if: steps.web.outputs.present == 'true'
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+
+      - uses: actions/download-artifact@v4
+        if: steps.web.outputs.present == 'true' && needs.android.result == 'success'
+        continue-on-error: true
+        with:
+          name: apk
+          path: web/dist/download
+
+      - name: Skip notice
+        if: steps.web.outputs.present == 'true' && env.HAS_FTP != 'true'
+        run: echo "::notice::FTP secrets are not set; the site was built but not uploaded."
+
+      # The FTP account is shared with the Asperlos site, whose files live in public_html/. The
+      # deploy action deletes whatever its sync-state file lists but this build lacks, so pointing
+      # it at public_html/ (or the account root) would wipe that site. Refuse anything but a
+      # dedicated subdomain folder.
+      - name: Guard target directory
+        if: steps.web.outputs.present == 'true' && env.HAS_FTP == 'true'
+        env:
+          DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          norm="$(echo "$DIR" | sed -e 's#^\./##' -e 's#^/##' -e 's#/*$##')"
+          case "$norm" in
+            ""|"."|"public_html"|"www"|"public_ftp"|"home"*)
+              echo "::error::FTP_SERVER_DIR='$DIR' is not a dedicated subdomain folder; refusing to deploy."
+              exit 1 ;;
+          esac
+          [[ "$DIR" == */ ]] || { echo "::error::FTP_SERVER_DIR must end with '/'"; exit 1; }
+
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        if: steps.web.outputs.present == 'true' && env.HAS_FTP == 'true'
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          dry-run: ${{ inputs.dry_run || false }}
+          local-dir: ./web/dist/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}

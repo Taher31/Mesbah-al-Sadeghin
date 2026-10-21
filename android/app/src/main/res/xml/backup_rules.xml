@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Back up the reader's bookmarks, progress and settings, not the 25 MB of decrypted books. -->
+<full-backup-content>
+    <include domain="database" path="user.db" />
+    <include domain="file" path="datastore/" />
+</full-backup-content>
