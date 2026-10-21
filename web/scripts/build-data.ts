@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url'
 import { DatabaseSync } from 'node:sqlite'
 import { BOOKS, Kind } from '../src/lib/books.ts'
 import type { Book, DataManifest, KindCode, RawParagraph, RawSearchIndex, RawToc, RawTocEntry } from '../src/lib/books.ts'
-import { normalize } from '../src/lib/normalize.ts'
+import { normalize, normalizeWithMap } from '../src/lib/normalize.ts'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const srcArg = process.argv.indexOf('--src')
@@ -192,8 +192,69 @@ export function paragraphStarts(withTranslation: RawParagraph[], without: RawPar
   return { starts, mapped, lost }
 }
 
+/**
+ * Content of 1.book that is wrong or missing, completed from 4.book. 1.book itself is left as it is:
+ * each fix checks that its problem is still there and reports, instead of applying, once the book
+ * has been corrected at the source. Every other difference between the editions is wording (or
+ * instructions laid out differently) and is kept as 1.book has it; see BOOK-CHANGES.md.
+ */
+function correctAnis(sections: Map<number, RawParagraph[]>, without: DatabaseSync): string[] {
+  const log: string[] = []
+  const fromWithout = (id: number) => paragraphsFromNtable3(without, id)
+
+  // «حرز یمانی» (368): parts 460–477 repeat 442–459 (pasted twice, the copy starting with a stray
+  // «@»), standing where 4.book continues «… وَ لٰا تَنْفَدُ خَزائِنُكَ مَواهِبُكَ الْمُتَّسِعَةُ …
+  // وَ عَمَلاً صالِحًا». The copy is replaced by that passage, as 9 phrases without translation.
+  {
+    const list = sections.get(368) ?? []
+    const at = new Map(list.map((p) => [p[0], p]))
+    const isCopy = Array.from({ length: 18 }, (_, k) => [at.get(442 + k), at.get(460 + k)]).every(
+      ([a, b]) => a && b && a[1] === b[1] && a[2] === b[2].replace(/^@/, ''),
+    )
+    if (!isCopy) log.push('368: the repeated block is gone from 1.book; correction not needed')
+    else {
+      const source = new Map(fromWithout(368).map((p) => [p[0], p[2]]))
+      const cut = (text: string, needle: string, after: boolean) => {
+        const { folded, map } = normalizeWithMap(text)
+        const i = folded.indexOf(needle)
+        if (i < 0) throw new Error(`368: «${needle}» not found in ${ANIS_PARAGRAPHS_SOURCE}.book`)
+        return after ? map[i + needle.length - 1] + 1 : map[i]
+      }
+      const p21 = source.get(21) ?? ''
+      const p22 = source.get(22) ?? ''
+      const a = p21.slice(cut(p21, 'خزاینک', true)).replace(/^[ً-ْٰ\s]+/, '').trim().split('، ')
+      const c = p22.slice(0, cut(p22, 'و عینا باکیه', false)).trim().replace(/،$/, '').split('، ')
+      if (a.length !== 4 || c.length !== 10) throw new Error('368: the passage in 4.book has changed; review the correction')
+      const lines = [
+        a[0] + '،', a[1] + '،', a[2] + '،', a[3],
+        c[0] + '،', c.slice(1, 3).join('، ') + '،', c.slice(3, 5).join('، ') + '،', c.slice(5, 7).join('، ') + '،', c.slice(7).join('، ') + '،',
+      ]
+      const added = lines.map((text, i): RawParagraph => [460 + 2 * i, Kind.Arabic, text])
+      const start = list.findIndex((p) => p[0] === 460)
+      const end = list.findIndex((p) => p[0] === 477)
+      list.splice(start, end - start + 1, ...added)
+      log.push(`368: repeated parts 460–477 replaced by ${lines.length} phrases from ${ANIS_PARAGRAPHS_SOURCE}.book`)
+    }
+  }
+
+  // «دعای روز شنبه» (88): the heading cites footnotes (1) and (2); only 4.book has them.
+  {
+    const list = sections.get(88) ?? []
+    if (list.some((p) => p[1] === Kind.Footnote)) log.push('88: 1.book has its footnotes; correction not needed')
+    else {
+      const notes = fromWithout(88).filter((p) => p[1] === Kind.Footnote)
+      const last = list[list.length - 1][0]
+      notes.forEach((p, i) => list.push([last + 1 + i, Kind.Footnote, p[2]]))
+      log.push(`88: ${notes.length} footnotes added from ${ANIS_PARAGRAPHS_SOURCE}.book`)
+    }
+  }
+  return log
+}
+
 function buildBook(book: Book, manifest: DataManifest) {
   const { db, close } = openBook(book.id)
+  // Anis: the edition without translation, for the corrections and the paragraph breaks below.
+  const other = book.paired ? openBook(ANIS_PARAGRAPHS_SOURCE) : null
   try {
     const toc = readToc(db)
     const titles = new Map(toc.map((e) => [e.id, e.title]))
@@ -214,9 +275,8 @@ function buildBook(book: Book, manifest: DataManifest) {
     const sections = new Map<number, RawParagraph[]>()
     if (book.hasParagraphTable) {
       for (const e of toc) if (e.hasContent) sections.set(e.id, paragraphsFromNtable3(db, e.id))
-      for (const r of db.prepare('SELECT tindex, tpart, ttext FROM Ntable3 ORDER BY tindex, tpart').all() as any[]) {
-        addSearch(Number(r.tindex), Number(r.tpart), String(r.ttext ?? ''))
-      }
+      if (other) correctAnis(sections, other.db).forEach((l) => console.log(`book ${book.id}: ${l}`))
+      for (const [id, list] of sections) for (const [key, , text] of list) addSearch(id, key, text)
     } else {
       const texts = new Map<number, string>()
       for (const r of db.prepare('SELECT tindex, ttext FROM table3 ORDER BY tindex').all() as any[]) {
@@ -227,22 +287,17 @@ function buildBook(book: Book, manifest: DataManifest) {
     }
     search.t = searchTexts.join('\n')
 
-    if (book.paired) {
+    if (other) {
       // Mark where paragraphs begin for reading without the translation.
-      const other = openBook(ANIS_PARAGRAPHS_SOURCE)
       let mapped = 0
       const lost: string[] = []
       let paragraphs = 0
-      try {
-        for (const [id, list] of sections) {
-          const result = paragraphStarts(list, paragraphsFromNtable3(other.db, id))
-          mapped += result.mapped
-          lost.push(...result.lost.map((l) => `section ${id}: ${l}`))
-          paragraphs += result.starts.size
-          sections.set(id, list.map((p): RawParagraph => (p[1] === Kind.Arabic && result.starts.has(p[0]) ? [p[0], p[1], p[2], 1] : p)))
-        }
-      } finally {
-        other.close()
+      for (const [id, list] of sections) {
+        const result = paragraphStarts(list, paragraphsFromNtable3(other.db, id))
+        mapped += result.mapped
+        lost.push(...result.lost.map((l) => `section ${id}: ${l}`))
+        paragraphs += result.starts.size
+        sections.set(id, list.map((p): RawParagraph => (p[1] === Kind.Arabic && result.starts.has(p[0]) ? [p[0], p[1], p[2], 1] : p)))
       }
       console.log(`book ${book.id}: without translation → ${paragraphs} Arabic paragraphs; ${mapped} breaks taken from ${ANIS_PARAGRAPHS_SOURCE}.book, ${lost.length} not found`)
       if (process.env.SHOW_LOST_BREAKS) lost.forEach((l) => console.log('  not found: ' + l))
@@ -292,6 +347,7 @@ function buildBook(book: Book, manifest: DataManifest) {
     )
   } finally {
     close()
+    other?.close()
   }
 }
 
