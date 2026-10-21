@@ -2014,3 +2014,8 @@ body:has(.fab) .page {
   border-color: transparent;
   color: var(--on-secondary-container);
 }
+
+/* All font choices visible at once in the text settings. */
+.text-settings .chip-row {
+  flex-wrap: wrap;
+}

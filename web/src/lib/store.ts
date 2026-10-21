@@ -68,7 +68,7 @@ function persisted<T>(key: string, load: (raw: unknown) => T): Store<T> {
 
 export type ThemeMode = 'system' | 'light' | 'sepia' | 'dark'
 export type PersianFont = 'vazirmatn' | 'nazanin' | 'lotus' | 'mitra' | 'zar'
-export type ArabicFont = 'naskh' | 'uthman' | 'badr'
+export type ArabicFont = 'naskh' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'vazirmatn'
 
 export const THEMES: { id: ThemeMode; label: string }[] = [
   { id: 'system', label: 'خودکار' },
@@ -89,6 +89,10 @@ export const ARABIC_FONTS: { id: ArabicFont; label: string; family: string }[] =
   { id: 'naskh', label: 'نسخ قرآنی', family: 'NaskhQurani' },
   { id: 'uthman', label: 'عثمان طه', family: 'UthmanTaha' },
   { id: 'badr', label: 'بدر', family: 'Badr' },
+  // Persian-style naskh: the familiar shapes of Iranian print, often easier to read than Quranic styles.
+  { id: 'nazanin', label: 'نازنین', family: 'Nazanin' },
+  { id: 'lotus', label: 'لوتوس', family: 'Lotus' },
+  { id: 'vazirmatn', label: 'وزیرمتن', family: 'Vazirmatn' },
 ]
 
 export interface Settings {
