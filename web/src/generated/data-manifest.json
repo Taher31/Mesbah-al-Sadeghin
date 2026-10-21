@@ -1,0 +1,25 @@
+{
+  "version": "bcc430d408",
+  "books": {
+    "1": {
+      "toc": "data/1/toc.6754079ccb.json",
+      "search": "data/1/search.6f2576510b.json",
+      "sections": 372
+    },
+    "2": {
+      "toc": "data/2/toc.d74cc229d4.json",
+      "search": "data/2/search.5f27877689.json",
+      "sections": 91
+    },
+    "3": {
+      "toc": "data/3/toc.7ab0b88ee2.json",
+      "search": "data/3/search.a1f6c57864.json",
+      "sections": 85
+    },
+    "4": {
+      "toc": "data/4/toc.9f9d3c40f5.json",
+      "search": "data/4/search.32d6291cf3.json",
+      "sections": 372
+    }
+  }
+}

@@ -1,0 +1,124 @@
+import { Store } from './store'
+
+/**
+ * Service-worker plumbing: registration, the offline download (the SW precaches the app shell on
+ * install; the books and reader fonts are pulled in afterwards with visible progress), the
+ * «new version» prompt, and install hints.
+ */
+
+export interface OfflineState {
+  /** False until the service worker answers (or when there is none, e.g. in dev). */
+  supported: boolean
+  done: number
+  total: number
+  /** Last fill attempt failed part-way (usually connectivity); it resumes on the next visit. */
+  failed: boolean
+}
+
+export const offlineStore = new Store<OfflineState>({ supported: false, done: 0, total: 0, failed: false })
+export const updateReady = new Store(false)
+
+let registration: ServiceWorkerRegistration | undefined
+
+const ua = navigator.userAgent
+export const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+/** Real Safari, as opposed to another browser or an app's built-in browser (Eitaa, Telegram …). */
+export const isIOSSafari = isIOS && /Version\/[\d.]+.*Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua)
+export const isAndroid = /Android/i.test(ua)
+export const isStandalone =
+  window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true
+
+/** Chrome/Android's own install prompt, captured so the home screen can offer a button. */
+export const installPrompt = new Store<{ prompt: () => Promise<unknown> } | null>(null)
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault()
+  installPrompt.set(e as unknown as { prompt: () => Promise<unknown> })
+})
+window.addEventListener('appinstalled', () => installPrompt.set(null))
+
+export function registerServiceWorker() {
+  if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return
+  const sw = navigator.serviceWorker
+  sw.addEventListener('message', (e) => {
+    const m = e.data
+    if (m?.type === 'progress') offlineStore.set({ supported: true, done: m.done, total: m.total, failed: !!m.failed })
+  })
+  let reloading = false
+  sw.addEventListener('controllerchange', () => {
+    // Only reload for an update the reader accepted, not for the first install taking control.
+    if (updateReady.get() && !reloading) {
+      reloading = true
+      location.reload()
+    }
+  })
+  window.addEventListener('load', async () => {
+    try {
+      registration = await sw.register(import.meta.env.BASE_URL + 'sw.js')
+    } catch {
+      return
+    }
+    const watch = (worker: ServiceWorker | null) => {
+      if (!worker) return
+      const check = () => {
+        if (worker.state === 'installed' && sw.controller) updateReady.set(true)
+      }
+      check()
+      worker.addEventListener('statechange', check)
+    }
+    watch(registration.waiting)
+    registration.addEventListener('updatefound', () => watch(registration!.installing))
+    const ready = await sw.ready
+    ready.active?.postMessage({ type: 'fill' })
+    if (isStandalone) navigator.storage?.persist?.().catch(() => {})
+    // Long-lived home-screen apps never reload on their own; look for updates when reopened.
+    let lastCheck = Date.now()
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && Date.now() - lastCheck > 30 * 60_000) {
+        lastCheck = Date.now()
+        registration?.update().catch(() => {})
+      }
+    })
+  })
+}
+
+/** Starts the downloads again, e.g. after a failure. */
+export function retryOfflineFill() {
+  ;(registration?.active ?? navigator.serviceWorker?.controller)?.postMessage({ type: 'fill' })
+}
+
+export function applyUpdate() {
+  const waiting = registration?.waiting
+  if (waiting) waiting.postMessage({ type: 'skip-waiting' })
+  else location.reload()
+}
+
+// ---------------------------------------------------------------- keep the screen on while reading
+
+let wakeLock: { release: () => Promise<void> } | null = null
+let wantWakeLock = false
+
+async function acquire() {
+  const api = (navigator as { wakeLock?: { request: (t: 'screen') => Promise<{ release: () => Promise<void> }> } }).wakeLock
+  if (!api || wakeLock || document.visibilityState !== 'visible') return
+  try {
+    wakeLock = await api.request('screen')
+    ;(wakeLock as unknown as EventTarget).addEventListener?.('release', () => (wakeLock = null))
+  } catch {
+    wakeLock = null
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (wantWakeLock && document.visibilityState === 'visible') acquire()
+})
+
+export const wakeLockSupported = 'wakeLock' in navigator
+
+export function keepScreenOn(on: boolean) {
+  wantWakeLock = on
+  if (on) acquire()
+  else {
+    wakeLock?.release().catch(() => {})
+    wakeLock = null
+  }
+}

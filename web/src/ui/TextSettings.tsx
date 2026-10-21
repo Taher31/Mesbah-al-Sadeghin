@@ -1,0 +1,86 @@
+import { useEffect, useState } from 'preact/hooks'
+import { fa } from '../lib/normalize'
+import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, THEMES, setSetting, settingsStore, useStore, type Settings } from '../lib/store'
+import { Chip, Segmented, SwitchRow } from './common'
+
+/** Theme, fonts and sizes with a live preview; used in the reader's sheet and on the settings page. */
+export function TextSettingsPanel({ showTranslationToggle }: { showTranslationToggle: boolean }) {
+  const s = useStore(settingsStore)
+  return (
+    <div class="text-settings">
+      <Preview s={s} />
+
+      <p class="field-label">پوسته</p>
+      <Segmented label="پوسته" options={THEMES} value={s.theme} onChange={(v) => setSetting('theme', v)} />
+
+      <p class="field-label">قلم عربی (ادعیه)</p>
+      <div class="chip-row">
+        {ARABIC_FONTS.map((f) => (
+          <Chip selected={s.arabicFont === f.id} onClick={() => setSetting('arabicFont', f.id)} style={`font-family:${f.family};font-size:17px`}>
+            {f.label}
+          </Chip>
+        ))}
+      </div>
+
+      <p class="field-label">قلم فارسی</p>
+      <div class="chip-row">
+        {PERSIAN_FONTS.map((f) => (
+          <Chip selected={s.persianFont === f.id} onClick={() => setSetting('persianFont', f.id)} style={`font-family:${f.family};font-size:16px`}>
+            {f.label}
+          </Chip>
+        ))}
+      </div>
+
+      <SizeSlider label="اندازهٔ متن عربی" value={s.arabicSize} range={RANGES.arabicSize} onChange={(v) => setSetting('arabicSize', v)} />
+      <SizeSlider label="اندازهٔ متن" value={s.textSize} range={RANGES.textSize} onChange={(v) => setSetting('textSize', v)} />
+      <SizeSlider label="فاصلهٔ سطرها" value={s.lineHeight} range={RANGES.lineHeight} decimals onChange={(v) => setSetting('lineHeight', v)} />
+
+      <SwitchRow label="تراز دوطرفه" checked={s.justify} onChange={(v) => setSetting('justify', v)} />
+      {showTranslationToggle && (
+        <SwitchRow label="نمایش ترجمه" checked={s.showTranslation} onChange={(v) => setSetting('showTranslation', v)} />
+      )}
+    </div>
+  )
+}
+
+function Preview({ s }: { s: Settings }) {
+  const arabic = ARABIC_FONTS.find((f) => f.id === s.arabicFont)!.family
+  const persian = PERSIAN_FONTS.find((f) => f.id === s.persianFont)!.family
+  return (
+    <div class="preview">
+      <p class="p-arabic is-paired" style={`font-family:${arabic};font-size:${s.arabicSize}px;line-height:${s.lineHeight}`}>
+        اَللّٰهُمَّ صَلِّ عَلیٰ مُحَمَّدٍ وَ آلِ مُحَمَّدٍ وَ عَجِّلْ فَرَجَهُم.
+      </p>
+      <p class="p-translation is-paired" style={`font-family:${persian};font-size:${s.textSize - 1.5}px;line-height:${s.lineHeight * 0.95}`}>
+        خدایا، بر محمد و آل محمد صلوات فرست و فرج آنان را نزدیک گردان.
+      </p>
+    </div>
+  )
+}
+
+/** Updates the preview while dragging but only writes the setting when the finger lifts. */
+function SizeSlider(props: { label: string; value: number; range: readonly [number, number]; decimals?: boolean; onChange: (v: number) => void }) {
+  const [dragging, setDragging] = useState(props.value)
+  useEffect(() => setDragging(props.value), [props.value])
+  const step = props.decimals ? 0.1 : 1
+  const shown = props.decimals ? dragging.toFixed(1) : String(Math.round(dragging))
+  return (
+    <div class="slider">
+      <div class="slider-head">
+        <span>{props.label}</span>
+        <b>{fa(shown)}</b>
+      </div>
+      <input
+        type="range"
+        min={props.range[0]}
+        max={props.range[1]}
+        step={step}
+        value={dragging}
+        aria-label={props.label}
+        style={`--fill:${((dragging - props.range[0]) / (props.range[1] - props.range[0])) * 100}%`}
+        onInput={(e) => setDragging(Number((e.target as HTMLInputElement).value))}
+        onChange={(e) => props.onChange(Number(Number((e.target as HTMLInputElement).value).toFixed(props.decimals ? 1 : 0)))}
+      />
+    </div>
+  )
+}

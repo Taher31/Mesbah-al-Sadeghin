@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>مصباح الصادقین</title>
+    <meta name="description" content="انیس الصادقین و سفینة الصادقین — آثار و سیرهٔ عالم ربانی آیت‌الله حاج سیّد حسین یعقوبی قائنی (قدّس‌سرّه). قابل نصب و استفاده بدون اینترنت." />
+    <meta name="theme-color" content="#04201C" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="/icons/favicon-48.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="مصباح الصادقین" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="preload" href="/fonts/vazirmatn_regular.woff2" as="font" type="font/woff2" crossorigin />
+    <script>
+      // Apply the saved theme before first paint so dark mode doesn't flash light.
+      try {
+        var t = (JSON.parse(localStorage.getItem('mesbah.settings') || '{}') || {}).theme
+        if (t !== 'light' && t !== 'sepia' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', t)
+      } catch (e) {}
+    </script>
+    <style>
+      /* Splash until the script runs: brand colours, no layout shift. */
+      html { background: #fbf8f2; }
+      html[data-theme='dark'] { background: #051916; }
+      html[data-theme='sepia'] { background: #f2e8d3; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <noscript>برای استفاده از مصباح الصادقین، جاوااسکریپت مرورگر را فعال کنید.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
