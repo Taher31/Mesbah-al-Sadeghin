@@ -11,6 +11,11 @@
  *   search.<hash>.json  normalized text of every paragraph, precomputed for search
  * and `src/generated/data-manifest.json`, which the app bundles to find the hashed files.
  * Content hashes in the names mean a data update can never be served stale from a cache.
+ *
+ * Anis is published as one book: 1.book (Arabic phrase by phrase, each with its translation). 4.book,
+ * the same text without translation, is not shipped; its editor's paragraph breaks are carried over
+ * onto 1.book's phrases so that hiding the translation shows flowing paragraphs instead of a column
+ * of fragments (see `paragraphStarts`).
  */
 import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, rmSync, unlinkSync, writeFileSync } from 'node:fs'
@@ -34,12 +39,12 @@ const footnote = /^\(\s*[0-9۰-۹]+\s*\)/
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex').slice(0, 10)
 
-function openBook(book: Book): { db: DatabaseSync; close: () => void } {
-  const file = join(srcDir, `${book.id}.book`)
+function openBook(id: number): { db: DatabaseSync; close: () => void } {
+  const file = join(srcDir, `${id}.book`)
   if (!existsSync(file)) throw new Error(`Missing ${file}`)
   const bytes = readFileSync(file)
   for (let i = 0; i < bytes.length; i++) bytes[i] ^= 0xff
-  const tmp = join(tmpdir(), `mesbah-${process.pid}-${book.id}.db`)
+  const tmp = join(tmpdir(), `mesbah-${process.pid}-${id}.db`)
   writeFileSync(tmp, bytes)
   const db = new DatabaseSync(tmp, { readOnly: true })
   return {
@@ -105,8 +110,90 @@ function paragraphsFromTable3(text: string, title: string): RawParagraph[] {
   return result
 }
 
+/** The Anis edition without translation; read only for its paragraph breaks. */
+const ANIS_PARAGRAPHS_SOURCE = 4
+
+/** Folded Arabic letters only: what both Anis editions share despite edits to vowels, punctuation and spacing. */
+const letters = (s: string) => normalize(s).replace(/[^\u0621-\u064A\u066E-\u06D3\u06FA-\u06FF]/g, '')
+
+/**
+ * Keys of the Arabic phrases (book 1) that begin a paragraph when the translation is hidden.
+ *
+ * Every run of consecutive phrases begins one. Inside a run, each paragraph break of the edition
+ * without translation is found in book 1 by the 12 letters on either side of it (searching forward
+ * only, so repeated prayers map in order) and moved to the nearest phrase boundary: phrases are
+ * never split and no text is changed. Where the surroundings differ between the editions (e.g.
+ * instructions the other one prints inside the Arabic), shorter or one-sided contexts are tried,
+ * guarded against jumping to a later repetition; failing that, the break is skipped.
+ */
+export function paragraphStarts(withTranslation: RawParagraph[], without: RawParagraph[]) {
+  const starts = new Set<number>()
+  const phrases: { key: number; end: number }[] = []
+  let k1 = ''
+  let previousArabic = false
+  for (const [key, kind, text] of withTranslation) {
+    if (kind === Kind.Translation) continue
+    if (kind === Kind.Arabic) {
+      if (!previousArabic) starts.add(key)
+      k1 += letters(text)
+      phrases.push({ key, end: k1.length })
+    }
+    previousArabic = kind === Kind.Arabic
+  }
+  let k4 = ''
+  const breaks: number[] = []
+  for (const [, kind, text] of without) {
+    if (kind !== Kind.Arabic) continue
+    if (k4.length) breaks.push(k4.length)
+    k4 += letters(text)
+  }
+  const W = 12
+  let from = 0
+  let fromB = 0
+  let mapped = 0
+  const lost: string[] = []
+  for (const b of breaks) {
+    const before = k4.slice(Math.max(0, b - W), b)
+    const after = k4.slice(b, b + W)
+    // A one-sided match may land on a later repetition of a short invocation (e.g. «یا ارحم
+    // الراحمین»), which would push every following break out of reach. So one side alone is used
+    // only if it is unique ahead, or if it lies within reach of the previous break.
+    const reach = Math.round((b - fromB) * 1.3) + 40
+    const side = (context: string) => {
+      if (context.length < W) return -1
+      const i = k1.indexOf(context, from)
+      if (i < 0) return -1
+      return k1.indexOf(context, i + 1) < 0 || i - from <= reach ? i : -1
+    }
+    let at = -1
+    let i = k1.indexOf(before + after, from)
+    if (i >= 0) at = i + before.length
+    else if ((i = k1.indexOf(before.slice(-8) + after.slice(0, 8), from)) >= 0 && i - from <= reach) at = i + 8
+    else if ((i = side(before)) >= 0) at = i + before.length
+    else if ((i = side(after)) >= 0) at = i
+    if (at < 0) {
+      lost.push(before + ' | ' + after)
+      continue
+    }
+    mapped++
+    from = at
+    fromB = b
+    let best = -1
+    let distance = Infinity
+    for (let j = 0; j < phrases.length - 1; j++) {
+      const d = Math.abs(phrases[j].end - at)
+      if (d < distance) {
+        distance = d
+        best = j
+      }
+    }
+    if (best >= 0) starts.add(phrases[best + 1].key)
+  }
+  return { starts, mapped, lost }
+}
+
 function buildBook(book: Book, manifest: DataManifest) {
-  const { db, close } = openBook(book)
+  const { db, close } = openBook(book.id)
   try {
     const toc = readToc(db)
     const titles = new Map(toc.map((e) => [e.id, e.title]))
@@ -139,6 +226,27 @@ function buildBook(book: Book, manifest: DataManifest) {
       for (const [id, text] of texts) text.split('\n').forEach((line, i) => addSearch(id, i, line))
     }
     search.t = searchTexts.join('\n')
+
+    if (book.paired) {
+      // Mark where paragraphs begin for reading without the translation.
+      const other = openBook(ANIS_PARAGRAPHS_SOURCE)
+      let mapped = 0
+      const lost: string[] = []
+      let paragraphs = 0
+      try {
+        for (const [id, list] of sections) {
+          const result = paragraphStarts(list, paragraphsFromNtable3(other.db, id))
+          mapped += result.mapped
+          lost.push(...result.lost.map((l) => `section ${id}: ${l}`))
+          paragraphs += result.starts.size
+          sections.set(id, list.map((p): RawParagraph => (p[1] === Kind.Arabic && result.starts.has(p[0]) ? [p[0], p[1], p[2], 1] : p)))
+        }
+      } finally {
+        other.close()
+      }
+      console.log(`book ${book.id}: without translation → ${paragraphs} Arabic paragraphs; ${mapped} breaks taken from ${ANIS_PARAGRAPHS_SOURCE}.book, ${lost.length} not found`)
+      if (process.env.SHOW_LOST_BREAKS) lost.forEach((l) => console.log('  not found: ' + l))
+    }
 
     // Pack consecutive sections into chunks of roughly CHUNK_BYTES.
     const chunkOf = new Map<number, number>()

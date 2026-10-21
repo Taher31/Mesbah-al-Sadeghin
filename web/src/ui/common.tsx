@@ -2,7 +2,7 @@ import type { ComponentChildren } from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import type { Book } from '../lib/books'
 import { goBack } from '../lib/router'
-import { useStore } from '../lib/store'
+import { setSetting, settingsStore, useStore } from '../lib/store'
 import { asset, toastStore } from '../lib/util'
 import { Icon, type IconName } from './icons'
 
@@ -56,9 +56,11 @@ export function TopBar(props: {
   )
 }
 
-/** A book cover with the slight lift of a physical book. */
+/** A book cover with the slight lift of a physical book. Anis shows the cover of the edition it reads like. */
 export function BookCover({ book, width, onClick }: { book: Book; width: number; onClick?: () => void }) {
-  const img = <img class="cover" src={asset(book.cover)} alt="" width={width} height={Math.round(width / 0.72)} loading="lazy" decoding="async" />
+  const showTranslation = useStore(settingsStore).showTranslation
+  const cover = book.paired && !showTranslation ? 'img/cover_anis.jpg' : book.cover
+  const img = <img class="cover" src={asset(cover)} alt="" width={width} height={Math.round(width / 0.72)} loading="lazy" decoding="async" />
   return onClick ? (
     <button type="button" class="cover-btn" onClick={onClick} aria-label="فهرست کتاب">
       {img}
@@ -147,6 +149,22 @@ export function Segmented<T extends string | number>({
         </button>
       ))}
     </div>
+  )
+}
+
+/** Anis is one book read two ways: phrase by phrase with its translation, or as flowing Arabic. */
+export function TranslationToggle() {
+  const show = useStore(settingsStore).showTranslation
+  return (
+    <Segmented
+      label="ترجمه"
+      options={[
+        { id: 'with', label: 'با ترجمه' },
+        { id: 'without', label: 'بدون ترجمه' },
+      ]}
+      value={show ? 'with' : 'without'}
+      onChange={(v) => setSetting('showTranslation', v === 'with')}
+    />
   )
 }
 

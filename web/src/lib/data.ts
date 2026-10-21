@@ -57,7 +57,13 @@ export interface Paragraph {
   key: number
   kind: KindCode
   text: string
+  /** Anis: this Arabic phrase begins a paragraph when the translation is hidden. */
+  start?: boolean
+  /** Set on Arabic phrases the reader joined into one paragraph: the key of the last one. */
+  last?: number
 }
+
+const toParagraph = ([key, kind, text, start]: RawParagraph): Paragraph => (start === 1 ? { key, kind, text, start: true } : { key, kind, text })
 
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url)
@@ -117,7 +123,7 @@ export async function loadSection(book: BookId, sectionId: number): Promise<Para
   const entry = toc.get(sectionId)
   if (!entry || entry.chunk < 0) return entry ? [] : null
   const chunk = await chunks.get(`${book}/${toc.chunks[entry.chunk]}`)
-  return (chunk[sectionId] ?? []).map(([key, kind, text]) => ({ key, kind, text }))
+  return (chunk[sectionId] ?? []).map(toParagraph)
 }
 
 export function peekSection(book: BookId, sectionId: number): Paragraph[] | undefined {
@@ -126,7 +132,7 @@ export function peekSection(book: BookId, sectionId: number): Paragraph[] | unde
   if (!toc || !entry) return undefined
   if (entry.chunk < 0) return []
   const chunk = chunks.peek(`${book}/${toc.chunks[entry.chunk]}`)
-  return chunk ? (chunk[sectionId] ?? []).map(([key, kind, text]) => ({ key, kind, text })) : undefined
+  return chunk ? (chunk[sectionId] ?? []).map(toParagraph) : undefined
 }
 
 export interface SearchIndex {

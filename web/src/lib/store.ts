@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks'
-import { BOOKS, bookById, type BookId, type WorkId } from './books'
+import { RETIRED_ANIS, bookById, type BookId, type WorkId } from './books'
 
 /** A value with listeners; the whole app's state is a handful of these. */
 export class Store<T> {
@@ -100,8 +100,8 @@ export interface Settings {
   lineHeight: number
   justify: boolean
   keepScreenOn: boolean
+  /** Anis: phrase-by-phrase with the Persian translation, or flowing Arabic paragraphs without it. */
   showTranslation: boolean
-  anisEdition: BookId
   safinehEdition: BookId
 }
 
@@ -115,7 +115,6 @@ export const DEFAULT_SETTINGS: Settings = {
   justify: true,
   keepScreenOn: true,
   showTranslation: true,
-  anisEdition: 1,
   safinehEdition: 3,
 }
 
@@ -151,8 +150,8 @@ export function sanitizeSettings(raw: unknown): Settings {
     lineHeight: clamp(r.lineHeight, RANGES.lineHeight, d.lineHeight),
     justify: typeof r.justify === 'boolean' ? r.justify : d.justify,
     keepScreenOn: typeof r.keepScreenOn === 'boolean' ? r.keepScreenOn : d.keepScreenOn,
-    showTranslation: typeof r.showTranslation === 'boolean' ? r.showTranslation : d.showTranslation,
-    anisEdition: editionOr(r.anisEdition, 'anis', d.anisEdition),
+    // Someone who used the retired «بدون ترجمه» edition keeps reading without the translation.
+    showTranslation: r.anisEdition === RETIRED_ANIS ? false : typeof r.showTranslation === 'boolean' ? r.showTranslation : d.showTranslation,
     safinehEdition: editionOr(r.safinehEdition, 'safineh', d.safinehEdition),
   }
 }
@@ -164,7 +163,7 @@ export function setSetting<K extends keyof Settings>(key: K, value: Settings[K])
 }
 
 export function editionOf(settings: Settings, work: WorkId): BookId {
-  return work === 'anis' ? settings.anisEdition : settings.safinehEdition
+  return work === 'anis' ? 1 : settings.safinehEdition
 }
 
 /** Restores text appearance only; theme and chosen editions are left alone. */
@@ -228,38 +227,52 @@ export interface UserData {
   bookmarks: Bookmark[]
 }
 
-const isBook = (v: unknown): v is BookId => BOOKS.some((b) => b.id === v)
 const isInt = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v)
+const isBook = (v: unknown): boolean => isInt(v) && bookById(v) !== undefined
+/** Data saved under the retired Anis edition (4) belongs to book 1; its sections have the same ids. */
+const asBook = (v: unknown): BookId => bookById(v as number)!.id
+const fromRetired = (v: unknown) => v === RETIRED_ANIS
 const list = (v: unknown): Record<string, unknown>[] =>
   Array.isArray(v) ? v.filter((x) => x && typeof x === 'object') : []
 
 export function sanitizeUserData(raw: unknown): UserData {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+  // Paragraph keys of the retired edition don't exist in book 1, so its positions and bookmarks
+  // fall back to the start of their section.
   const progress = list(r.progress)
     .filter((p) => isBook(p.book) && isInt(p.section) && isInt(p.paragraph))
-    .map((p) => ({ book: p.book as BookId, section: p.section as number, paragraph: p.paragraph as number, updated: Number(p.updated) || 0 }))
+    .map((p) => ({ book: asBook(p.book), section: p.section as number, paragraph: fromRetired(p.book) ? 0 : (p.paragraph as number), updated: Number(p.updated) || 0 }))
   const favorites = list(r.favorites)
     .filter((f) => isBook(f.book) && isInt(f.section))
-    .map((f) => ({ book: f.book as BookId, section: f.section as number }))
+    .map((f) => ({ book: asBook(f.book), section: f.section as number }))
   const visits = list(r.visits)
     .filter((v) => isBook(v.book) && isInt(v.section) && isInt(v.count))
-    .map((v) => ({ book: v.book as BookId, section: v.section as number, count: v.count as number, last: Number(v.last) || 0 }))
+    .map((v) => ({ book: asBook(v.book), section: v.section as number, count: v.count as number, last: Number(v.last) || 0 }))
   const bookmarks = list(r.bookmarks)
     .filter((b) => isBook(b.book) && isInt(b.section) && isInt(b.paragraph))
     .map((b, i) => ({
       id: isInt(b.id) ? b.id : Date.now() + i,
-      book: b.book as BookId,
+      book: asBook(b.book),
       section: b.section as number,
-      paragraph: b.paragraph as number,
+      paragraph: fromRetired(b.book) ? SECTION_LEVEL : (b.paragraph as number),
       excerpt: typeof b.excerpt === 'string' ? b.excerpt.slice(0, MAX_EXCERPT) : '',
       note: typeof b.note === 'string' && b.note.trim() ? b.note : null,
       created: Number(b.created) || 0,
     }))
+  const visitTotals = new Map<string, Visit>()
+  for (const v of visits) {
+    const k = `${v.book}:${v.section}`
+    const cur = visitTotals.get(k)
+    visitTotals.set(k, cur ? { ...cur, count: cur.count + v.count, last: Math.max(cur.last, v.last) } : v)
+  }
   return {
-    progress: dedupe(progress, (p) => `${p.book}`).sort((a, b) => b.updated - a.updated),
+    progress: dedupe(progress.sort((a, b) => b.updated - a.updated), (p) => `${p.book}`),
     favorites: dedupe(favorites, (f) => `${f.book}:${f.section}`),
-    visits: dedupe(visits, (v) => `${v.book}:${v.section}`),
-    bookmarks: dedupe(bookmarks, (b) => `${b.book}:${b.section}:${b.paragraph}`).sort((a, b) => b.created - a.created),
+    visits: [...visitTotals.values()],
+    // Section-level bookmarks (from the retired edition) may share a section; their excerpts differ.
+    bookmarks: dedupe(bookmarks, (b) => `${b.book}:${b.section}:${b.paragraph}` + (b.paragraph === SECTION_LEVEL ? `:${b.excerpt}` : '')).sort(
+      (a, b) => b.created - a.created,
+    ),
   }
 }
 
@@ -347,6 +360,11 @@ export function progressFor(data: UserData, book: number): Progress | undefined 
 
 export function findBookmark(data: UserData, book: number, section: number, paragraph: number): Bookmark | undefined {
   return data.bookmarks.find((b) => same(b, book, section) && b.paragraph === paragraph)
+}
+
+/** Bookmarks on any of the paragraphs `from`…`to` (a paragraph the reader joined from several). */
+export function bookmarksIn(data: UserData, book: number, section: number, from: number, to: number): Bookmark[] {
+  return data.bookmarks.filter((b) => same(b, book, section) && b.paragraph >= from && b.paragraph <= to)
 }
 
 /** @returns true when the paragraph is now bookmarked. */

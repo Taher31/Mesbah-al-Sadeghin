@@ -4,7 +4,7 @@ import { fa } from '../lib/normalize'
 import { navigate, routes } from '../lib/router'
 import { editionOf, frequentVisits, setSetting, settingsStore, useStore, userStore, type Progress } from '../lib/store'
 import { ANDROID_APK, APP_NAME, CHANNEL_URL, asset } from '../lib/util'
-import { BookCover, SectionLabel, Segmented } from '../ui/common'
+import { BookCover, SectionLabel, Segmented, TranslationToggle } from '../ui/common'
 import { Icon } from '../ui/icons'
 import { isAndroid } from '../lib/pwa'
 import { InstallBanner, OfflineStatus } from '../ui/PwaUi'
@@ -232,12 +232,16 @@ function BookCard(props: { work: Work; selected: BookId; tocs: Map<BookId, Table
         <div class="book-card-info">
           <h3>{work.title}</h3>
           <p>{work.description}</p>
-          <Segmented
-            label={`نسخهٔ ${work.title}`}
-            options={editionsOf(work.id).map((b) => ({ id: b.id, label: b.edition }))}
-            value={selected}
-            onChange={(id) => setSetting(work.id === 'anis' ? 'anisEdition' : 'safinehEdition', id as BookId)}
-          />
+          {book.paired ? (
+            <TranslationToggle />
+          ) : (
+            <Segmented
+              label={`نسخهٔ ${work.title}`}
+              options={editionsOf(work.id).map((b) => ({ id: b.id, label: b.edition }))}
+              value={selected}
+              onChange={(id) => setSetting('safinehEdition', id as BookId)}
+            />
+          )}
         </div>
       </div>
       <div class="book-card-actions">

@@ -8,7 +8,8 @@ import { navigate, replaceSilently, routes, shareUrl, type Route } from '../lib/
 import {
   ARABIC_FONTS,
   PERSIAN_FONTS,
-  findBookmark,
+  bookmarksIn,
+  removeBookmark,
   isFavorite,
   recordVisit,
   saveProgress,
@@ -140,10 +141,35 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
     const entry = content.toc.get(current.section)!
     // The first line usually repeats the title (or its group) already shown in the header.
     const shown = new Set([...content.toc.pathTo(current.section).map((e) => e.title), entry.title].map(normalize))
-    return content.paragraphs.filter(
-      (p) => !(p.kind === Kind.Translation && !settings.showTranslation) && !(p.kind === Kind.Heading && shown.has(normalize(p.text))),
-    )
+    // Without the translation, Anis's phrase-by-phrase Arabic is joined into the paragraphs of the
+    // edition without translation (marked at build time); the words themselves are untouched.
+    const join = !!bookById(current.book)?.paired && !settings.showTranslation
+    const out: Paragraph[] = []
+    for (const p of content.paragraphs) {
+      if (p.kind === Kind.Translation && !settings.showTranslation) continue
+      if (p.kind === Kind.Heading && shown.has(normalize(p.text))) continue
+      const prev = out[out.length - 1]
+      if (join && p.kind === Kind.Arabic && !p.start && prev?.kind === Kind.Arabic) {
+        out[out.length - 1] = { ...prev, text: prev.text + ' ' + p.text, last: p.key }
+      } else out.push(p)
+    }
+    return out
   }, [content, settings.showTranslation])
+
+  // Switching the translation reflows the page; keep the paragraph that was at the top in view.
+  // The old page is still in the document while this renders, so it can be measured here.
+  const translationShown = useRef(settings.showTranslation)
+  const keepInView = useRef<number | null>(null)
+  if (translationShown.current !== settings.showTranslation) {
+    translationShown.current = settings.showTranslation
+    keepInView.current = firstVisibleParagraph()
+  }
+  useLayoutEffect(() => {
+    const key = keepInView.current
+    keepInView.current = null
+    const node = key == null ? null : findParagraphNode(key)
+    if (node) window.scrollTo(0, Math.max(0, node.getBoundingClientRect().top + window.scrollY - 90))
+  }, [settings.showTranslation])
 
   const sectionLink = (ref: Ref, paragraph?: number) =>
     shareUrl(routes.reader(ref.book, ref.section, paragraph != null ? { paragraph } : {}))
@@ -396,10 +422,10 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
                   key={p.key}
                   p={p}
                   previous={visible[i - 1]}
-                  paired={book.paired}
+                  paired={book.paired && settings.showTranslation}
                   query={isStart ? start.query : null}
                   focused={isStart && p.key === focusedKey(visible, focused)}
-                  bookmarked={!!findBookmark(user, current.book, current.section, p.key)}
+                  bookmarked={bookmarksIn(user, current.book, current.section, p.key, p.last ?? p.key).length > 0}
                   onOpen={() => setSheet(p)}
                 />
               ))}
@@ -460,16 +486,30 @@ function ReaderShell({ children }: { children: ComponentChildren }) {
   )
 }
 
-/** The focused key may sit on a filtered-out line; highlight the first shown one at or after it. */
+/**
+ * The paragraph to highlight for `key`: the one containing it (a joined paragraph spans several
+ * keys, and a hidden translation belongs to the Arabic above it), else the next one shown.
+ */
 function focusedKey(visible: Paragraph[], key: number | null): number | null {
   if (key == null) return null
+  let found: Paragraph | undefined
+  for (const p of visible) {
+    if (p.key > key) break
+    found = p
+  }
+  if (found && key <= (found.last ?? found.key) + 1) return found.key
   return visible.find((p) => p.key >= key)?.key ?? null
 }
 
+/** The shown paragraph holding `key`: the last one starting at or before it. */
 function findParagraphNode(key: number): HTMLElement | null {
   const nodes = document.querySelectorAll<HTMLElement>('.reader .para[data-key]')
-  for (const n of nodes) if (Number(n.dataset.key) >= key) return n
-  return null
+  let found: HTMLElement | null = null
+  for (const n of nodes) {
+    if (Number(n.dataset.key) > key) break
+    found = n
+  }
+  return found ?? nodes[0] ?? null
 }
 
 function firstVisibleParagraph(): number | null {
@@ -595,7 +635,9 @@ function ParagraphView(props: {
 
 function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; link: string; onClose: () => void }) {
   const { p, current } = props
-  const bookmarked = !!findBookmark(props.user, current.book, current.section, p.key)
+  // A joined paragraph counts as bookmarked if any of its phrases is.
+  const marks = bookmarksIn(props.user, current.book, current.section, p.key, p.last ?? p.key)
+  const bookmarked = marks.length > 0
   return (
     <Sheet label="بند" onClose={props.onClose}>
       <p class="sheet-excerpt">{p.text}</p>
@@ -604,7 +646,13 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
         label={bookmarked ? 'حذف نشانه' : 'نشانه‌گذاری این بند'}
         onClick={() => {
           props.onClose()
-          toast(toggleBookmark(current.book, current.section, p.key, p.text) ? 'نشانه اضافه شد' : 'نشانه حذف شد')
+          if (marks.length > 0) {
+            marks.forEach((m) => removeBookmark(m.id))
+            toast('نشانه حذف شد')
+          } else {
+            toggleBookmark(current.book, current.section, p.key, p.text)
+            toast('نشانه اضافه شد')
+          }
         }}
       />
       <ActionRow

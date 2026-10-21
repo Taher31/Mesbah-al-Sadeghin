@@ -4,7 +4,7 @@ import { useToc, type TableOfContents, type TocEntry } from '../lib/data'
 import { normalize } from '../lib/normalize'
 import { initialScroll, navigate, routes, type Route } from '../lib/router'
 import { isFavorite, progressFor, toggleFavorite, useStore, userStore } from '../lib/store'
-import { BookCover, EmptyState, IconButton, LoadError, Loading, TopBar } from '../ui/common'
+import { BookCover, EmptyState, IconButton, LoadError, Loading, TopBar, TranslationToggle } from '../ui/common'
 import { Icon } from '../ui/icons'
 
 /** Open branches and the filter survive going into the reader and back. */
@@ -98,7 +98,13 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
           <BookCover book={book} width={88} />
           <div>
             <h2>{workOf(book).title}</h2>
-            <p class="edition">{book.edition}</p>
+            {book.paired ? (
+              <div class="toc-toggle">
+                <TranslationToggle />
+              </div>
+            ) : (
+              <p class="edition">{book.edition}</p>
+            )}
             <button type="button" class={'btn ' + (progress ? 'btn-filled' : 'btn-tonal')} onClick={start} disabled={!toc}>
               {progress ? 'ادامهٔ مطالعه' : 'شروع مطالعه'}
             </button>
