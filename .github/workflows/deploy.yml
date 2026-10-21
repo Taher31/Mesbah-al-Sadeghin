@@ -31,7 +31,7 @@ jobs:
     env:
       HAS_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Skip notice
         if: env.HAS_KEYSTORE != 'true'
@@ -76,7 +76,7 @@ jobs:
     env:
       HAS_FTP: ${{ secrets.FTP_SERVER != '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check for the web app
         id: web
@@ -84,7 +84,7 @@ jobs:
           if [ -f web/package-lock.json ]; then echo "present=true" >> "$GITHUB_OUTPUT"
           else echo "::notice::web/ is not in the repository yet; nothing to deploy."; fi
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.web.outputs.present == 'true'
         with:
           node-version: 22
