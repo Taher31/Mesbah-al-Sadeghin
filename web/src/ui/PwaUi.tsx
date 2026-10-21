@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks'
 import { fa } from '../lib/normalize'
-import { applyUpdate, installPrompt, isAndroid, isIOS, isIOSSafari, isStandalone, offlineStore, retryOfflineFill, updateReady } from '../lib/pwa'
+import { installPrompt, isAndroid, isIOS, isIOSSafari, isStandalone, offlineStore, retryOfflineFill, updateReady } from '../lib/pwa'
 import { useStore } from '../lib/store'
 import { ANDROID_APK, copyText, toast } from '../lib/util'
 import { Icon } from './icons'
@@ -159,10 +159,7 @@ export function UpdateBanner() {
   if (!ready) return null
   return (
     <div class="update-banner" role="status">
-      <span>نسخهٔ تازهٔ برنامه آماده است</span>
-      <button type="button" onClick={applyUpdate}>
-        به‌روزرسانی
-      </button>
+      <span>نسخهٔ تازهٔ برنامه دریافت شد؛ چند لحظهٔ دیگر بارگذاری می‌شود.</span>
     </div>
   )
 }

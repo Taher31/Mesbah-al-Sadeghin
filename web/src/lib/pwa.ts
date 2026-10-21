@@ -16,6 +16,7 @@ export interface OfflineState {
 }
 
 export const offlineStore = new Store<OfflineState>({ supported: false, done: 0, total: 0, failed: false })
+/** A new version has downloaded and is about to take over (the page then reloads by itself). */
 export const updateReady = new Store(false)
 
 let registration: ServiceWorkerRegistration | undefined
@@ -43,10 +44,13 @@ export function registerServiceWorker() {
     const m = e.data
     if (m?.type === 'progress') offlineStore.set({ supported: true, done: m.done, total: m.total, failed: !!m.failed })
   })
+  // A new version takes control as soon as it has downloaded (sw.js); reload into it. Not on the
+  // very first install, which only starts controlling a page that is already current. The address
+  // holds the reading position, so a reader comes back to the same paragraph.
+  const updating = !!sw.controller
   let reloading = false
   sw.addEventListener('controllerchange', () => {
-    // Only reload for an update the reader accepted, not for the first install taking control.
-    if (updateReady.get() && !reloading) {
+    if ((updating || updateReady.get()) && !reloading) {
       reloading = true
       location.reload()
     }
@@ -65,7 +69,9 @@ export function registerServiceWorker() {
       check()
       worker.addEventListener('statechange', check)
     }
+    // The browser checks for updates as the page loads, so one may already be on its way.
     watch(registration.waiting)
+    watch(registration.installing)
     registration.addEventListener('updatefound', () => watch(registration!.installing))
     const ready = await sw.ready
     ready.active?.postMessage({ type: 'fill' })
@@ -84,12 +90,6 @@ export function registerServiceWorker() {
 /** Starts the downloads again, e.g. after a failure. */
 export function retryOfflineFill() {
   ;(registration?.active ?? navigator.serviceWorker?.controller)?.postMessage({ type: 'fill' })
-}
-
-export function applyUpdate() {
-  const waiting = registration?.waiting
-  if (waiting) waiting.postMessage({ type: 'skip-waiting' })
-  else location.reload()
 }
 
 // ---------------------------------------------------------------- keep the screen on while reading

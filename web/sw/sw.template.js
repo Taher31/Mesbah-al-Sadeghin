@@ -2,11 +2,11 @@
  * the build replaces PRECACHE with every file in dist/ and a content revision for each.
  *
  * - install: caches the app shell ("core": page, script, styles, UI font, images, tables of
- *   contents) and carries over unchanged files from the previous version's cache.
+ *   contents), carries over unchanged files from the previous version's cache, and takes over.
  * - message "fill": downloads the rest ("lazy": book text, search index, reader fonts) and
  *   reports progress to the pages, so after the first visit the whole app works offline.
  * - fetch: cache first for anything listed; everything else goes to the network untouched.
- * - message "skip-waiting": the page accepted an update.
+ * - message "skip-waiting": the page asks a waiting update to take over (kept for older pages).
  */
 const PRECACHE = self.__PRECACHE__
 
@@ -57,6 +57,10 @@ self.addEventListener('install', (event) => {
       const cache = await caches.open(CACHE)
       await pool(core, 6, (e) => cacheEntry(cache, e, true))
       await pool(lazy, 6, (e) => cacheEntry(cache, e, false))
+      // Take over as soon as the new version is in place; open pages reload into it (pwa.ts).
+      // Waiting for every tab to close would leave home-screen apps, which are rarely closed,
+      // on the old version indefinitely.
+      await self.skipWaiting()
     })(),
   )
 })
