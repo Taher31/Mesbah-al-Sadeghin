@@ -50,8 +50,8 @@ const words = {
   // books
   'انیس الصادقین': ['أنيس الصادقين', 'Anis al-Sadeghin'],
   'سفینة الصادقین': ['سفينة الصادقين', 'Safinat al-Sadeghin'],
-  'رهنمودهای آن عالم ربانی در زمینهٔ ادعیه و اذکار': ['إرشادات ذلك العالم الربّاني في الأدعية والأذكار', 'His guidance on supplications and remembrances'],
-  'شرح احوال و زندگی‌نامهٔ آن بزرگوار': ['سيرة ذلك العالم الجليل وأحواله', 'His life and biography'],
+  'توصیه‌هایی از عالم ربانی آیت الله حاج سیّد حسین یعقوبی قائنی (قدّس‌سرّه) در زمینه ادعیه و اذکار': ['توصيات من العالم الرباني آية الله الحاج السيد حسين اليعقوبي القائني (قدّس سرّه) في الأدعية والأذكار', 'Recommendations from the godly scholar Ayatollah Hajj Sayyid Husayn Ya‘qubi Qa’eni (may God sanctify his soul) on supplications and remembrances'],
+  'شرح حال عالم ربانی آیت الله حاج سیّد حسین یعقوبی قائنی (قدّس‌سرّه)': ['شرح حال العالم الرباني آية الله الحاج السيد حسين اليعقوبي القائني (قدّس سرّه)', 'Biography of the godly scholar Ayatollah Hajj Sayyid Husayn Ya‘qubi Qa’eni (may God sanctify his soul)'],
   'فارسی': ['الفارسية', 'Persian'],
   'عربی': ['العربية', 'Arabic'],
   'نسخه‌های {0}': ['نسخ {0}', '{0} editions'],
