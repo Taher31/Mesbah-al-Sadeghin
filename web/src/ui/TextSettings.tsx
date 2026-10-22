@@ -16,11 +16,16 @@ export function TextSettingsPanel() {
       <p class="field-label">قلم عربی (ادعیه)</p>
       <div class="chip-row">
         {ARABIC_FONTS.map((f) => (
-          <Chip selected={s.arabicFont === f.id} onClick={() => setSetting('arabicFont', f.id)} style={`font-family:${f.family};font-size:17px`}>
+          <Chip
+            selected={s.arabicFont === f.id}
+            onClick={() => setSetting('arabicFont', f.id)}
+            style={`font-family:${f.family};font-size:17px;font-weight:${s.arabicBold ? 700 : 400}`}
+          >
             {f.label}
           </Chip>
         ))}
       </div>
+      <SwitchRow label="متن عربی پررنگ" checked={s.arabicBold} onChange={(v) => setSetting('arabicBold', v)} />
 
       <p class="field-label">قلم فارسی</p>
       <div class="chip-row">
@@ -32,7 +37,18 @@ export function TextSettingsPanel() {
       </div>
 
       <SizeSlider label="اندازهٔ متن عربی" value={s.arabicSize} range={RANGES.arabicSize} onChange={(v) => setSetting('arabicSize', v)} />
-      <SizeSlider label="اندازهٔ متن" value={s.textSize} range={RANGES.textSize} onChange={(v) => setSetting('textSize', v)} />
+      <SizeSlider
+        label="اندازهٔ ترجمه"
+        value={s.translationSize}
+        range={RANGES.translationSize}
+        onChange={(v) => setSetting('translationSize', v)}
+      />
+      <SizeSlider
+        label="اندازهٔ متن فارسی و توضیحات"
+        value={s.textSize}
+        range={RANGES.textSize}
+        onChange={(v) => setSetting('textSize', v)}
+      />
       <SizeSlider label="فاصلهٔ سطرها" value={s.lineHeight} range={RANGES.lineHeight} decimals onChange={(v) => setSetting('lineHeight', v)} />
 
       <SwitchRow label="تراز دوطرفه" checked={s.justify} onChange={(v) => setSetting('justify', v)} />
@@ -45,11 +61,17 @@ function Preview({ s }: { s: Settings }) {
   const persian = PERSIAN_FONTS.find((f) => f.id === s.persianFont)!.family
   return (
     <div class="preview">
-      <p class="p-arabic is-paired" style={`font-family:${arabic};font-size:${s.arabicSize}px;line-height:${s.lineHeight}`}>
+      <p
+        class="p-arabic is-paired"
+        style={`font-family:${arabic};font-size:${s.arabicSize}px;line-height:${s.lineHeight};font-weight:${s.arabicBold ? 700 : 400}`}
+      >
         اَللّٰهُمَّ صَلِّ عَلیٰ مُحَمَّدٍ وَ آلِ مُحَمَّدٍ وَ عَجِّلْ فَرَجَهُم.
       </p>
-      <p class="p-translation is-paired" style={`font-family:${persian};font-size:${s.textSize - 1.5}px;line-height:${s.lineHeight * 0.95}`}>
+      <p class="p-translation is-paired" style={`font-family:${persian};font-size:${s.translationSize}px;line-height:${s.lineHeight * 0.95}`}>
         خدایا، بر محمد و آل محمد صلوات فرست و فرج آنان را نزدیک گردان.
+      </p>
+      <p class="p-body" style={`font-family:${persian};font-size:${s.textSize}px;line-height:${s.lineHeight}`}>
+        این دعا را پس از هر نماز بخوانید.
       </p>
     </div>
   )

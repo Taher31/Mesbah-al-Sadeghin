@@ -1294,6 +1294,7 @@ input[type='search']::-webkit-search-cancel-button {
 .k-body p {
   font-family: var(--body-font), Vazirmatn, serif;
   font-size: var(--body-size);
+  font-weight: var(--body-weight, 400);
   line-height: var(--lh);
   text-align: var(--align);
   color: var(--on-surface);
@@ -1302,6 +1303,7 @@ input[type='search']::-webkit-search-cancel-button {
 .k-arabic p {
   font-family: var(--ar-font), serif;
   font-size: var(--ar-size);
+  font-weight: var(--ar-weight, 400);
   line-height: calc(var(--lh) * 1.02);
   text-align: var(--align);
   color: var(--r-arabic);
@@ -1309,10 +1311,26 @@ input[type='search']::-webkit-search-cancel-button {
 
 .k-translation p {
   font-family: var(--fa-font), Vazirmatn, serif;
-  font-size: calc(var(--text-size) - 1.5px);
+  font-size: var(--tr-size);
   line-height: calc(var(--lh) * 0.95);
   text-align: var(--align);
   color: var(--r-translation);
+}
+
+/* Numbers inside Arabic text, set apart in Persian digits (see `withNumbers` in Reader.tsx). */
+.num {
+  unicode-bidi: isolate;
+  font-family: Vazirmatn, sans-serif;
+}
+
+/* Vazirmatn's digits are large next to the Arabic fonts' letters. */
+.k-arabic .num,
+.k-body .num {
+  font-size: 0.8em;
+}
+
+mark.is-current {
+  box-shadow: 0 0 0 2px var(--r-heading);
 }
 
 .k-arabic.is-paired p,
@@ -1650,6 +1668,25 @@ body:has(.fab) .snackbar {
 
 /* ------------------------------------------------------------------ search, lists */
 
+/* Search options: chips with an icon, and the advanced panel under them. */
+.search-options {
+  padding: 0 0 8px;
+}
+
+.search-options .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.search-advanced {
+  padding: 0 4px 12px;
+}
+
+.search-advanced .field-label {
+  padding: 8px 0 6px;
+}
+
 .result-count {
   font-size: 12px;
   font-weight: 600;
@@ -1798,6 +1835,65 @@ body:has(.fab) .page {
   margin-top: -10px;
 }
 
+/* «جستجو در متن جاری» */
+.find-bar {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 21;
+  background: var(--surface);
+  padding: env(safe-area-inset-top) 4px 4px;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--outline-variant) 50%, transparent);
+}
+
+/* The find bar is taller than the top bar it replaces. */
+.reader.is-finding .reader-pager {
+  padding-top: calc(100px + env(safe-area-inset-top));
+}
+
+.find-row {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.find-row:first-child {
+  min-height: 56px;
+}
+
+.find-row input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  outline: 0;
+  border-radius: 22px;
+  background: var(--sc-high);
+  color: var(--on-surface);
+  font-size: 16px;
+}
+
+.find-meta {
+  justify-content: space-between;
+  padding: 0 12px 4px;
+}
+
+.find-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+
+.find-meta .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+}
+
 /* ------------------------------------------------------------------ settings, about */
 
 .text-settings {
@@ -1816,6 +1912,11 @@ body:has(.fab) .page {
 
 .preview .p-translation {
   color: var(--r-translation);
+}
+
+.preview .p-body {
+  margin-top: 10px;
+  color: var(--on-surface);
 }
 
 .sheet .text-settings {

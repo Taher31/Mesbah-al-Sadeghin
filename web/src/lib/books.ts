@@ -96,6 +96,8 @@ export interface RawToc {
 export interface RawSearchIndex {
   s: number[]
   k: number[]
+  /** Each paragraph's KindCode, one digit per paragraph. */
+  y: string
   t: string
 }
 

@@ -82,17 +82,42 @@ export function normalize(text: string): string {
   return normalizeWithMap(text).folded
 }
 
+/** A letter or digit of folded text; a whole-word match may not touch one on either side. */
+function isWordChar(c: number): boolean {
+  return (
+    (c >= 0x30 && c <= 0x39) ||
+    ((c | 0x20) >= 0x61 && (c | 0x20) <= 0x7a) ||
+    (c >= 0x0621 && c <= 0x064a) ||
+    (c >= 0x066e && c <= 0x06d3) ||
+    c === 0x06d5 ||
+    (c >= 0x06ee && c <= 0x06ff)
+  )
+}
+
+/**
+ * Where `needle` next occurs in the folded `haystack` at or after `from`, or -1. With `whole`, only
+ * occurrences standing as whole words count, so «الله» no longer finds «اللهم».
+ */
+export function indexOfMatch(haystack: string, needle: string, from: number, whole: boolean): number {
+  for (;;) {
+    const at = haystack.indexOf(needle, from)
+    if (at < 0 || !whole) return at
+    if (!isWordChar(haystack.charCodeAt(at - 1)) && !isWordChar(haystack.charCodeAt(at + needle.length))) return at
+    from = at + 1
+  }
+}
+
 /** [start, endExclusive) in the original text's own coordinates. */
 export type Range = [number, number]
 
 /** Finds every occurrence of `normalizedQuery` in `text` and returns ranges in `text`'s coordinates. */
-export function findMatches(text: string, normalizedQuery: string): Range[] {
+export function findMatches(text: string, normalizedQuery: string, whole = false): Range[] {
   if (!normalizedQuery.trim()) return []
   const { folded, map } = normalizeWithMap(text)
   const result: Range[] = []
   let from = 0
   for (;;) {
-    const at = folded.indexOf(normalizedQuery, from)
+    const at = indexOfMatch(folded, normalizedQuery, from, whole)
     if (at < 0) break
     let end = map[at + normalizedQuery.length - 1] + 1
     // Keep the last letter's vowel marks inside the highlight so they aren't cut off its base.
@@ -101,6 +126,36 @@ export function findMatches(text: string, normalizedQuery: string): Range[] {
     from = at + normalizedQuery.length
   }
   return result
+}
+
+/** What a search looks for: one phrase, or with «all words» each word anywhere in the paragraph. */
+export interface Needle {
+  /** Folded; the longest first. */
+  terms: string[]
+  whole: boolean
+}
+
+export function makeNeedle(query: string, options: { whole?: boolean; allWords?: boolean } = {}): Needle | null {
+  const folded = normalize(query)
+  if (folded.length < 2) return null
+  const whole = !!options.whole
+  // A lone letter such as «و» would match nearly everything, except as a whole word.
+  const words = options.allWords ? [...new Set(folded.split(' '))].filter((w) => w.length >= 2 || whole) : [folded]
+  if (words.length === 0) return null
+  return { terms: words.sort((a, b) => b.length - a.length), whole }
+}
+
+/** Every match of the needle in `text`, in text order and without overlaps. */
+export function needleRanges(text: string, needle: Needle): Range[] {
+  if (needle.terms.length === 1) return findMatches(text, needle.terms[0], needle.whole)
+  const all = needle.terms.flatMap((t) => findMatches(text, t, needle.whole)).sort((a, b) => a[0] - b[0])
+  const out: Range[] = []
+  for (const [a, b] of all) {
+    const last = out[out.length - 1]
+    if (last && a < last[1]) last[1] = Math.max(last[1], b)
+    else out.push([a, b])
+  }
+  return out
 }
 
 const persianDigits = '۰۱۲۳۴۵۶۷۸۹'

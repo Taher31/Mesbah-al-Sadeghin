@@ -39,6 +39,9 @@ const footnote = /^\(\s*[0-9۰-۹]+\s*\)/
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex').slice(0, 10)
 
+/** The books type numbers in Latin digits; the app shows Persian ones everywhere. Search folds both alike. */
+const persianDigits = (s: string) => s.replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d.charCodeAt(0) - 48])
+
 function openBook(id: number): { db: DatabaseSync; close: () => void } {
   const file = join(srcDir, `${id}.book`)
   if (!existsSync(file)) throw new Error(`Missing ${file}`)
@@ -289,13 +292,15 @@ function buildBook(book: Book, manifest: DataManifest) {
     const dir = join(outDir, String(book.id))
     mkdirSync(dir, { recursive: true })
 
-    const search: RawSearchIndex = { s: [], k: [], t: '' }
+    const search: RawSearchIndex = { s: [], k: [], y: '', t: '' }
     const searchTexts: string[] = []
-    const addSearch = (section: number, key: number, text: string) => {
+    const searchKinds: KindCode[] = []
+    const addSearch = (section: number, key: number, kind: KindCode, text: string) => {
       const norm = normalize(text)
       if (!norm.trim()) return
       search.s.push(section)
       search.k.push(key)
+      searchKinds.push(kind)
       searchTexts.push(norm)
     }
 
@@ -304,16 +309,22 @@ function buildBook(book: Book, manifest: DataManifest) {
     if (book.hasParagraphTable) {
       for (const e of toc) if (e.hasContent) sections.set(e.id, paragraphsFromNtable3(db, e.id))
       if (other) correctAnis(sections, other.db).forEach((l) => console.log(`book ${book.id}: ${l}`))
-      for (const [id, list] of sections) for (const [key, , text] of list) addSearch(id, key, text)
+      for (const [id, list] of sections) for (const [key, kind, text] of list) addSearch(id, key, kind, text)
     } else {
       const texts = new Map<number, string>()
       for (const r of db.prepare('SELECT tindex, ttext FROM table3 ORDER BY tindex').all() as any[]) {
         texts.set(Number(r.tindex), String(r.ttext ?? ''))
       }
       for (const e of toc) if (e.hasContent) sections.set(e.id, paragraphsFromTable3(texts.get(e.id) ?? '', e.title))
-      for (const [id, text] of texts) text.split('\n').forEach((line, i) => addSearch(id, i, line))
+      for (const [id, text] of texts) {
+        text.split('\n').forEach((line, i) => {
+          const raw = line.trim()
+          if (!pageMarker.test(raw)) addSearch(id, i, footnote.test(raw) ? Kind.Footnote : Kind.Body, raw)
+        })
+      }
     }
     search.t = searchTexts.join('\n')
+    search.y = searchKinds.join('')
 
     if (other) {
       // Mark where paragraphs begin for reading without the translation.
@@ -345,7 +356,8 @@ function buildBook(book: Book, manifest: DataManifest) {
       current = {}
       size = 0
     }
-    for (const [id, paragraphs] of sections) {
+    for (const [id, list] of sections) {
+      const paragraphs = list.map((p) => [p[0], p[1], persianDigits(p[2]), ...p.slice(3)] as RawParagraph)
       const bytes = Buffer.byteLength(JSON.stringify(paragraphs))
       if (size > 0 && size + bytes > CHUNK_BYTES) flush()
       current[id] = paragraphs
@@ -355,7 +367,7 @@ function buildBook(book: Book, manifest: DataManifest) {
     flush()
 
     const rawToc: RawToc = {
-      e: toc.map((e): RawTocEntry => [e.id, e.level, e.title, e.hasContent ? 1 : 0, chunkOf.get(e.id) ?? -1]),
+      e: toc.map((e): RawTocEntry => [e.id, e.level, persianDigits(e.title), e.hasContent ? 1 : 0, chunkOf.get(e.id) ?? -1]),
       c: chunkFiles,
     }
     const tocJson = JSON.stringify(rawToc)

@@ -5,8 +5,9 @@ import { Store } from './store'
  * `#/r/1/10` open a section directly. Routes:
  *   (empty)            home
  *   toc/<book>         table of contents
- *   r/<book>/<section> reader; query: p=<paragraph> q=<search query> fav=1 (walk the favourites)
- *   search[/<book>]    search; query: q=<text>
+ *   r/<book>/<section> reader; query: p=<paragraph> q=<search query> (w=1 whole words, all=1 all
+ *                      words) fav=1 (walk the favourites)
+ *   search[/<book>]    search; query: q=<text> w=1 all=1 in=ar|fa (only the Arabic / the Persian)
  *   favorites, bookmarks, settings, about
  */
 export interface Route {
@@ -88,19 +89,35 @@ export function shareUrl(to: string): string {
   return location.origin + location.pathname + '#/' + to
 }
 
+export interface SearchOptions {
+  whole?: boolean
+  allWords?: boolean
+}
+
 export const routes = {
   home: () => '',
   toc: (book: number) => `toc/${book}`,
-  reader: (book: number, section: number, opts: { paragraph?: number; query?: string; favorites?: boolean } = {}) => {
+  reader: (book: number, section: number, opts: { paragraph?: number; query?: string; favorites?: boolean } & SearchOptions = {}) => {
     const q = new URLSearchParams()
     if (opts.paragraph != null) q.set('p', String(opts.paragraph))
-    if (opts.query) q.set('q', opts.query)
+    if (opts.query) {
+      q.set('q', opts.query)
+      if (opts.whole) q.set('w', '1')
+      if (opts.allWords) q.set('all', '1')
+    }
     if (opts.favorites) q.set('fav', '1')
     const qs = q.toString()
     return `r/${book}/${section}` + (qs ? '?' + qs : '')
   },
-  search: (book?: number, query?: string) =>
-    (book ? `search/${book}` : 'search') + (query ? '?q=' + encodeURIComponent(query) : ''),
+  search: (book?: number, query?: string, opts: SearchOptions & { scope?: 'all' | 'arabic' | 'persian' } = {}) => {
+    const q = new URLSearchParams()
+    if (query) q.set('q', query)
+    if (opts.whole) q.set('w', '1')
+    if (opts.allWords) q.set('all', '1')
+    if (opts.scope && opts.scope !== 'all') q.set('in', opts.scope === 'arabic' ? 'ar' : 'fa')
+    const qs = q.toString()
+    return (book ? `search/${book}` : 'search') + (qs ? '?' + qs : '')
+  },
   favorites: () => 'favorites',
   bookmarks: () => 'bookmarks',
   settings: () => 'settings',

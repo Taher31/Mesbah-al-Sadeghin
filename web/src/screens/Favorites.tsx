@@ -41,7 +41,8 @@ export function Favorites() {
                   <button
                     type="button"
                     class="fav-open"
-                    onClick={() => navigate(routes.reader(item.fav.book, item.fav.section, { favorites: true }))}
+                    // In the book, to page on from it; the button below walks the list.
+                    onClick={() => navigate(routes.reader(item.fav.book, item.fav.section))}
                   >
                     <span class="fav-num">{fa(i + 1)}</span>
                     <span class="fav-text">

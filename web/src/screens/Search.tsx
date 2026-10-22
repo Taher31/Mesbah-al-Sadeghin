@@ -1,15 +1,23 @@
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { BOOKS, bookById, bookLabel, type BookId } from '../lib/books'
-import { fa, normalize } from '../lib/normalize'
+import { fa, makeNeedle } from '../lib/normalize'
 import { initialScroll, navigate, replaceSilently, routes, type Route } from '../lib/router'
-import { search, type SearchHit, type SearchResult } from '../lib/search'
-import { Chip, EmptyState, IconButton, LoadError, Loading, TopBar } from '../ui/common'
+import { search, type SearchHit, type SearchResult, type SearchScope } from '../lib/search'
+import { Chip, EmptyState, IconButton, LoadError, Loading, Segmented, TopBar } from '../ui/common'
+import { Icon } from '../ui/icons'
 
 type State = { kind: 'idle' } | { kind: 'loading' } | { kind: 'error' } | { kind: 'done'; result: SearchResult }
 
 export function Search({ route }: { route: Route }) {
   const [query, setQuery] = useState(route.query.get('q') ?? '')
   const [book, setBook] = useState<BookId | null>(bookById(Number(route.path[1]))?.id ?? null)
+  const [whole, setWhole] = useState(route.query.get('w') === '1')
+  const [allWords, setAllWords] = useState(route.query.get('all') === '1')
+  const [scope, setScope] = useState<SearchScope>(() => {
+    const at = route.query.get('in')
+    return at === 'ar' ? 'arabic' : at === 'fa' ? 'persian' : 'all'
+  })
+  const [advanced, setAdvanced] = useState(allWords || scope !== 'all')
   const [state, setState] = useState<State>({ kind: 'idle' })
   const [attempt, setAttempt] = useState(0)
   const input = useRef<HTMLInputElement>(null)
@@ -21,8 +29,9 @@ export function Search({ route }: { route: Route }) {
 
   useEffect(() => {
     // Remember the query in the address, so coming back from a result shows the same list.
-    replaceSilently(routes.search(book ?? undefined, query.trim() || undefined))
-    if (normalize(query).length < 2) {
+    replaceSilently(routes.search(book ?? undefined, query.trim() || undefined, { whole, allWords, scope }))
+    const needle = makeNeedle(query, { whole, allWords })
+    if (!needle) {
       setState({ kind: 'idle' })
       return
     }
@@ -30,7 +39,7 @@ export function Search({ route }: { route: Route }) {
     const timer = setTimeout(
       () => {
         setState((s) => (s.kind === 'done' ? s : { kind: 'loading' }))
-        search(query, book ? [book] : BOOKS.map((b) => b.id)).then(
+        search(needle, book ? [book] : BOOKS.map((b) => b.id), scope).then(
           (result) => alive && setState({ kind: 'done', result }),
           () => alive && setState({ kind: 'error' }),
         )
@@ -41,7 +50,7 @@ export function Search({ route }: { route: Route }) {
       alive = false
       clearTimeout(timer)
     }
-  }, [query, book, attempt])
+  }, [query, book, whole, allWords, scope, attempt])
 
   useEffect(() => {
     if (state.kind === 'done' && !restored.current) {
@@ -52,7 +61,7 @@ export function Search({ route }: { route: Route }) {
 
   const open = (hit: SearchHit) => {
     input.current?.blur()
-    navigate(routes.reader(hit.book, hit.section, { paragraph: hit.paragraph, query }))
+    navigate(routes.reader(hit.book, hit.section, { paragraph: hit.paragraph, query, whole, allWords }))
   }
 
   return (
@@ -88,9 +97,48 @@ export function Search({ route }: { route: Route }) {
             </Chip>
           ))}
         </div>
+        <div class="chip-row search-options">
+          <Chip selected={whole} onClick={() => setWhole(!whole)}>
+            {whole && <Icon name="check" size={16} />}
+            کلمهٔ کامل
+          </Chip>
+          <Chip selected={advanced} onClick={() => setAdvanced(!advanced)}>
+            جستجوی پیشرفته
+            <Icon name={advanced ? 'up' : 'down'} size={18} />
+          </Chip>
+        </div>
+        {advanced && (
+          <div class="search-advanced">
+            <p class="field-label">کلمه‌ها</p>
+            <Segmented
+              label="کلمه‌ها"
+              options={[
+                { id: 'phrase', label: 'عین عبارت' },
+                { id: 'all', label: 'همهٔ کلمه‌ها، به هر ترتیب' },
+              ]}
+              value={allWords ? 'all' : 'phrase'}
+              onChange={(v) => setAllWords(v === 'all')}
+            />
+            <p class="field-label">جستجو در</p>
+            <Segmented
+              label="جستجو در"
+              options={[
+                { id: 'all' as SearchScope, label: 'همهٔ متن' },
+                { id: 'arabic' as SearchScope, label: 'متن عربی' },
+                { id: 'persian' as SearchScope, label: 'ترجمه و توضیحات' },
+              ]}
+              value={scope}
+              onChange={setScope}
+            />
+          </div>
+        )}
 
         {state.kind === 'idle' && (
-          <EmptyState icon="search" title="عبارتی برای جستجو بنویسید" body="اعراب، «ی/ي» و «ک/ك» در جستجو اهمیتی ندارند." />
+          <EmptyState
+            icon="search"
+            title="عبارتی برای جستجو بنویسید"
+            body="اعراب، «ی/ي» و «ک/ك» در جستجو اهمیتی ندارند. با «کلمهٔ کامل»، «الله» دیگر «اللهم» را پیدا نمی‌کند."
+          />
         )}
         {state.kind === 'loading' && <Loading />}
         {state.kind === 'error' && <LoadError retry={() => setAttempt((a) => a + 1)} />}

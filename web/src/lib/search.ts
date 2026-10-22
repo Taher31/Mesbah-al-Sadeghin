@@ -1,6 +1,6 @@
-import type { BookId } from './books'
+import { Kind, bookById, type BookId, type KindCode } from './books'
 import { loadSearchIndex, loadSection, loadToc } from './data'
-import { findMatches, normalize, type Range } from './normalize'
+import { indexOfMatch, needleRanges, type Needle, type Range } from './normalize'
 
 export interface SearchHit {
   book: BookId
@@ -16,6 +16,9 @@ export interface SearchResult {
   capped: boolean
 }
 
+/** Which text to search: everything, only the Arabic of the prayers, or only the Persian around it. */
+export type SearchScope = 'all' | 'arabic' | 'persian'
+
 const SNIPPET = 160
 export const LIMIT_PER_BOOK = 150
 
@@ -23,22 +26,28 @@ export const LIMIT_PER_BOOK = 150
  * Searches the precomputed normalized paragraphs of `books`. The query is folded the same way the
  * index was built, so «علی», «علي» and «عَلِیّ» all match each other.
  */
-export async function search(query: string, books: BookId[]): Promise<SearchResult> {
-  const needle = normalize(query)
-  if (needle.length < 2) return { hits: [], capped: false }
+export async function search(needle: Needle, books: BookId[], scope: SearchScope = 'all'): Promise<SearchResult> {
   let capped = false
+  const [anchor, ...others] = needle.terms
   const perBook = await Promise.all(
     books.map(async (book) => {
+      const arabicBook = !!bookById(book)?.arabicBody
+      const inScope = (kind: KindCode) => scope === 'all' || (kind === Kind.Arabic || arabicBook) === (scope === 'arabic')
       const [index, toc] = await Promise.all([loadSearchIndex(book), loadToc(book)])
       const found: { section: number; paragraph: number }[] = []
       let from = 0
       while (found.length <= LIMIT_PER_BOOK) {
-        const at = index.text.indexOf(needle, from)
+        // The longest word finds the candidates; the paragraph must then hold all the others too.
+        const at = indexOfMatch(index.text, anchor, from, needle.whole)
         if (at < 0) break
         const i = paragraphAt(index.starts, at)
-        found.push({ section: index.sections[i], paragraph: index.keys[i] })
+        const end = i + 1 < index.starts.length ? index.starts[i + 1] : index.text.length
+        const text = others.length ? index.text.slice(index.starts[i], end) : ''
+        if (inScope(index.kinds[i]) && others.every((t) => indexOfMatch(text, t, 0, needle.whole) >= 0)) {
+          found.push({ section: index.sections[i], paragraph: index.keys[i] })
+        }
         // One hit per paragraph: continue from the next one.
-        from = i + 1 < index.starts.length ? index.starts[i + 1] : index.text.length
+        from = end
       }
       if (found.length > LIMIT_PER_BOOK) {
         capped = true
@@ -70,8 +79,8 @@ function paragraphAt(starts: Int32Array, offset: number): number {
 }
 
 /** Cuts a window around the first match so long paragraphs still show the hit. */
-function makeSnippet(text: string, needle: string): { snippet: string; ranges: Range[] } {
-  const matches = findMatches(text, needle)
+function makeSnippet(text: string, needle: Needle): { snippet: string; ranges: Range[] } {
+  const matches = needleRanges(text, needle)
   const first = matches[0]
   if (!first) return { snippet: text.slice(0, SNIPPET), ranges: [] }
   if (text.length <= SNIPPET) return { snippet: text, ranges: matches }

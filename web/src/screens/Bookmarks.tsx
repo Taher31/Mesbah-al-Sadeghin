@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks'
 import { WORKS, bookById, bookLabel, type WorkId } from '../lib/books'
 import { useAllTocs } from '../lib/data'
+import { fa } from '../lib/normalize'
 import { navigate, routes } from '../lib/router'
 import { SECTION_LEVEL, removeBookmark, restoreBookmark, updateNote, useStore, userStore, type Bookmark } from '../lib/store'
 import { toast } from '../lib/util'
@@ -48,7 +49,8 @@ export function Bookmarks() {
                   >
                     <span class="hit-book">{bookLabel(bookById(b.book)!)}</span>
                     <span class="hit-title">{tocs?.get(b.book)?.get(b.section)?.title ?? ''}</span>
-                    {b.excerpt.trim() && <span class="bookmark-excerpt">{b.excerpt}</span>}
+                    {/* Excerpts saved before the books switched to Persian digits still have Latin ones. */}
+                    {b.excerpt.trim() && <span class="bookmark-excerpt">{fa(b.excerpt)}</span>}
                     {b.note && <span class="bookmark-note">{b.note}</span>}
                   </button>
                   <div class="bookmark-actions">

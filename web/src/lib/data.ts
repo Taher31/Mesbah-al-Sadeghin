@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks'
 import manifestJson from '../generated/data-manifest.json'
-import { BOOKS, type BookId, type DataManifest, type KindCode, type RawParagraph, type RawToc } from './books'
+import { BOOKS, type BookId, type DataManifest, type KindCode, type RawParagraph, type RawSearchIndex, type RawToc } from './books'
 
 const manifest = manifestJson as DataManifest
 const base = import.meta.env.BASE_URL
@@ -138,13 +138,15 @@ export function peekSection(book: BookId, sectionId: number): Paragraph[] | unde
 export interface SearchIndex {
   sections: number[]
   keys: number[]
+  kinds: KindCode[]
   text: string
   /** Offset in `text` where each paragraph starts. */
   starts: Int32Array
 }
 
 const searchIndexes = memo(async (book: BookId): Promise<SearchIndex> => {
-  const raw = await fetchJson<{ s: number[]; k: number[]; t: string }>(base + manifest.books[book].search)
+  const raw = await fetchJson<RawSearchIndex>(base + manifest.books[book].search)
+  const kinds = Array.from(raw.y, (c) => Number(c) as KindCode)
   const starts = new Int32Array(raw.s.length)
   let at = 0
   for (let i = 0; i < raw.s.length; i++) {
@@ -152,7 +154,7 @@ const searchIndexes = memo(async (book: BookId): Promise<SearchIndex> => {
     const nl = raw.t.indexOf('\n', at)
     at = nl < 0 ? raw.t.length : nl + 1
   }
-  return { sections: raw.s, keys: raw.k, text: raw.t, starts }
+  return { sections: raw.s, keys: raw.k, kinds, text: raw.t, starts }
 })
 
 export const loadSearchIndex = searchIndexes.get

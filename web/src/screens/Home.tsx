@@ -172,7 +172,9 @@ function FavoritesShelf({ items }: { items: ShelfItem[] }) {
               type="button"
               key={`${item.book}-${item.section}`}
               class="fav-row"
-              onClick={() => navigate(routes.reader(item.book, item.section, { favorites: true }))}
+              // Opens in the book, so the reader can page on to what follows (e.g. the rest of the
+              // تعقیبات); «خواندن پشت‌سرهم» below walks the منتخب list instead.
+              onClick={() => navigate(routes.reader(item.book, item.section))}
             >
               <Icon name="star" class="gold" />
               <span class="fav-text">

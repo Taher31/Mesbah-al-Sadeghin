@@ -68,7 +68,7 @@ function persisted<T>(key: string, load: (raw: unknown) => T): Store<T> {
 
 export type ThemeMode = 'system' | 'light' | 'sepia' | 'dark'
 export type PersianFont = 'vazirmatn' | 'nazanin' | 'lotus' | 'mitra' | 'zar'
-export type ArabicFont = 'naskh' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'vazirmatn'
+export type ArabicFont = 'naskh' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'mitra' | 'zar' | 'vazirmatn'
 
 export const THEMES: { id: ThemeMode; label: string }[] = [
   { id: 'system', label: 'خودکار' },
@@ -92,6 +92,8 @@ export const ARABIC_FONTS: { id: ArabicFont; label: string; family: string }[] =
   // Persian-style naskh: the familiar shapes of Iranian print, often easier to read than Quranic styles.
   { id: 'nazanin', label: 'نازنین', family: 'Nazanin' },
   { id: 'lotus', label: 'لوتوس', family: 'Lotus' },
+  { id: 'mitra', label: 'میترا', family: 'Mitra' },
+  { id: 'zar', label: 'زر', family: 'Zar' },
   { id: 'vazirmatn', label: 'وزیرمتن', family: 'Vazirmatn' },
 ]
 
@@ -99,7 +101,11 @@ export interface Settings {
   theme: ThemeMode
   persianFont: PersianFont
   arabicFont: ArabicFont
+  arabicBold: boolean
+  /** Persian text: the author's explanations, notes and the Safineh books. */
   textSize: number
+  /** Anis's translation, sized on its own so it can be made small without shrinking the explanations. */
+  translationSize: number
   arabicSize: number
   lineHeight: number
   justify: boolean
@@ -113,7 +119,9 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   persianFont: 'vazirmatn',
   arabicFont: 'naskh',
+  arabicBold: false,
   textSize: 18,
+  translationSize: 17,
   arabicSize: 23,
   lineHeight: 1.9,
   justify: true,
@@ -123,8 +131,9 @@ export const DEFAULT_SETTINGS: Settings = {
 }
 
 export const RANGES = {
-  textSize: [14, 30],
-  arabicSize: [16, 36],
+  textSize: [14, 40],
+  translationSize: [12, 40],
+  arabicSize: [16, 45],
   lineHeight: [1.4, 2.6],
 } as const
 
@@ -149,7 +158,10 @@ export function sanitizeSettings(raw: unknown): Settings {
     theme: oneOf(r.theme, THEMES, d.theme),
     persianFont: oneOf(r.persianFont, PERSIAN_FONTS, d.persianFont),
     arabicFont: oneOf(r.arabicFont, ARABIC_FONTS, d.arabicFont),
+    arabicBold: typeof r.arabicBold === 'boolean' ? r.arabicBold : d.arabicBold,
     textSize: clamp(r.textSize, RANGES.textSize, d.textSize),
+    // Before it had its own size the translation followed the text size, a little smaller.
+    translationSize: clamp(r.translationSize ?? (typeof r.textSize === 'number' ? Math.round(r.textSize - 1) : undefined), RANGES.translationSize, d.translationSize),
     arabicSize: clamp(r.arabicSize, RANGES.arabicSize, d.arabicSize),
     lineHeight: clamp(r.lineHeight, RANGES.lineHeight, d.lineHeight),
     justify: typeof r.justify === 'boolean' ? r.justify : d.justify,
@@ -177,7 +189,9 @@ export function resetTextSettings() {
     ...s,
     persianFont: d.persianFont,
     arabicFont: d.arabicFont,
+    arabicBold: d.arabicBold,
     textSize: d.textSize,
+    translationSize: d.translationSize,
     arabicSize: d.arabicSize,
     lineHeight: d.lineHeight,
     justify: d.justify,

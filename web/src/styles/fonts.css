@@ -9,9 +9,13 @@
 @font-face { font-family: Nazanin; src: url('/fonts/nazanin_bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
 @font-face { font-family: Lotus; src: url('/fonts/lotus.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: Lotus; src: url('/fonts/lotus_bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
-@font-face { font-family: Mitra; src: url('/fonts/mitra.woff2') format('woff2'); font-display: swap; }
-@font-face { font-family: Zar; src: url('/fonts/zar.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: Mitra; src: url('/fonts/mitra.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: Mitra; src: url('/fonts/mitra_bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+@font-face { font-family: Zar; src: url('/fonts/zar.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: Zar; src: url('/fonts/zar_bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
 
+/* Naskh Qurani has no bold face (the browser thickens it for «پررنگ»); Uthman Taha is bold already. */
 @font-face { font-family: NaskhQurani; src: url('/fonts/naskh_qurani.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: UthmanTaha; src: url('/fonts/uthman_taha.woff2') format('woff2'); font-display: swap; }
-@font-face { font-family: Badr; src: url('/fonts/badr.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: Badr; src: url('/fonts/badr.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: Badr; src: url('/fonts/badr_bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }

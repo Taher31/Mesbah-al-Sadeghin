@@ -2,7 +2,7 @@ import type { ComponentChildren } from 'preact'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { Kind, bookById, bookLabel, type Book, type BookId } from '../lib/books'
 import { loadSection, loadToc, peekSection, peekToc, type Paragraph, type TableOfContents } from '../lib/data'
-import { fa, findMatches, normalize } from '../lib/normalize'
+import { fa, makeNeedle, needleRanges, normalize, type Needle } from '../lib/normalize'
 import { keepScreenOn } from '../lib/pwa'
 import { navigate, replaceSilently, routes, shareUrl, type Route } from '../lib/router'
 import {
@@ -23,7 +23,7 @@ import {
   type UserData,
 } from '../lib/store'
 import { APP_NAME, copyText, shareText, toast } from '../lib/util'
-import { ActionRow, EmptyState, IconButton, LoadError, Loading, Ornament, Sheet, TopBar } from '../ui/common'
+import { ActionRow, Chip, EmptyState, IconButton, LoadError, Loading, Ornament, Sheet, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
 import { TextSettingsPanel } from '../ui/TextSettings'
 
@@ -82,11 +82,11 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const favoritesMode = route.query.get('fav') === '1'
   // Search terms and the focused paragraph apply to the section the reader was opened at.
   const start = useMemo(() => {
-    const q = normalize(route.query.get('q') ?? '')
+    const q = route.query.get('q') ?? ''
     const p = route.query.get('p')
     const at = route.query.get('at')
     return {
-      query: q.length >= 2 ? q : null,
+      needle: makeNeedle(q, { whole: route.query.get('w') === '1', allWords: route.query.get('all') === '1' }),
       focus: p != null && p !== '' ? Number(p) : null,
       at: at != null && at !== '' ? Number(at) : null,
     }
@@ -155,6 +155,24 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
     }
     return out
   }, [content, settings.showTranslation])
+
+  // «جستجو در متن جاری»: the matches in the section on screen, visited one at a time.
+  const [find, setFind] = useState<{ text: string; whole: boolean } | null>(null)
+  const [findAt, setFindAt] = useState(0)
+  const findNeedle = useMemo(() => (find ? makeNeedle(find.text, { whole: find.whole }) : null), [find?.text, find?.whole])
+  const matches = useMemo(() => {
+    const list: { key: number; nth: number }[] = []
+    if (!findNeedle || !visible) return list
+    for (const p of visible) {
+      if (p.kind !== Kind.PageMarker) needleRanges(p.text, findNeedle).forEach((_, nth) => list.push({ key: p.key, nth }))
+    }
+    return list
+  }, [visible, findNeedle])
+  const currentMatch = matches.length ? matches[Math.min(findAt, matches.length - 1)] : null
+  useEffect(() => setFindAt(0), [matches])
+  useEffect(() => {
+    if (currentMatch) document.querySelector('.reader mark.is-current')?.scrollIntoView({ block: 'center' })
+  }, [currentMatch])
 
   // Switching the translation reflows the page; keep the paragraph that was at the top in view.
   // The old page is still in the document while this renders, so it can be measured here.
@@ -336,6 +354,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const menu = (
     <>
       <ActionRow icon="list" label="فهرست مطالب" onClick={() => (setSheet(null), navigate(routes.toc(current.book)))} />
+      <ActionRow icon="search" label="جستجو در متن جاری" onClick={() => (setSheet(null), setFind((f) => f ?? { text: '', whole: false }))} />
       <ActionRow icon="search" label="جستجو در این کتاب" onClick={() => (setSheet(null), navigate(routes.search(current.book)))} />
       <ActionRow
         icon="copy"
@@ -366,9 +385,20 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   )
 
   return (
-    <main class="reader">
+    <main class={'reader' + (find ? ' is-finding' : '')}>
+      {find && (
+        <FindBar
+          find={find}
+          count={matches.length}
+          at={currentMatch ? matches.indexOf(currentMatch) : -1}
+          tooShort={!findNeedle && find.text.trim() !== ''}
+          onChange={setFind}
+          onStep={(dir) => matches.length && setFindAt((i) => (Math.min(i, matches.length - 1) + dir + matches.length) % matches.length)}
+          onClose={() => setFind(null)}
+        />
+      )}
       <TopBar
-        hidden={chromeHidden}
+        hidden={chromeHidden || !!find}
         class="reader-bar"
         actions={
           <>
@@ -432,7 +462,9 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
                   p={p}
                   previous={visible[i - 1]}
                   paired={book.paired && settings.showTranslation}
-                  query={isStart ? start.query : null}
+                  arabic={p.kind === Kind.Arabic || (book.arabicBody && p.kind !== Kind.Footnote)}
+                  needle={find ? findNeedle : isStart ? start.needle : null}
+                  currentMatch={currentMatch?.key === p.key ? currentMatch.nth : null}
                   focused={isStart && p.key === focusedKey(visible, focused)}
                   bookmarked={bookmarksIn(user, current.book, current.section, p.key, p.last ?? p.key).length > 0}
                   onOpen={() => setSheet(p)}
@@ -535,8 +567,11 @@ function readerStyle(s: Settings, book: Book): string {
     `--ar-font:${arabic}`,
     `--body-font:${book.arabicBody ? arabic : persian}`,
     `--body-size:${book.arabicBody ? s.textSize + 3 : s.textSize}px`,
+    `--body-weight:${book.arabicBody && s.arabicBold ? 700 : 400}`,
     `--text-size:${s.textSize}px`,
+    `--tr-size:${s.translationSize}px`,
     `--ar-size:${s.arabicSize}px`,
+    `--ar-weight:${s.arabicBold ? 700 : 400}`,
     `--lh:${s.lineHeight}`,
     `--align:${s.justify ? 'justify' : 'start'}`,
   ].join(';')
@@ -579,26 +614,106 @@ function spacing(p: Paragraph, previous: Paragraph | undefined): number {
   }
 }
 
-function Highlighted({ text, query }: { text: string; query: string | null }) {
-  if (!query) return <>{text}</>
-  const ranges = findMatches(text, query)
-  if (ranges.length === 0) return <>{text}</>
+/**
+ * Numbers in Arabic text («* ۱۲. اَللّٰهُمَّ», «.(۱)»), each set apart in the UI font. The Arabic fonts
+ * draw digits in Arabic rather than Persian shapes, and Safari on iPhone placed them on top of the
+ * next word; an isolated run in another font is laid out on its own.
+ */
+const NUMBER = /\(\s*[۰-۹]+\s*\)|[۰-۹]+(?:[./:-][۰-۹]+)*[.)]?/g
+
+function withNumbers(text: string, arabic: boolean): ComponentChildren {
+  if (!arabic) return text
   const out: ComponentChildren[] = []
   let at = 0
-  for (const [a, b] of ranges) {
-    if (a > at) out.push(text.slice(at, a))
-    out.push(<mark>{text.slice(a, b)}</mark>)
-    at = b
+  for (const m of text.matchAll(NUMBER)) {
+    if (m.index > at) out.push(text.slice(at, m.index))
+    out.push(<span class="num">{m[0]}</span>)
+    at = m.index + m[0].length
   }
+  if (at === 0) return text
   if (at < text.length) out.push(text.slice(at))
+  return out
+}
+
+function Highlighted({ text, needle, current, arabic }: { text: string; needle: Needle | null; current: number | null; arabic: boolean }) {
+  const ranges = needle ? needleRanges(text, needle) : []
+  if (ranges.length === 0) return <>{withNumbers(text, arabic)}</>
+  const out: ComponentChildren[] = []
+  let at = 0
+  ranges.forEach(([a, b], nth) => {
+    if (a > at) out.push(withNumbers(text.slice(at, a), arabic))
+    out.push(<mark class={nth === current ? 'is-current' : undefined}>{withNumbers(text.slice(a, b), arabic)}</mark>)
+    at = b
+  })
+  if (at < text.length) out.push(withNumbers(text.slice(at), arabic))
   return <>{out}</>
+}
+
+/** The bar of «جستجو در متن جاری», in place of the reader's top bar while it is open. */
+function FindBar(props: {
+  find: { text: string; whole: boolean }
+  count: number
+  /** Index of the current match, -1 when there is none. */
+  at: number
+  tooShort: boolean
+  onChange: (find: { text: string; whole: boolean }) => void
+  onStep: (dir: 1 | -1) => void
+  onClose: () => void
+}) {
+  const { find } = props
+  const input = useRef<HTMLInputElement>(null)
+  useEffect(() => input.current?.focus(), [])
+  const status = props.tooShort
+    ? 'دست‌کم دو حرف بنویسید'
+    : !find.text.trim()
+      ? 'واژه‌ای از همین بخش را بنویسید'
+      : props.count === 0
+        ? 'در این بخش پیدا نشد'
+        : `${fa(props.at + 1)} از ${fa(props.count)}`
+  return (
+    <div class="find-bar" role="search">
+      <div class="find-row">
+        <IconButton icon="close" label="بستن جستجو" onClick={props.onClose} />
+        <input
+          ref={input}
+          type="search"
+          enterKeyHint="search"
+          aria-label="جستجو در متن جاری"
+          placeholder="جستجو در متن جاری…"
+          value={find.text}
+          onInput={(e) => props.onChange({ ...find, text: (e.target as HTMLInputElement).value })}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              props.onStep(e.shiftKey ? -1 : 1)
+            } else if (e.key === 'Escape') props.onClose()
+          }}
+        />
+        <IconButton icon="up" label="مورد قبلی" disabled={props.count < 2} onClick={() => props.onStep(-1)} />
+        <IconButton icon="down" label="مورد بعدی" disabled={props.count < 2} onClick={() => props.onStep(1)} />
+      </div>
+      <div class="find-row find-meta">
+        <span class="find-count" role="status">
+          {status}
+        </span>
+        <Chip selected={find.whole} onClick={() => props.onChange({ ...find, whole: !find.whole })}>
+          {find.whole && <Icon name="check" size={16} />}
+          کلمهٔ کامل
+        </Chip>
+      </div>
+    </div>
+  )
 }
 
 function ParagraphView(props: {
   p: Paragraph
   previous: Paragraph | undefined
   paired: boolean
-  query: string | null
+  /** Arabic text: numbers are set apart (see `withNumbers`). */
+  arabic: boolean
+  needle: Needle | null
+  /** Which of this paragraph's matches is the current one of «جستجو در متن جاری». */
+  currentMatch: number | null
   focused: boolean
   bookmarked: boolean
   onOpen: () => void
@@ -611,7 +726,7 @@ function ParagraphView(props: {
     if (selection && !selection.isCollapsed && selection.toString().trim()) return
     props.onOpen()
   }
-  const text = <Highlighted text={p.text} query={props.query} />
+  const text = <Highlighted text={p.text} needle={props.needle} current={props.currentMatch} arabic={props.arabic} />
   return (
     <div
       class={
