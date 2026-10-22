@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'preact/hooks'
-import { fa } from '../lib/normalize'
-import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, THEMES, resetTextSettings, setSetting, settingsStore, useStore, type Settings } from '../lib/store'
+import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, resetTextSettings, themes, setSetting, settingsStore, useStore, type Settings } from '../lib/store'
 import { toast } from '../lib/util'
 import { Chip, Segmented, SwitchRow } from './common'
 import { Icon } from './icons'
+import { decimal, num, t } from '../lib/i18n'
 
 /** Theme, fonts and sizes with a live preview; used in the reader's sheet and on the settings page. */
 export function TextSettingsPanel() {
@@ -12,10 +12,10 @@ export function TextSettingsPanel() {
     <div class="text-settings">
       <Preview s={s} />
 
-      <p class="field-label">پوسته</p>
-      <Segmented label="پوسته" options={THEMES} value={s.theme} onChange={(v) => setSetting('theme', v)} />
+      <p class="field-label">{t('پوسته')}</p>
+      <Segmented label={t('پوسته')} options={themes()} value={s.theme} onChange={(v) => setSetting('theme', v)} />
 
-      <p class="field-label">قلم عربی (ادعیه)</p>
+      <p class="field-label">{t('قلم عربی (ادعیه)')}</p>
       <div class="chip-row">
         {ARABIC_FONTS.map((f) => (
           <Chip
@@ -27,9 +27,9 @@ export function TextSettingsPanel() {
           </Chip>
         ))}
       </div>
-      <SwitchRow label="متن عربی پررنگ" checked={s.arabicBold} onChange={(v) => setSetting('arabicBold', v)} />
+      <SwitchRow label={t('متن عربی پررنگ')} checked={s.arabicBold} onChange={(v) => setSetting('arabicBold', v)} />
 
-      <p class="field-label">قلم فارسی</p>
+      <p class="field-label">{t('قلم فارسی')}</p>
       <div class="chip-row">
         {PERSIAN_FONTS.map((f) => (
           <Chip selected={s.persianFont === f.id} onClick={() => setSetting('persianFont', f.id)} style={`font-family:${f.family};font-size:16px`}>
@@ -38,22 +38,22 @@ export function TextSettingsPanel() {
         ))}
       </div>
 
-      <SizeSlider label="اندازهٔ متن عربی" value={s.arabicSize} range={RANGES.arabicSize} onChange={(v) => setSetting('arabicSize', v)} />
+      <SizeSlider label={t('اندازهٔ متن عربی')} value={s.arabicSize} range={RANGES.arabicSize} onChange={(v) => setSetting('arabicSize', v)} />
       <SizeSlider
-        label="اندازهٔ ترجمه"
+        label={t('اندازهٔ ترجمه')}
         value={s.translationSize}
         range={RANGES.translationSize}
         onChange={(v) => setSetting('translationSize', v)}
       />
       <SizeSlider
-        label="اندازهٔ متن فارسی و توضیحات"
+        label={t('اندازهٔ متن فارسی و توضیحات')}
         value={s.textSize}
         range={RANGES.textSize}
         onChange={(v) => setSetting('textSize', v)}
       />
-      <SizeSlider label="فاصلهٔ سطرها" value={s.lineHeight} range={RANGES.lineHeight} decimals onChange={(v) => setSetting('lineHeight', v)} />
+      <SizeSlider label={t('فاصلهٔ سطرها')} value={s.lineHeight} range={RANGES.lineHeight} decimals onChange={(v) => setSetting('lineHeight', v)} />
 
-      <SwitchRow label="تراز دوطرفه" checked={s.justify} onChange={(v) => setSetting('justify', v)} />
+      <SwitchRow label={t('تراز دوطرفه')} checked={s.justify} onChange={(v) => setSetting('justify', v)} />
 
       <button
         type="button"
@@ -61,11 +61,11 @@ export function TextSettingsPanel() {
         onClick={() => {
           const before = settingsStore.get()
           resetTextSettings()
-          toast('تنظیمات متن به حالت پیش‌فرض برگشت', { label: 'بازگردانی', run: () => settingsStore.set(before) })
+          toast('تنظیمات متن به حالت پیش‌فرض برگشت', { label: t('بازگردانی'), run: () => settingsStore.set(before) })
         }}
       >
         <Icon name="refresh" size={20} />
-        بازگشت به پیش‌فرض
+        {t('بازگشت به پیش‌فرض')}
       </button>
     </div>
   )
@@ -98,12 +98,12 @@ function SizeSlider(props: { label: string; value: number; range: readonly [numb
   useEffect(() => setDragging(props.value), [props.value])
   const step = props.decimals ? 0.1 : 1
   // Persian writes the decimal point as «٫».
-  const shown = props.decimals ? dragging.toFixed(1).replace('.', '٫') : String(Math.round(dragging))
+  const shown = props.decimals ? dragging.toFixed(1) : String(Math.round(dragging))
   return (
     <div class="slider">
       <div class="slider-head">
         <span>{props.label}</span>
-        <b>{fa(shown)}</b>
+        <b>{decimal(num(shown))}</b>
       </div>
       <input
         type="range"

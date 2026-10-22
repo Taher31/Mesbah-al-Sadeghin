@@ -6,6 +6,7 @@ import { navigate, routes } from '../lib/router'
 import { SECTION_LEVEL, removeBookmark, restoreBookmark, updateNote, useStore, userStore, type Bookmark } from '../lib/store'
 import { toast } from '../lib/util'
 import { Chip, Dialog, EmptyState, IconButton, TopBar } from '../ui/common'
+import { t } from '../lib/i18n'
 
 export function Bookmarks() {
   const user = useStore(userStore)
@@ -17,19 +18,19 @@ export function Bookmarks() {
 
   return (
     <main class="page">
-      <TopBar title="نشانه‌ها" />
+      <TopBar title={t('نشانه‌ها')} />
       <div class="content">
         {user.bookmarks.length === 0 ? (
           <EmptyState
             icon="bookmarkOutline"
-            title="هنوز نشانه‌ای ندارید"
-            body="در صفحهٔ مطالعه، روی یک بند بزنید و «نشانه‌گذاری این بند» را انتخاب کنید."
+            title={t('هنوز نشانه‌ای ندارید')}
+            body={t('در صفحهٔ مطالعه، روی یک بند بزنید و «نشانه‌گذاری این بند» را انتخاب کنید.')}
           />
         ) : (
           <>
             <div class="chip-row chip-row-pad">
               <Chip selected={work === null} onClick={() => setWork(null)}>
-                همهٔ کتاب‌ها
+                {t('همهٔ کتاب‌ها')}
               </Chip>
               {WORKS.map((w) => (
                 <Chip selected={work === w.id} onClick={() => setWork(w.id)}>
@@ -48,20 +49,20 @@ export function Bookmarks() {
                     }
                   >
                     <span class="hit-book">{bookLabel(bookById(b.book)!)}</span>
-                    <span class="hit-title">{tocs?.get(b.book)?.get(b.section)?.title ?? ''}</span>
+                    <span class="hit-title" dir="auto">{tocs?.get(b.book)?.get(b.section)?.title ?? ''}</span>
                     {/* Excerpts saved before the books switched to Persian digits still have Latin ones. */}
-                    {b.excerpt.trim() && <span class="bookmark-excerpt">{fa(b.excerpt)}</span>}
-                    {b.note && <span class="bookmark-note">{b.note}</span>}
+                    {b.excerpt.trim() && <span class="bookmark-excerpt" dir="auto">{fa(b.excerpt)}</span>}
+                    {b.note && <span class="bookmark-note" dir="auto">{b.note}</span>}
                   </button>
                   <div class="bookmark-actions">
-                    <IconButton icon="editNote" label="یادداشت" onClick={() => setEditing(b)} />
+                    <IconButton icon="editNote" label={t('یادداشت')} onClick={() => setEditing(b)} />
                     <IconButton
                       icon="delete"
-                      label="حذف"
+                      label={t('حذف')}
                       class="muted"
                       onClick={() => {
                         removeBookmark(b.id)
-                        toast('نشانه حذف شد', { label: 'بازگردانی', run: () => restoreBookmark(b) })
+                        toast('نشانه حذف شد', { label: t('بازگردانی'), run: () => restoreBookmark(b) })
                       }}
                     />
                   </div>
@@ -80,12 +81,12 @@ function NoteDialog({ bookmark, onClose }: { bookmark: Bookmark; onClose: () => 
   const [text, setText] = useState(bookmark.note ?? '')
   return (
     <Dialog
-      title="یادداشت"
+      title={t('یادداشت')}
       onClose={onClose}
       actions={
         <>
           <button type="button" class="btn btn-text" onClick={onClose}>
-            انصراف
+            {t('انصراف')}
           </button>
           <button
             type="button"
@@ -95,15 +96,16 @@ function NoteDialog({ bookmark, onClose }: { bookmark: Bookmark; onClose: () => 
               onClose()
             }}
           >
-            ذخیره
+            {t('ذخیره')}
           </button>
         </>
       }
     >
       <textarea
         class="note-input"
+        dir="auto"
         rows={4}
-        placeholder="یادداشت شما دربارهٔ این بند…"
+        placeholder={t('یادداشت شما دربارهٔ این بند…')}
         value={text}
         onInput={(e) => setText((e.target as HTMLTextAreaElement).value)}
         autoFocus

@@ -1,8 +1,8 @@
-import { fa } from '../lib/normalize'
-import { APP_NAME, CHANNEL_URL, asset } from '../lib/util'
+import { CHANNEL_URL, asset } from '../lib/util'
 import { Ornament, SectionLabel, TopBar } from '../ui/common'
 import { Icon, type IconName } from '../ui/icons'
 import aboutText from '../about.txt?raw'
+import { num, t } from '../lib/i18n'
 
 const ADMIN_EMAIL = 'Yaghobi01@gmail.com'
 const DEVELOPER_EMAIL = 'Anisbook@iran.ir'
@@ -10,18 +10,18 @@ const DEVELOPER_EMAIL = 'Anisbook@iran.ir'
 export function About() {
   return (
     <main class="page">
-      <TopBar title="دربارهٔ برنامه" />
+      <TopBar title={t('دربارهٔ برنامه')} />
       <div class="content about">
         <img class="about-logo" src={asset('img/logo.webp')} alt="" width="112" height="112" />
-        <h2>{APP_NAME}</h2>
-        <p class="muted">نسخهٔ {fa(__APP_VERSION__)}</p>
+        <h2>{t('مصباح الصادقین')}</h2>
+        <p class="muted">{t('نسخهٔ {0}', num(__APP_VERSION__))}</p>
         <Ornament />
         <div class="about-text">{aboutText.trim()}</div>
-        <SectionLabel>راه‌های ارتباطی</SectionLabel>
+        <SectionLabel>{t('راه‌های ارتباطی')}</SectionLabel>
         <div class="card contacts">
-          <Contact icon="campaign" title="کانال صادقین در ایتا" value="eitaa.com/sadeghin_ir" href={CHANNEL_URL} />
-          <Contact icon="mail" title="مدیر کانال" value={ADMIN_EMAIL} href={`mailto:${ADMIN_EMAIL}`} />
-          <Contact icon="mail" title="برنامه‌نویس" value={DEVELOPER_EMAIL} href={`mailto:${DEVELOPER_EMAIL}`} />
+          <Contact icon="campaign" title={t('کانال صادقین در ایتا')} value="eitaa.com/sadeghin_ir" href={CHANNEL_URL} />
+          <Contact icon="mail" title={t('مدیر کانال')} value={ADMIN_EMAIL} href={`mailto:${ADMIN_EMAIL}`} />
+          <Contact icon="mail" title={t('برنامه‌نویس')} value={DEVELOPER_EMAIL} href={`mailto:${DEVELOPER_EMAIL}`} />
         </div>
       </div>
     </main>

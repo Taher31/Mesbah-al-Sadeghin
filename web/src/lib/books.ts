@@ -1,4 +1,5 @@
 /** The two works, each shipped in two editions. Shared with the data build script. */
+import { t, type Phrase } from './i18n'
 
 export type BookId = 1 | 2 | 3 | 4
 export type WorkId = 'anis' | 'safineh'
@@ -23,9 +24,26 @@ export interface Book {
   paired: boolean
 }
 
+// Getters: the names follow the menus' language (lib/i18n.ts).
 export const WORKS: Work[] = [
-  { id: 'anis', title: 'انیس الصادقین', description: 'رهنمودهای آن عالم ربانی در زمینهٔ ادعیه و اذکار' },
-  { id: 'safineh', title: 'سفینة الصادقین', description: 'شرح احوال و زندگی‌نامهٔ آن بزرگوار' },
+  {
+    id: 'anis',
+    get title() {
+      return t('انیس الصادقین')
+    },
+    get description() {
+      return t('رهنمودهای آن عالم ربانی در زمینهٔ ادعیه و اذکار')
+    },
+  },
+  {
+    id: 'safineh',
+    get title() {
+      return t('سفینة الصادقین')
+    },
+    get description() {
+      return t('شرح احوال و زندگی‌نامهٔ آن بزرگوار')
+    },
+  },
 ]
 
 /**
@@ -56,7 +74,12 @@ export function editionsOf(work: WorkId): Book[] {
 
 /** «سفینة الصادقین · فارسی», or just «انیس الصادقین» for a work with a single edition. */
 export function bookLabel(book: Book): string {
-  return workOf(book).title + (book.edition ? ' · ' + book.edition : '')
+  return workOf(book).title + (book.edition ? ' · ' + editionLabel(book) : '')
+}
+
+/** «فارسی» / «عربی» in the menus' language. */
+export function editionLabel(book: Book): string {
+  return book.edition ? t(book.edition as Phrase) : ''
 }
 
 /** Paragraph kinds, as stored in the generated JSON. */

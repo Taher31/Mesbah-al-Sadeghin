@@ -13,6 +13,7 @@ import { SettingsScreen } from './screens/Settings'
 import { Toc } from './screens/Toc'
 import { EmptyState, Snackbar } from './ui/common'
 import { UpdateBanner } from './ui/PwaUi'
+import { setLanguage, t } from './lib/i18n'
 
 const darkQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
@@ -68,6 +69,14 @@ function screen(route: Route) {
 export function App() {
   const route = useStore(routeStore)
   const settings = useStore(settingsStore)
+  // Before anything renders, so every label below comes out in the chosen language.
+  setLanguage(settings.language)
+  useLayoutEffect(() => {
+    const root = document.documentElement
+    root.lang = settings.language
+    // English menus run left to right; the books' text keeps its own direction (dir="rtl"/"auto").
+    root.dir = settings.language === 'en' ? 'ltr' : 'rtl'
+  }, [settings.language])
   useTheme(settings.theme, route.path.length === 0)
   // A new screen starts at the top, or where it was when coming back. The reader positions itself
   // (at a paragraph), and its own effects run before this one.
@@ -76,9 +85,9 @@ export function App() {
   }, [route.depth, route.raw])
   const content = screen(route) ?? (
     <main class="page">
-      <EmptyState icon="search" title="این صفحه پیدا نشد">
+      <EmptyState icon="search" title={t('این صفحه پیدا نشد')}>
         <button type="button" class="btn btn-tonal" onClick={() => navigate(routes.home(), { replace: true })}>
-          صفحهٔ اصلی
+          {t('صفحهٔ اصلی')}
         </button>
       </EmptyState>
     </main>

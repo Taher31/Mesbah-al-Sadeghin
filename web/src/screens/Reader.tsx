@@ -2,7 +2,7 @@ import type { ComponentChildren } from 'preact'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { Kind, bookById, bookLabel, type Book, type BookId } from '../lib/books'
 import { loadSection, loadToc, peekSection, peekToc, type Paragraph, type TableOfContents } from '../lib/data'
-import { fa, makeNeedle, needleRanges, normalize, type Needle } from '../lib/normalize'
+import { makeNeedle, needleRanges, normalize, type Needle } from '../lib/normalize'
 import { keepScreenOn } from '../lib/pwa'
 import { navigate, replaceSilently, routes, shareUrl, type Route } from '../lib/router'
 import {
@@ -22,10 +22,11 @@ import {
   type Settings,
   type UserData,
 } from '../lib/store'
-import { APP_NAME, copyText, shareText, toast } from '../lib/util'
+import { copyText, shareText, toast } from '../lib/util'
 import { ActionRow, Chip, EmptyState, IconButton, LoadError, Loading, Ornament, Sheet, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
 import { TextSettingsPanel } from '../ui/TextSettings'
+import { num, t } from '../lib/i18n'
 
 interface Ref {
   book: BookId
@@ -348,25 +349,25 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         .filter((p) => p.kind !== Kind.PageMarker)
         .map((p) => p.text)
         .join('\n\n'),
-      '— ' + APP_NAME + '\n' + sectionLink(current),
+      '— ' + t('مصباح الصادقین') + '\n' + sectionLink(current),
     ].join('\n\n')
 
   const menu = (
     <>
-      <ActionRow icon="list" label="فهرست مطالب" onClick={() => (setSheet(null), navigate(routes.toc(current.book)))} />
-      <ActionRow icon="search" label="جستجو در متن جاری" onClick={() => (setSheet(null), setFind((f) => f ?? { text: '', whole: false }))} />
-      <ActionRow icon="search" label="جستجو در این کتاب" onClick={() => (setSheet(null), navigate(routes.search(current.book)))} />
+      <ActionRow icon="list" label={t('فهرست مطالب')} onClick={() => (setSheet(null), navigate(routes.toc(current.book)))} />
+      <ActionRow icon="search" label={t('جستجو در متن جاری')} onClick={() => (setSheet(null), setFind((f) => f ?? { text: '', whole: false }))} />
+      <ActionRow icon="search" label={t('جستجو در این کتاب')} onClick={() => (setSheet(null), navigate(routes.search(current.book)))} />
       <ActionRow
         icon="copy"
-        label="کپی کل این بخش"
+        label={t('کپی کل این بخش')}
         onClick={async () => {
           setSheet(null)
-          toast((await copyText(sectionText())) ? 'کپی شد' : 'کپی نشد')
+          toast((await copyText(sectionText())) ? t('کپی شد') : t('کپی نشد'))
         }}
       />
       <ActionRow
         icon="share"
-        label="اشتراک‌گذاری این بخش"
+        label={t('اشتراک‌گذاری این بخش')}
         onClick={async () => {
           setSheet(null)
           if ((await shareText({ title, text: sectionText() })) === 'copied') toast('متن کپی شد')
@@ -374,10 +375,10 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
       />
       <ActionRow
         icon="link"
-        label="اشتراک‌گذاری پیوند این بخش"
+        label={t('اشتراک‌گذاری پیوند این بخش')}
         onClick={async () => {
           setSheet(null)
-          const result = await shareText({ title, text: title + ' — ' + APP_NAME, url: sectionLink(current) })
+          const result = await shareText({ title, text: title + ' — ' + t('مصباح الصادقین'), url: sectionLink(current) })
           if (result === 'copied') toast('پیوند کپی شد')
         }}
       />
@@ -408,30 +409,30 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
                 type="button"
                 class={'tr-toggle' + (settings.showTranslation ? ' is-on' : '')}
                 aria-pressed={settings.showTranslation}
-                title={settings.showTranslation ? 'پنهان کردن ترجمه' : 'نمایش ترجمه'}
+                title={settings.showTranslation ? t('پنهان کردن ترجمه') : t('نمایش ترجمه')}
                 onClick={() => {
                   setSetting('showTranslation', !settings.showTranslation)
-                  toast(settings.showTranslation ? 'بدون ترجمه' : 'با ترجمه')
+                  toast(settings.showTranslation ? t('بدون ترجمه') : t('با ترجمه'))
                 }}
               >
                 {settings.showTranslation && <Icon name="check" size={16} />}
-                ترجمه
+                {t('ترجمه')}
               </button>
             )}
             <IconButton
               icon={favorite ? 'star' : 'starOutline'}
               class={favorite ? 'gold' : ''}
               pressed={favorite}
-              label={favorite ? 'حذف از منتخب' : 'افزودن به منتخب'}
-              onClick={() => toast(toggleFavorite(current.book, current.section) ? 'به «منتخب من» اضافه شد' : 'از «منتخب من» حذف شد')}
+              label={favorite ? t('حذف از منتخب') : t('افزودن به منتخب')}
+              onClick={() => toast(toggleFavorite(current.book, current.section) ? t('به «منتخب من» اضافه شد') : t('از «منتخب من» حذف شد'))}
             />
-            <IconButton icon="textFields" label="تنظیمات متن" onClick={() => setSheet('text')} />
-            <IconButton icon="more" label="بیشتر" onClick={() => setSheet('menu')} />
+            <IconButton icon="textFields" label={t('تنظیمات متن')} onClick={() => setSheet('text')} />
+            <IconButton icon="more" label={t('بیشتر')} onClick={() => setSheet('menu')} />
           </>
         }
       >
-        <h1>{title}</h1>
-        <p>{favoritesMode ? 'منتخب من · ' + bookLabel(book) : bookLabel(book)}</p>
+        <h1 dir="auto">{title}</h1>
+        <p>{favoritesMode ? t('منتخب من · {0}', bookLabel(book)) : bookLabel(book)}</p>
       </TopBar>
 
       <div
@@ -442,20 +443,20 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         onTouchEnd={onTouchEnd}
         onTouchCancel={onTouchEnd}
       >
-        <article class="section" style={readerStyle(settings, book)}>
+        <article class="section" dir="rtl" style={readerStyle(settings, book)}>
           {error && <LoadError retry={retry} />}
           {!error && !content && <Loading />}
           {content && content.paragraphs === null && (
-            <EmptyState icon="search" title="این بخش پیدا نشد">
+            <EmptyState icon="search" title={t('این بخش پیدا نشد')}>
               <button type="button" class="btn btn-tonal" onClick={() => navigate(routes.toc(current.book), { replace: true })}>
-                فهرست مطالب
+                {t('فهرست مطالب')}
               </button>
             </EmptyState>
           )}
           {content && visible && (
             <>
               <SectionTitle title={title} path={path} bookLabel={favoritesMode ? bookLabel(book) : null} />
-              {visible.length === 0 && <p class="empty-section">این بخش متنی ندارد</p>}
+              {visible.length === 0 && <p class="empty-section">{t('این بخش متنی ندارد')}</p>}
               {visible.map((p, i) => (
                 <ParagraphView
                   key={p.key}
@@ -478,30 +479,30 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         </article>
       </div>
 
-      <nav class="reader-bottom" aria-label="پیمایش بخش‌ها">
+      <nav class="reader-bottom" dir="rtl" aria-label={t('پیمایش بخش‌ها')}>
         <div class="progress progress-line" style={`--value:${((index + 1) / pages.refs.length) * 100}%`} />
         <div class="reader-bottom-row">
           <button type="button" class="btn btn-text" disabled={!canPrev} onClick={() => turn(-1)}>
             <Icon name="back" />
-            قبلی
+            {t('قبلی')}
           </button>
           <span class="page-count">
-            {(favoritesMode ? '★ ' : '') + fa(index + 1) + ' / ' + fa(pages.refs.length)}
+            {(favoritesMode ? '★ ' : '') + num(index + 1) + ' / ' + num(pages.refs.length)}
           </span>
           <button type="button" class="btn btn-text" disabled={!canNext} onClick={() => turn(1)}>
-            بعدی
+            {t('بعدی')}
             <Icon name="forward" />
           </button>
         </div>
       </nav>
 
       {sheet === 'text' && (
-        <Sheet label="تنظیمات متن" onClose={() => setSheet(null)}>
+        <Sheet label={t('تنظیمات متن')} onClose={() => setSheet(null)}>
           <TextSettingsPanel />
         </Sheet>
       )}
       {sheet === 'menu' && (
-        <Sheet label="بیشتر" onClose={() => setSheet(null)}>
+        <Sheet label={t('بیشتر')} onClose={() => setSheet(null)}>
           {menu}
         </Sheet>
       )}
@@ -670,22 +671,23 @@ function FindBar(props: {
     return () => window.removeEventListener('keydown', onKey)
   }, [props.onClose])
   const status = props.tooShort
-    ? 'دست‌کم دو حرف بنویسید'
+    ? t('دست‌کم دو حرف بنویسید')
     : !find.text.trim()
-      ? 'واژه‌ای از همین بخش را بنویسید'
+      ? t('واژه‌ای از همین بخش را بنویسید')
       : props.count === 0
-        ? 'در این بخش پیدا نشد'
-        : `${fa(props.at + 1)} از ${fa(props.count)}`
+        ? t('در این بخش پیدا نشد')
+        : t('{0} از {1}', num(props.at + 1), num(props.count))
   return (
     <div class="find-bar" role="search">
       <div class="find-row">
-        <IconButton icon="close" label="بستن جستجو" onClick={props.onClose} />
+        <IconButton icon="close" label={t('بستن جستجو')} onClick={props.onClose} />
         <input
+          dir="auto"
           ref={input}
           type="search"
           enterKeyHint="search"
-          aria-label="جستجو در متن جاری"
-          placeholder="جستجو در متن جاری…"
+          aria-label={t('جستجو در متن جاری')}
+          placeholder={t('جستجو در متن جاری…')}
           value={find.text}
           onInput={(e) => props.onChange({ ...find, text: (e.target as HTMLInputElement).value })}
           onKeyDown={(e) => {
@@ -695,8 +697,8 @@ function FindBar(props: {
             }
           }}
         />
-        <IconButton icon="up" label="مورد قبلی" disabled={props.count < 2} onClick={() => props.onStep(-1)} />
-        <IconButton icon="down" label="مورد بعدی" disabled={props.count < 2} onClick={() => props.onStep(1)} />
+        <IconButton icon="up" label={t('مورد قبلی')} disabled={props.count < 2} onClick={() => props.onStep(-1)} />
+        <IconButton icon="down" label={t('مورد بعدی')} disabled={props.count < 2} onClick={() => props.onStep(1)} />
       </div>
       <div class="find-row find-meta">
         <span class="find-count" role="status">
@@ -704,7 +706,7 @@ function FindBar(props: {
         </span>
         <Chip selected={find.whole} onClick={() => props.onChange({ ...find, whole: !find.whole })}>
           {find.whole && <Icon name="check" size={16} />}
-          کلمهٔ کامل
+          {t('کلمهٔ کامل')}
         </Chip>
       </div>
     </div>
@@ -753,7 +755,7 @@ function ParagraphView(props: {
         </div>
       ) : p.kind === Kind.PageMarker ? (
         <p class="page-marker">
-          <span>صفحهٔ {fa(p.text)}</span>
+          <span>{t('صفحهٔ {0}', num(p.text))}</span>
         </p>
       ) : (
         <p>{text}</p>
@@ -769,11 +771,11 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
   const marks = bookmarksIn(props.user, current.book, current.section, p.key, p.last ?? p.key)
   const bookmarked = marks.length > 0
   return (
-    <Sheet label="بند" onClose={props.onClose}>
-      <p class="sheet-excerpt">{p.text}</p>
+    <Sheet label={t('بند')} onClose={props.onClose}>
+      <p class="sheet-excerpt" dir="auto">{p.text}</p>
       <ActionRow
         icon={bookmarked ? 'bookmark' : 'bookmarkAdd'}
-        label={bookmarked ? 'حذف نشانه' : 'نشانه‌گذاری این بند'}
+        label={bookmarked ? t('حذف نشانه') : t('نشانه‌گذاری این بند')}
         onClick={() => {
           props.onClose()
           if (marks.length > 0) {
@@ -787,18 +789,18 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
       />
       <ActionRow
         icon="copy"
-        label="کپی"
+        label={t('کپی')}
         onClick={async () => {
           props.onClose()
-          toast((await copyText(p.text)) ? 'کپی شد' : 'کپی نشد')
+          toast((await copyText(p.text)) ? t('کپی شد') : t('کپی نشد'))
         }}
       />
       <ActionRow
         icon="share"
-        label="اشتراک‌گذاری"
+        label={t('اشتراک‌گذاری')}
         onClick={async () => {
           props.onClose()
-          const result = await shareText({ text: p.text + '\n\n— ' + APP_NAME + '\n' + props.link })
+          const result = await shareText({ text: p.text + '\n\n— ' + t('مصباح الصادقین') + '\n' + props.link })
           if (result === 'copied') toast('متن کپی شد')
         }}
       />

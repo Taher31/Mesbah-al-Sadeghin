@@ -6,6 +6,7 @@ import { initialScroll, navigate, routes, type Route } from '../lib/router'
 import { isFavorite, progressFor, toggleFavorite, useStore, userStore } from '../lib/store'
 import { BookCover, EmptyState, IconButton, LoadError, Loading, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
+import { t } from '../lib/i18n'
 
 /** Open branches and the filter survive going into the reader and back. */
 const memory = new Map<BookId, { open: Set<number>; filter: string }>()
@@ -79,17 +80,17 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
   return (
     <main class="page">
       <TopBar
-        title="فهرست مطالب"
+        title={t('فهرست مطالب')}
         actions={
           <>
             <IconButton
               icon={allOpen ? 'unfoldLess' : 'unfoldMore'}
-              label={allOpen ? 'بستن همه' : 'باز کردن همه'}
+              label={allOpen ? t('بستن همه') : t('باز کردن همه')}
               onClick={() =>
                 setState((s) => s && { ...s, open: allOpen ? new Set() : new Set(toc!.entries.filter((e) => e.hasChildren).map((e) => e.id)) })
               }
             />
-            <IconButton icon="search" label="جستجو در این کتاب" onClick={() => navigate(routes.search(book.id))} />
+            <IconButton icon="search" label={t('جستجو در این کتاب')} onClick={() => navigate(routes.search(book.id))} />
           </>
         }
       />
@@ -100,7 +101,7 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
             <h2>{workOf(book).title}</h2>
             {book.edition && <p class="edition">{book.edition}</p>}
             <button type="button" class={'btn ' + (progress ? 'btn-filled' : 'btn-tonal')} onClick={start} disabled={!toc}>
-              {progress ? 'ادامهٔ مطالعه' : 'شروع مطالعه'}
+              {progress ? t('ادامهٔ مطالعه') : t('شروع مطالعه')}
             </button>
           </div>
         </div>
@@ -108,20 +109,21 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
         <label class="filter">
           <Icon name="search" />
           <input
+            dir="auto"
             type="search"
-            placeholder="جستجو در عناوین…"
+            placeholder={t('جستجو در عناوین…')}
             value={state?.filter ?? ''}
             onInput={(e) => {
               const filter = (e.target as HTMLInputElement).value
               setState((s) => s && { ...s, filter })
             }}
           />
-          {state?.filter && <IconButton icon="close" label="پاک کردن" onClick={() => setState((s) => s && { ...s, filter: '' })} />}
+          {state?.filter && <IconButton icon="close" label={t('پاک کردن')} onClick={() => setState((s) => s && { ...s, filter: '' })} />}
         </label>
 
         {error && <LoadError retry={retry} />}
         {!error && !rows && <Loading />}
-        {rows && rows.length === 0 && <EmptyState icon="search" title="عنوانی با این عبارت نیست" />}
+        {rows && rows.length === 0 && <EmptyState icon="search" title={t('عنوانی با این عبارت نیست')} />}
         {rows && (
           <ul class="toc-list">
             {rows.map((row) => (
@@ -151,7 +153,7 @@ function TocRow(props: { row: Row; filtering: boolean; current: boolean; favorit
     <li class={'toc-row' + (props.current ? ' is-current' : '') + (e.hasContent ? '' : ' is-group')} style={`--depth:${depth}`}>
       <span class="toc-lead">
         {e.hasChildren && !filtering ? (
-          <button type="button" class={'toc-chevron' + (open ? ' is-open' : '')} aria-expanded={open} aria-label={open ? 'بستن' : 'باز کردن'} onClick={props.onToggle}>
+          <button type="button" class={'toc-chevron' + (open ? ' is-open' : '')} aria-expanded={open} aria-label={open ? t('بستن') : t('باز کردن')} onClick={props.onToggle}>
             <Icon name="chevronEnd" />
           </button>
         ) : (
@@ -159,14 +161,14 @@ function TocRow(props: { row: Row; filtering: boolean; current: boolean; favorit
         )}
       </span>
       <button type="button" class="toc-main" onClick={props.onOpen} aria-expanded={!e.hasContent && e.hasChildren ? open : undefined}>
-        {path && <span class="toc-path">{path}</span>}
-        <span class={'toc-title' + (depth === 0 ? ' is-top' : '')}>{e.title}</span>
+        {path && <span class="toc-path" dir="auto">{path}</span>}
+        <span class={'toc-title' + (depth === 0 ? ' is-top' : '')} dir="auto">{e.title}</span>
       </button>
       {e.hasContent && (
         <button
           type="button"
           class={'toc-star' + (props.favorite ? ' is-on' : '')}
-          aria-label={props.favorite ? 'حذف از منتخب' : 'افزودن به منتخب'}
+          aria-label={props.favorite ? t('حذف از منتخب') : t('افزودن به منتخب')}
           aria-pressed={props.favorite}
           onClick={props.onFavorite}
         >

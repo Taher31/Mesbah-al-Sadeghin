@@ -1,9 +1,9 @@
 import { useState } from 'preact/hooks'
-import { fa } from '../lib/normalize'
 import { installPrompt, isAndroid, isIOS, isIOSSafari, isStandalone, offlineStore, retryOfflineFill, updateReady } from '../lib/pwa'
 import { useStore } from '../lib/store'
 import { ANDROID_APK, copyText, toast } from '../lib/util'
 import { Icon } from './icons'
+import { num, t } from '../lib/i18n'
 
 const HINT_KEY = 'mesbah.installHintDismissed'
 const HINT_PAUSE = 30 * 24 * 3600_000
@@ -34,50 +34,50 @@ export function InstallBanner() {
     setHidden(true)
   }
   const close = (
-    <button type="button" class="banner-close" aria-label="بستن" onClick={dismiss}>
+    <button type="button" class="banner-close" aria-label={t('بستن')} onClick={dismiss}>
       <Icon name="close" size={20} />
     </button>
   )
 
   if (isIOSSafari) {
     return (
-      <section class="banner" aria-label="نصب روی آیفون">
+      <section class="banner" aria-label={t('نصب روی آیفون')}>
         {close}
         <h3>
-          <Icon name="install" size={20} /> نصب «مصباح الصادقین» روی آیفون
+          <Icon name="install" size={20} /> {t('نصب «مصباح الصادقین» روی آیفون')}
         </h3>
         <ol>
           <li>
-            در نوار Safari دکمهٔ اشتراک‌گذاری <Icon name="iosShare" size={18} class="inline-icon" /> را بزنید
-            <small> (در iOS ۲۶ ابتدا دکمهٔ «⋯»)</small>.
+            {t('در نوار Safari دکمهٔ اشتراک‌گذاری را بزنید')} <Icon name="iosShare" size={18} class="inline-icon" />
+            <small>{t(' (در iOS ۲۶ ابتدا دکمهٔ «⋯»)')}</small>.
           </li>
           <li>
-            گزینهٔ <b dir="ltr">Add to Home Screen</b> یا «افزودن به صفحهٔ اصلی» <Icon name="addBox" size={18} class="inline-icon" /> را
-            انتخاب کنید.
+            {t('گزینهٔ {0} یا «افزودن به صفحهٔ اصلی» را انتخاب کنید', 'Add to Home Screen')} <Icon name="addBox" size={18} class="inline-icon" />
           </li>
-          <li>«Add / افزودن» را بزنید و برنامه را از صفحهٔ اصلی گوشی باز کنید.</li>
+          <li>{t('«Add / افزودن» را بزنید و برنامه را از صفحهٔ اصلی گوشی باز کنید.')}</li>
         </ol>
-        <p class="banner-note">بار اول که برنامهٔ نصب‌شده را باز می‌کنید اینترنت وصل باشد تا کتاب‌ها برای استفادهٔ بدون اینترنت ذخیره شوند.</p>
+        <p class="banner-note">{t('بار اول که برنامهٔ نصب‌شده را باز می‌کنید اینترنت وصل باشد تا کتاب‌ها برای استفادهٔ بدون اینترنت ذخیره شوند.')}</p>
       </section>
     )
   }
   if (isIOS) {
     return (
-      <section class="banner" aria-label="نصب روی آیفون">
+      <section class="banner" aria-label={t('نصب روی آیفون')}>
         {close}
         <h3>
-          <Icon name="install" size={20} /> برای نصب روی آیفون، این صفحه را در Safari باز کنید
+          <Icon name="install" size={20} /> {t('برای نصب روی آیفون، این صفحه را در Safari باز کنید')}
         </h3>
         <p>
-          در مرورگر داخلی برنامه‌ها (مثل ایتا) امکان نصب نیست. از منوی همین صفحه «باز کردن در Safari» را بزنید، یا پیوند را کپی و در
-          Safari باز کنید.
+          {t(
+            'در مرورگر داخلی برنامه‌ها (مثل ایتا) امکان نصب نیست. از منوی همین صفحه «باز کردن در Safari» را بزنید، یا پیوند را کپی و در Safari باز کنید.',
+          )}
         </p>
         <button
           type="button"
           class="btn btn-tonal"
-          onClick={async () => toast((await copyText(location.href.split('#')[0])) ? 'پیوند کپی شد' : 'کپی نشد')}
+          onClick={async () => toast((await copyText(location.href.split('#')[0])) ? t('پیوند کپی شد') : t('کپی نشد'))}
         >
-          <Icon name="link" size={18} /> کپی پیوند
+          <Icon name="link" size={18} /> {t('کپی پیوند')}
         </button>
       </section>
     )
@@ -91,20 +91,20 @@ export function InstallBanner() {
         installPrompt.set(null)
       }}
     >
-      <Icon name="install" size={18} /> نصب نسخهٔ وب
+      <Icon name="install" size={18} /> {t('نصب نسخهٔ وب')}
     </button>
   )
   if (isAndroid) {
     return (
-      <section class="banner" aria-label="نسخهٔ اندروید">
+      <section class="banner" aria-label={t('نسخهٔ اندروید')}>
         {close}
         <h3>
-          <Icon name="install" size={20} /> نسخهٔ اندروید
+          <Icon name="install" size={20} /> {t('نسخهٔ اندروید')}
         </h3>
-        <p>برای گوشی‌های اندروید، برنامهٔ مصباح الصادقین را دانلود و نصب کنید؛ بدون اینترنت هم کار می‌کند.</p>
+        <p>{t('برای گوشی‌های اندروید، برنامهٔ مصباح الصادقین را دانلود و نصب کنید؛ بدون اینترنت هم کار می‌کند.')}</p>
         <div class="banner-actions">
           <a class="btn btn-filled" href={ANDROID_APK} download>
-            <Icon name="download" size={18} /> دانلود نسخهٔ اندروید
+            <Icon name="download" size={18} /> {t('دانلود نسخهٔ اندروید')}
           </a>
           {installButton}
         </div>
@@ -113,10 +113,10 @@ export function InstallBanner() {
   }
   if (installButton) {
     return (
-      <section class="banner" aria-label="نصب برنامه">
+      <section class="banner" aria-label={t('نصب برنامه')}>
         {close}
         <p>
-          <b>مصباح الصادقین</b> را مثل یک برنامه نصب کنید تا بدون اینترنت هم در دسترس باشد.
+          {t('{0} را مثل یک برنامه نصب کنید تا بدون اینترنت هم در دسترس باشد.', t('مصباح الصادقین'))}
         </p>
         <div class="banner-actions">{installButton}</div>
       </section>
@@ -129,25 +129,25 @@ export function InstallBanner() {
 export function OfflineStatus({ detailed }: { detailed?: boolean }) {
   const s = useStore(offlineStore)
   if (!s.supported || s.total === 0) {
-    return detailed ? <p class="offline-status muted">ذخیره برای استفادهٔ بدون اینترنت پس از اولین بارگذاری کامل آغاز می‌شود.</p> : null
+    return detailed ? <p class="offline-status muted">{t('ذخیره برای استفادهٔ بدون اینترنت پس از اولین بارگذاری کامل آغاز می‌شود.')}</p> : null
   }
   const percent = Math.floor((s.done / s.total) * 100)
   if (s.done >= s.total) {
     return (
       <p class="offline-status ok">
-        <Icon name="offline" size={18} /> همهٔ کتاب‌ها برای استفادهٔ بدون اینترنت آماده است
+        <Icon name="offline" size={18} /> {t('همهٔ کتاب‌ها برای استفادهٔ بدون اینترنت آماده است')}
       </p>
     )
   }
   return (
     <div class="offline-status">
       <p>
-        {s.failed ? 'دریافت کامل نشد؛ با اتصال دوباره ادامه می‌یابد' : 'در حال آماده‌سازی برای استفادهٔ بدون اینترنت…'} {fa(percent)}٪
+        {s.failed ? t('دریافت کامل نشد؛ با اتصال دوباره ادامه می‌یابد') : t('در حال آماده‌سازی برای استفادهٔ بدون اینترنت…')} {num(percent)}%
       </p>
       <div class="progress" style={`--value:${percent}%`} />
       {s.failed && (
         <button type="button" class="btn btn-text" onClick={retryOfflineFill}>
-          تلاش دوباره
+          {t('تلاش دوباره')}
         </button>
       )}
     </div>
@@ -159,7 +159,7 @@ export function UpdateBanner() {
   if (!ready) return null
   return (
     <div class="update-banner" role="status">
-      <span>نسخهٔ تازهٔ برنامه دریافت شد؛ چند لحظهٔ دیگر بارگذاری می‌شود.</span>
+      <span>{t('نسخهٔ تازهٔ برنامه دریافت شد؛ چند لحظهٔ دیگر بارگذاری می‌شود.')}</span>
     </div>
   )
 }

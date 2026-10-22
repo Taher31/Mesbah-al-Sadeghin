@@ -199,8 +199,13 @@ hr {
   flex: none;
 }
 
-.icon.mirror {
+/* Arrows along the reading direction: drawn for left-to-right, flipped in right-to-left parts. */
+[dir='rtl'] .icon.mirror {
   transform: scaleX(-1);
+}
+
+[dir='ltr'] .icon.mirror {
+  transform: none;
 }
 
 .gold {
@@ -626,7 +631,7 @@ hr {
 .hero-actions {
   position: absolute;
   top: calc(8px + env(safe-area-inset-top));
-  left: 8px;
+  inset-inline-end: 8px;
   display: flex;
   gap: 8px;
 }
@@ -1019,7 +1024,7 @@ hr {
 .banner-close {
   position: absolute;
   top: 8px;
-  left: 8px;
+  inset-inline-end: 8px;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -1797,7 +1802,7 @@ body:has(.fab) .snackbar {
 .fab {
   position: fixed;
   z-index: 20;
-  left: 16px;
+  inset-inline-end: 16px;
   bottom: calc(16px + env(safe-area-inset-bottom));
   min-height: 56px;
   display: inline-flex;
@@ -2087,8 +2092,9 @@ body:has(.fab) .page {
   }
 }
 
-/* Addresses and URLs: Latin digits (Vazirmatn draws 0-9 as Persian digits). */
-[dir='ltr'] {
+/* Addresses and URLs: Latin digits (Vazirmatn draws 0-9 as Persian digits). Not the whole page
+   when the menus are in English. */
+:not(html)[dir='ltr'] {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 

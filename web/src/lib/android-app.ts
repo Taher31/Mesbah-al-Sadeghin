@@ -1,3 +1,4 @@
+import { t } from './i18n'
 import { android } from './native'
 import { goBack, routeStore } from './router'
 import { importBackup } from './store'
@@ -23,6 +24,6 @@ export function connectAndroid() {
   const legacy = android.legacyData()
   if (legacy && importBackup(legacy)) {
     android.legacyImported()
-    toast('منتخب‌ها و نشانه‌های نسخهٔ قبلی برنامه منتقل شد')
+    toast(t('منتخب‌ها و نشانه‌های نسخهٔ قبلی برنامه منتقل شد'))
   }
 }

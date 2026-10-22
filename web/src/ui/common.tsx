@@ -5,6 +5,7 @@ import { goBack } from '../lib/router'
 import { useStore } from '../lib/store'
 import { asset, toastStore } from '../lib/util'
 import { Icon, type IconName } from './icons'
+import { t } from '../lib/i18n'
 
 export function IconButton(props: {
   icon: IconName
@@ -41,7 +42,7 @@ export function TopBar(props: {
   return (
     <header class={'topbar' + (props.hidden ? ' is-hidden' : '') + (props.class ? ' ' + props.class : '')}>
       <div class="topbar-inner">
-        {props.back !== false && <IconButton icon="back" label="بازگشت" onClick={goBack} />}
+        {props.back !== false && <IconButton icon="back" label={t('بازگشت')} onClick={goBack} />}
         <div class="topbar-title">
           {props.children ?? (
             <>
@@ -60,7 +61,7 @@ export function TopBar(props: {
 export function BookCover({ book, width, onClick }: { book: Book; width: number; onClick?: () => void }) {
   const img = <img class="cover" src={asset(book.cover)} alt="" width={width} height={Math.round(width / 0.72)} loading="lazy" decoding="async" />
   return onClick ? (
-    <button type="button" class="cover-btn" onClick={onClick} aria-label="فهرست کتاب">
+    <button type="button" class="cover-btn" onClick={onClick} aria-label={t('فهرست کتاب')}>
       {img}
     </button>
   ) : (
@@ -83,16 +84,16 @@ export function EmptyState({ icon, title, body, children }: { icon: IconName; ti
 
 export function LoadError({ retry }: { retry: () => void }) {
   return (
-    <EmptyState icon="refresh" title="بارگیری ناموفق بود" body="اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.">
+    <EmptyState icon="refresh" title={t('بارگیری ناموفق بود')} body={t('اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.')}>
       <button type="button" class="btn btn-tonal" onClick={retry}>
-        تلاش دوباره
+        {t('تلاش دوباره')}
       </button>
     </EmptyState>
   )
 }
 
 export function Loading() {
-  return <div class="loading" role="progressbar" aria-label="در حال بارگیری" />
+  return <div class="loading" role="progressbar" aria-label={t('در حال بارگیری')} />
 }
 
 export function SectionLabel({ children, class: cls }: { children: ComponentChildren; class?: string }) {

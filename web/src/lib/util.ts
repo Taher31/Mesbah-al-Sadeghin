@@ -1,7 +1,6 @@
 import { android } from './native'
 import { Store } from './store'
 
-export const APP_NAME = 'مصباح الصادقین'
 export const CHANNEL_URL = 'https://eitaa.com/sadeghin_ir'
 /** Put next to the site by the deploy workflow; not part of the build or the offline cache. */
 export const ANDROID_APK = import.meta.env.BASE_URL + 'download/mesbah-sadeghin.apk'

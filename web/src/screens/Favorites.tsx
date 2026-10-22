@@ -1,11 +1,11 @@
 import { bookById, bookLabel } from '../lib/books'
 import { useAllTocs } from '../lib/data'
-import { fa } from '../lib/normalize'
 import { navigate, routes } from '../lib/router'
 import { moveFavorite, restoreFavorite, toggleFavorite, useStore, userStore } from '../lib/store'
 import { toast } from '../lib/util'
 import { EmptyState, IconButton, LoadError, Loading, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
+import { num, t } from '../lib/i18n'
 
 export function Favorites() {
   const user = useStore(userStore)
@@ -21,20 +21,20 @@ export function Favorites() {
 
   return (
     <main class="page">
-      <TopBar title="منتخب من" />
+      <TopBar title={t('منتخب من')} />
       <div class="content">
         {error && <LoadError retry={retry} />}
         {!error && !items && <Loading />}
         {items && items.length === 0 && (
           <EmptyState
             icon="starOutline"
-            title="هنوز چیزی منتخب نکرده‌اید"
-            body="هنگام مطالعهٔ هر دعا، ستارهٔ بالای صفحه را بزنید تا اینجا بیاید؛ مثلاً دعاهایی که هر روز می‌خوانید."
+            title={t('هنوز چیزی منتخب نکرده‌اید')}
+            body={t('هنگام مطالعهٔ هر دعا، ستارهٔ بالای صفحه را بزنید تا اینجا بیاید؛ مثلاً دعاهایی که هر روز می‌خوانید.')}
           />
         )}
         {items && items.length > 0 && (
           <>
-            <p class="lead">دعاها و بخش‌هایی که همیشه دم دستتان است</p>
+            <p class="lead">{t('دعاها و بخش‌هایی که همیشه دم دستتان است')}</p>
             <ol class="fav-list">
               {items.map((item, i) => (
                 <li key={`${item.fav.book}-${item.fav.section}`} class="card fav-item">
@@ -44,28 +44,28 @@ export function Favorites() {
                     // In the book, to page on from it; the button below walks the list.
                     onClick={() => navigate(routes.reader(item.fav.book, item.fav.section))}
                   >
-                    <span class="fav-num">{fa(i + 1)}</span>
+                    <span class="fav-num">{num(i + 1)}</span>
                     <span class="fav-text">
-                      <span class="fav-title">{item.title}</span>
-                      <span class="fav-meta">{[item.group, bookLabel(bookById(item.fav.book)!)].filter(Boolean).join(' · ')}</span>
+                      <span class="fav-title" dir="auto">{item.title}</span>
+                      <span class="fav-meta" dir="auto">{[item.group, bookLabel(bookById(item.fav.book)!)].filter(Boolean).join(' · ')}</span>
                     </span>
                   </button>
                   <span class="fav-move">
-                    <IconButton icon="up" label="بالاتر" disabled={i === 0} onClick={() => moveFavorite(item.index, items[i - 1].index)} />
+                    <IconButton icon="up" label={t('بالاتر')} disabled={i === 0} onClick={() => moveFavorite(item.index, items[i - 1].index)} />
                     <IconButton
                       icon="down"
-                      label="پایین‌تر"
+                      label={t('پایین‌تر')}
                       disabled={i === items.length - 1}
                       onClick={() => moveFavorite(item.index, items[i + 1].index)}
                     />
                   </span>
                   <IconButton
                     icon="delete"
-                    label="حذف"
+                    label={t('حذف')}
                     class="muted"
                     onClick={() => {
                       toggleFavorite(item.fav.book, item.fav.section)
-                      toast('از «منتخب من» حذف شد', { label: 'بازگردانی', run: () => restoreFavorite(item.fav, item.index) })
+                      toast('از «منتخب من» حذف شد', { label: t('بازگردانی'), run: () => restoreFavorite(item.fav, item.index) })
                     }}
                   />
                 </li>
@@ -77,7 +77,7 @@ export function Favorites() {
               onClick={() => navigate(routes.reader(items[0].fav.book, items[0].fav.section, { favorites: true }))}
             >
               <Icon name="playlist" />
-              خواندن پشت‌سرهم
+              {t('خواندن پشت‌سرهم')}
             </button>
           </>
         )}

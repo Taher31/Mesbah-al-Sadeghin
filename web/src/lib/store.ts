@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks'
 import { RETIRED_ANIS, bookById, type BookId, type WorkId } from './books'
+import { LANGUAGES, t, type Language } from './i18n'
 
 /** A value with listeners; the whole app's state is a handful of these. */
 export class Store<T> {
@@ -70,11 +71,12 @@ export type ThemeMode = 'system' | 'light' | 'sepia' | 'dark'
 export type PersianFont = 'vazirmatn' | 'nazanin' | 'lotus' | 'mitra' | 'zar'
 export type ArabicFont = 'naskh' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'mitra' | 'zar' | 'vazirmatn'
 
-export const THEMES: { id: ThemeMode; label: string }[] = [
-  { id: 'system', label: 'خودکار' },
-  { id: 'light', label: 'روشن' },
-  { id: 'sepia', label: 'کاغذی' },
-  { id: 'dark', label: 'شب' },
+/** Labels in the menus' language, so read them when rendering. */
+export const themes = (): { id: ThemeMode; label: string }[] => [
+  { id: 'system', label: t('خودکار') },
+  { id: 'light', label: t('روشن') },
+  { id: 'sepia', label: t('کاغذی') },
+  { id: 'dark', label: t('شب') },
 ]
 
 export const PERSIAN_FONTS: { id: PersianFont; label: string; family: string }[] = [
@@ -98,6 +100,8 @@ export const ARABIC_FONTS: { id: ArabicFont; label: string; family: string }[] =
 ]
 
 export interface Settings {
+  /** Of the menus; the books are always in their own languages. */
+  language: Language
   theme: ThemeMode
   persianFont: PersianFont
   arabicFont: ArabicFont
@@ -116,6 +120,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
+  language: 'fa',
   theme: 'system',
   persianFont: 'vazirmatn',
   arabicFont: 'naskh',
@@ -155,7 +160,8 @@ export function sanitizeSettings(raw: unknown): Settings {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
   const d = DEFAULT_SETTINGS
   return {
-    theme: oneOf(r.theme, THEMES, d.theme),
+    language: oneOf(r.language, LANGUAGES, d.language),
+    theme: oneOf(r.theme, themes(), d.theme),
     persianFont: oneOf(r.persianFont, PERSIAN_FONTS, d.persianFont),
     arabicFont: oneOf(r.arabicFont, ARABIC_FONTS, d.arabicFont),
     arabicBold: typeof r.arabicBold === 'boolean' ? r.arabicBold : d.arabicBold,

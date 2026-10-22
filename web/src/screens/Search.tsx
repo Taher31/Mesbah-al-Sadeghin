@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { BOOKS, bookById, bookLabel, type BookId } from '../lib/books'
-import { fa, makeNeedle } from '../lib/normalize'
+import { makeNeedle } from '../lib/normalize'
 import { initialScroll, navigate, replaceSilently, routes, type Route } from '../lib/router'
 import { search, type SearchHit, type SearchResult, type SearchScope } from '../lib/search'
 import { Chip, EmptyState, IconButton, LoadError, Loading, Segmented, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
+import { num, t } from '../lib/i18n'
 
 type State = { kind: 'idle' } | { kind: 'loading' } | { kind: 'error' } | { kind: 'done'; result: SearchResult }
 
@@ -76,20 +77,21 @@ export function Search({ route }: { route: Route }) {
           }}
         >
           <input
+            dir="auto"
             ref={input}
             type="search"
             enterKeyHint="search"
-            placeholder={book ? 'جستجو در این کتاب…' : 'جستجو در متن کتاب‌ها…'}
+            placeholder={book ? t('جستجو در این کتاب…') : t('جستجو در متن کتاب‌ها…')}
             value={query}
             onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
           />
-          {query && <IconButton icon="close" label="پاک کردن" onClick={() => (setQuery(''), input.current?.focus())} />}
+          {query && <IconButton icon="close" label={t('پاک کردن')} onClick={() => (setQuery(''), input.current?.focus())} />}
         </form>
       </TopBar>
       <div class="content">
         <div class="chip-row chip-row-pad">
           <Chip selected={book === null} onClick={() => setBook(null)}>
-            همهٔ کتاب‌ها
+            {t('همهٔ کتاب‌ها')}
           </Chip>
           {BOOKS.map((b) => (
             <Chip selected={book === b.id} onClick={() => setBook(b.id)}>
@@ -100,32 +102,32 @@ export function Search({ route }: { route: Route }) {
         <div class="chip-row search-options">
           <Chip selected={whole} onClick={() => setWhole(!whole)}>
             {whole && <Icon name="check" size={16} />}
-            کلمهٔ کامل
+            {t('کلمهٔ کامل')}
           </Chip>
           <Chip selected={advanced} onClick={() => setAdvanced(!advanced)}>
-            جستجوی پیشرفته
+            {t('جستجوی پیشرفته')}
             <Icon name={advanced ? 'up' : 'down'} size={18} />
           </Chip>
         </div>
         {advanced && (
           <div class="search-advanced">
-            <p class="field-label">کلمه‌ها</p>
+            <p class="field-label">{t('کلمه‌ها')}</p>
             <Segmented
-              label="کلمه‌ها"
+              label={t('کلمه‌ها')}
               options={[
-                { id: 'phrase', label: 'عین عبارت' },
-                { id: 'all', label: 'همهٔ کلمه‌ها، به هر ترتیب' },
+                { id: 'phrase', label: t('عین عبارت') },
+                { id: 'all', label: t('همهٔ کلمه‌ها، به هر ترتیب') },
               ]}
               value={allWords ? 'all' : 'phrase'}
               onChange={(v) => setAllWords(v === 'all')}
             />
-            <p class="field-label">جستجو در</p>
+            <p class="field-label">{t('جستجو در')}</p>
             <Segmented
-              label="جستجو در"
+              label={t('جستجو در')}
               options={[
-                { id: 'all' as SearchScope, label: 'همهٔ متن' },
-                { id: 'arabic' as SearchScope, label: 'متن عربی' },
-                { id: 'persian' as SearchScope, label: 'ترجمه و توضیحات' },
+                { id: 'all' as SearchScope, label: t('همهٔ متن') },
+                { id: 'arabic' as SearchScope, label: t('متن عربی') },
+                { id: 'persian' as SearchScope, label: t('ترجمه و توضیحات') },
               ]}
               value={scope}
               onChange={setScope}
@@ -136,27 +138,27 @@ export function Search({ route }: { route: Route }) {
         {state.kind === 'idle' && (
           <EmptyState
             icon="search"
-            title="عبارتی برای جستجو بنویسید"
-            body="اعراب، «ی/ي» و «ک/ك» در جستجو اهمیتی ندارند. با «کلمهٔ کامل»، «الله» دیگر «اللهم» را پیدا نمی‌کند."
+            title={t('عبارتی برای جستجو بنویسید')}
+            body={t('اعراب، «ی/ي» و «ک/ك» در جستجو اهمیتی ندارند. با «کلمهٔ کامل»، «الله» دیگر «اللهم» را پیدا نمی‌کند.')}
           />
         )}
         {state.kind === 'loading' && <Loading />}
         {state.kind === 'error' && <LoadError retry={() => setAttempt((a) => a + 1)} />}
-        {state.kind === 'done' && state.result.hits.length === 0 && <EmptyState icon="search" title="نتیجه‌ای پیدا نشد" />}
+        {state.kind === 'done' && state.result.hits.length === 0 && <EmptyState icon="search" title={t('نتیجه‌ای پیدا نشد')} />}
         {state.kind === 'done' && state.result.hits.length > 0 && (
           <>
             <p class="result-count">
               {state.result.capped
-                ? `بیش از ${fa(state.result.hits.length)} نتیجه — عبارت دقیق‌تری بنویسید`
-                : `${fa(state.result.hits.length)} نتیجه`}
+                ? t('بیش از {0} نتیجه — عبارت دقیق‌تری بنویسید', num(state.result.hits.length))
+                : t('{0} نتیجه', num(state.result.hits.length))}
             </p>
             <ul class="hits">
               {state.result.hits.map((hit) => (
                 <li key={`${hit.book}-${hit.section}-${hit.paragraph}`}>
                   <button type="button" class="card hit" onClick={() => open(hit)}>
                     {book === null && <span class="hit-book">{bookLabel(bookById(hit.book)!)}</span>}
-                    <span class="hit-title">{hit.sectionTitle}</span>
-                    <span class="hit-snippet">
+                    <span class="hit-title" dir="auto">{hit.sectionTitle}</span>
+                    <span class="hit-snippet" dir="auto">
                       <Snippet hit={hit} />
                     </span>
                   </button>

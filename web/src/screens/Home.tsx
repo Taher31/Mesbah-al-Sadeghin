@@ -1,13 +1,13 @@
-import { WORKS, bookById, bookLabel, editionsOf, workOf, type BookId, type Work } from '../lib/books'
+import { WORKS, bookById, bookLabel, editionLabel, editionsOf, workOf, type BookId, type Work } from '../lib/books'
 import { useAllTocs, type TableOfContents } from '../lib/data'
-import { fa } from '../lib/normalize'
 import { navigate, routes } from '../lib/router'
 import { editionOf, frequentVisits, setSetting, settingsStore, useStore, userStore, type Progress } from '../lib/store'
-import { ANDROID_APK, APP_NAME, CHANNEL_URL, asset } from '../lib/util'
+import { ANDROID_APK, CHANNEL_URL, asset } from '../lib/util'
 import { BookCover, SectionLabel, Segmented } from '../ui/common'
 import { Icon } from '../ui/icons'
 import { isAndroid } from '../lib/pwa'
 import { InstallBanner, OfflineStatus } from '../ui/PwaUi'
+import { num, t } from '../lib/i18n'
 
 const HOME_FAVORITES = 6
 
@@ -55,7 +55,7 @@ export function Home() {
       <div class="home-body">
         <button type="button" class="search-pill" onClick={() => navigate(routes.search())}>
           <Icon name="search" />
-          <span>جستجو در متن کتاب‌ها…</span>
+          <span>{t('جستجو در متن کتاب‌ها…')}</span>
         </button>
 
         <InstallBanner />
@@ -64,7 +64,7 @@ export function Home() {
 
         {continueItems.length > 0 && (
           <>
-            <SectionLabel>ادامهٔ مطالعه</SectionLabel>
+            <SectionLabel>{t('ادامهٔ مطالعه')}</SectionLabel>
             <div class="h-scroll">
               {continueItems.map((item) => (
                 <ContinueCard key={item.progress.book} progress={item.progress} title={item.title} fraction={item.fraction} />
@@ -75,7 +75,7 @@ export function Home() {
 
         {frequent.length > 0 && (
           <>
-            <SectionLabel class="mt-8">پرکاربرد</SectionLabel>
+            <SectionLabel class="mt-8">{t('پرکاربرد')}</SectionLabel>
             <div class="h-scroll">
               {frequent.map((item) => (
                 <button
@@ -84,10 +84,10 @@ export function Home() {
                   class="frequent-card"
                   onClick={() => navigate(routes.reader(item.book, item.section))}
                 >
-                  <span class="frequent-title">{item.title}</span>
+                  <span class="frequent-title" dir="auto">{item.title}</span>
                   <span class="frequent-meta">
                     <span>{workOf(bookById(item.book)!).title}</span>
-                    <b>{fa(item.visits!)} بار</b>
+                    <b>{t('{0} بار', num(item.visits!))}</b>
                   </span>
                 </button>
               ))}
@@ -95,7 +95,7 @@ export function Home() {
           </>
         )}
 
-        <SectionLabel class="mt-8">کتابخانه</SectionLabel>
+        <SectionLabel class="mt-8">{t('کتابخانه')}</SectionLabel>
         {WORKS.map((work) => (
           <BookCard key={work.id} work={work} selected={editionOf(settings, work.id)} tocs={tocs} progress={user.progress} />
         ))}
@@ -103,22 +103,22 @@ export function Home() {
         <div class="quick-links">
           <button type="button" class="quick-link" onClick={() => navigate(routes.bookmarks())}>
             <Icon name="bookmarkOutline" />
-            <span>نشانه‌ها</span>
+            <span>{t('نشانه‌ها')}</span>
           </button>
           <a class="quick-link" href={CHANNEL_URL} target="_blank" rel="noopener">
             <Icon name="campaign" />
-            <span>کانال صادقین در ایتا</span>
+            <span>{t('کانال صادقین در ایتا')}</span>
           </a>
           {isAndroid && (
             <a class="quick-link quick-link-wide" href={ANDROID_APK} download>
               <Icon name="download" />
-              <span>دانلود نسخهٔ اندروید</span>
+              <span>{t('دانلود نسخهٔ اندروید')}</span>
             </a>
           )}
         </div>
 
         <OfflineStatus />
-        <p class="version">نسخهٔ {fa(__APP_VERSION__)}</p>
+        <p class="version">{t('نسخهٔ {0}', num(__APP_VERSION__))}</p>
       </div>
     </main>
   )
@@ -130,16 +130,16 @@ function Hero() {
       <img class="hero-img" src={asset('img/portrait.jpg')} alt="" width="900" height="900" decoding="async" fetchpriority="high" />
       <div class="hero-shade" />
       <div class="hero-actions">
-        <button type="button" class="hero-icon" aria-label="تنظیمات" title="تنظیمات" onClick={() => navigate(routes.settings())}>
+        <button type="button" class="hero-icon" aria-label={t('تنظیمات')} title={t('تنظیمات')} onClick={() => navigate(routes.settings())}>
           <Icon name="settings" />
         </button>
-        <button type="button" class="hero-icon" aria-label="دربارهٔ برنامه" title="دربارهٔ برنامه" onClick={() => navigate(routes.about())}>
+        <button type="button" class="hero-icon" aria-label={t('دربارهٔ برنامه')} title={t('دربارهٔ برنامه')} onClick={() => navigate(routes.about())}>
           <Icon name="info" />
         </button>
       </div>
       <div class="hero-text">
-        <h1>{APP_NAME}</h1>
-        <p>آثار و سیرهٔ عالم ربانی آیت‌الله حاج سیّد حسین یعقوبی قائنی (قدّس‌سرّه)</p>
+        <h1>{t('مصباح الصادقین')}</h1>
+        <p>{t('آثار و سیرهٔ عالم ربانی آیت‌الله حاج سیّد حسین یعقوبی قائنی (قدّس‌سرّه)')}</p>
       </div>
     </header>
   )
@@ -153,17 +153,17 @@ function FavoritesShelf({ items }: { items: ShelfItem[] }) {
   return (
     <section class="favorites-shelf">
       <div class="shelf-head">
-        <SectionLabel>منتخب من</SectionLabel>
+        <SectionLabel>{t('منتخب من')}</SectionLabel>
         {items.length > 0 && (
           <button type="button" class="btn btn-text" onClick={() => navigate(routes.favorites())}>
-            همه و ترتیب
+            {t('همه و ترتیب')}
           </button>
         )}
       </div>
       {items.length === 0 ? (
         <div class="hint-card">
           <Icon name="starOutline" />
-          <p>دعاهای روزانه‌تان را با ستاره ☆ منتخب کنید تا همیشه یک لمس فاصله داشته باشند.</p>
+          <p>{t('دعاهای روزانه‌تان را با ستاره ☆ منتخب کنید تا همیشه یک لمس فاصله داشته باشند.')}</p>
         </div>
       ) : (
         <div class="card fav-card">
@@ -178,8 +178,8 @@ function FavoritesShelf({ items }: { items: ShelfItem[] }) {
             >
               <Icon name="star" class="gold" />
               <span class="fav-text">
-                <span class="fav-title">{item.title}</span>
-                <span class="fav-meta">{[item.group, workOf(bookById(item.book)!).title].filter(Boolean).join(' · ')}</span>
+                <span class="fav-title" dir="auto">{item.title}</span>
+                <span class="fav-meta" dir="auto">{[item.group, workOf(bookById(item.book)!).title].filter(Boolean).join(' · ')}</span>
               </span>
               <Icon name="chevronEnd" class="muted" />
             </button>
@@ -190,7 +190,7 @@ function FavoritesShelf({ items }: { items: ShelfItem[] }) {
             onClick={() => navigate(routes.reader(items[0].book, items[0].section, { favorites: true }))}
           >
             <Icon name="playlist" size={20} />
-            خواندن پشت‌سرهم
+            {t('خواندن پشت‌سرهم')}
           </button>
         </div>
       )}
@@ -209,7 +209,7 @@ function ContinueCard({ progress, title, fraction }: { progress: Progress; title
       <BookCover book={book} width={52} />
       <span class="continue-text">
         <span class="continue-book">{bookLabel(book)}</span>
-        <span class="continue-title">{title}</span>
+        <span class="continue-title" dir="auto">{title}</span>
         <span class="progress" style={`--value:${Math.round(fraction * 100)}%`} />
       </span>
     </button>
@@ -236,8 +236,8 @@ function BookCard(props: { work: Work; selected: BookId; tocs: Map<BookId, Table
           <p>{work.description}</p>
           {editionsOf(work.id).length > 1 && (
             <Segmented
-              label={`نسخهٔ ${work.title}`}
-              options={editionsOf(work.id).map((b) => ({ id: b.id, label: b.edition }))}
+              label={t('نسخه‌های {0}', work.title)}
+              options={editionsOf(work.id).map((b) => ({ id: b.id, label: editionLabel(b) }))}
               value={selected}
               onChange={(id) => setSetting('safinehEdition', id as BookId)}
             />
@@ -247,10 +247,10 @@ function BookCard(props: { work: Work; selected: BookId; tocs: Map<BookId, Table
       <div class="book-card-actions">
         <button type="button" class="btn btn-filled" onClick={() => navigate(routes.toc(selected))}>
           <Icon name="menuBook" size={18} />
-          فهرست کتاب
+          {t('فهرست کتاب')}
         </button>
         <button type="button" class="btn btn-outlined" onClick={start}>
-          {progress ? 'ادامهٔ مطالعه' : 'شروع مطالعه'}
+          {progress ? t('ادامهٔ مطالعه') : t('شروع مطالعه')}
         </button>
       </div>
     </article>
