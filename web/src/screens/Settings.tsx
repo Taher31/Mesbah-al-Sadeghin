@@ -1,5 +1,5 @@
 import { isAndroid, wakeLockSupported } from '../lib/pwa'
-import { clearVisits, exportBackup, importBackup, resetTextSettings, setSetting, settingsStore, useStore } from '../lib/store'
+import { clearVisits, exportBackup, importBackup, setSetting, settingsStore, useStore } from '../lib/store'
 import { ANDROID_APK, downloadFile, pickFile, toast } from '../lib/util'
 import { SectionLabel, SwitchRow, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
@@ -21,9 +21,6 @@ export function SettingsScreen() {
           <SwitchRow label="روشن ماندن صفحه هنگام مطالعه" checked={settings.keepScreenOn} onChange={(v) => setSetting('keepScreenOn', v)} />
         )}
         <div class="stack">
-          <button type="button" class="btn btn-outlined btn-block" onClick={resetTextSettings}>
-            بازگشت به پیش‌فرض
-          </button>
           <button
             type="button"
             class="btn btn-outlined btn-block"

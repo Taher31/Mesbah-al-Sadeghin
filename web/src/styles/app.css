@@ -2116,6 +2116,10 @@ body:has(.fab) .page {
   color: var(--on-secondary-container);
 }
 
+.text-settings-reset {
+  margin: 8px 0 4px;
+}
+
 /* All font choices visible at once in the text settings. */
 .text-settings .chip-row {
   flex-wrap: wrap;

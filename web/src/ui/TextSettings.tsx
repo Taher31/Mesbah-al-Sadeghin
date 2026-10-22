@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'preact/hooks'
 import { fa } from '../lib/normalize'
-import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, THEMES, setSetting, settingsStore, useStore, type Settings } from '../lib/store'
+import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, THEMES, resetTextSettings, setSetting, settingsStore, useStore, type Settings } from '../lib/store'
+import { toast } from '../lib/util'
 import { Chip, Segmented, SwitchRow } from './common'
+import { Icon } from './icons'
 
 /** Theme, fonts and sizes with a live preview; used in the reader's sheet and on the settings page. */
 export function TextSettingsPanel() {
@@ -52,6 +54,19 @@ export function TextSettingsPanel() {
       <SizeSlider label="فاصلهٔ سطرها" value={s.lineHeight} range={RANGES.lineHeight} decimals onChange={(v) => setSetting('lineHeight', v)} />
 
       <SwitchRow label="تراز دوطرفه" checked={s.justify} onChange={(v) => setSetting('justify', v)} />
+
+      <button
+        type="button"
+        class="btn btn-outlined btn-block text-settings-reset"
+        onClick={() => {
+          const before = settingsStore.get()
+          resetTextSettings()
+          toast('تنظیمات متن به حالت پیش‌فرض برگشت', { label: 'بازگردانی', run: () => settingsStore.set(before) })
+        }}
+      >
+        <Icon name="refresh" size={20} />
+        بازگشت به پیش‌فرض
+      </button>
     </div>
   )
 }
@@ -82,7 +97,8 @@ function SizeSlider(props: { label: string; value: number; range: readonly [numb
   const [dragging, setDragging] = useState(props.value)
   useEffect(() => setDragging(props.value), [props.value])
   const step = props.decimals ? 0.1 : 1
-  const shown = props.decimals ? dragging.toFixed(1) : String(Math.round(dragging))
+  // Persian writes the decimal point as «٫».
+  const shown = props.decimals ? dragging.toFixed(1).replace('.', '٫') : String(Math.round(dragging))
   return (
     <div class="slider">
       <div class="slider-head">
