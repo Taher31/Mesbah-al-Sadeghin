@@ -4,7 +4,8 @@ import { useToc, type TableOfContents, type TocEntry } from '../lib/data'
 import { normalize } from '../lib/normalize'
 import { initialScroll, navigate, routes, type Route } from '../lib/router'
 import { isFavorite, progressFor, toggleFavorite, useStore, userStore } from '../lib/store'
-import { BookCover, EmptyState, IconButton, LoadError, Loading, TopBar } from '../ui/common'
+import { BookCover, EmptyState, IconButton, LoadError, Loading, Sheet, TopBar } from '../ui/common'
+import { ListTextSettings } from '../ui/TextSettings'
 import { Icon } from '../ui/icons'
 import { t } from '../lib/i18n'
 
@@ -44,6 +45,7 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
   const progress = progressFor(user, book.id)
 
   const [state, setState] = useState(() => memory.get(book.id))
+  const [listSettings, setListSettings] = useState(false)
   // First visit: open the branch the reader is currently in, so they land where they left off.
   useEffect(() => {
     if (toc && !state) {
@@ -91,9 +93,15 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
               }
             />
             <IconButton icon="search" label={t('جستجو در این کتاب')} onClick={() => navigate(routes.search(book.id))} />
+            <IconButton icon="textFields" label={t('فهرست و نتایج جستجو')} onClick={() => setListSettings(true)} />
           </>
         }
       />
+      {listSettings && (
+        <Sheet label={t('فهرست و نتایج جستجو')} onClose={() => setListSettings(false)}>
+          <ListTextSettings />
+        </Sheet>
+      )}
       <div class="content">
         <div class="toc-header">
           <BookCover book={book} width={88} />
@@ -109,7 +117,6 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
         <label class="filter">
           <Icon name="search" />
           <input
-            dir="auto"
             type="search"
             placeholder={t('جستجو در عناوین…')}
             value={state?.filter ?? ''}

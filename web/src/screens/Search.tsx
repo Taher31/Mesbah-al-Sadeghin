@@ -3,7 +3,8 @@ import { BOOKS, bookById, bookLabel, type BookId } from '../lib/books'
 import { makeNeedle } from '../lib/normalize'
 import { initialScroll, navigate, replaceSilently, routes, type Route } from '../lib/router'
 import { search, type SearchHit, type SearchResult, type SearchScope } from '../lib/search'
-import { Chip, EmptyState, IconButton, LoadError, Loading, Segmented, TopBar } from '../ui/common'
+import { Chip, EmptyState, IconButton, LoadError, Loading, Segmented, Sheet, TopBar } from '../ui/common'
+import { ListTextSettings } from '../ui/TextSettings'
 import { Icon } from '../ui/icons'
 import { num, t } from '../lib/i18n'
 
@@ -20,6 +21,7 @@ export function Search({ route }: { route: Route }) {
   })
   const [advanced, setAdvanced] = useState(allWords || scope !== 'all')
   const [state, setState] = useState<State>({ kind: 'idle' })
+  const [listSettings, setListSettings] = useState(false)
   const [attempt, setAttempt] = useState(0)
   const input = useRef<HTMLInputElement>(null)
   const restored = useRef(false)
@@ -77,7 +79,6 @@ export function Search({ route }: { route: Route }) {
           }}
         >
           <input
-            dir="auto"
             ref={input}
             type="search"
             enterKeyHint="search"
@@ -87,7 +88,13 @@ export function Search({ route }: { route: Route }) {
           />
           {query && <IconButton icon="close" label={t('پاک کردن')} onClick={() => (setQuery(''), input.current?.focus())} />}
         </form>
+        <IconButton icon="textFields" label={t('فهرست و نتایج جستجو')} onClick={() => setListSettings(true)} />
       </TopBar>
+      {listSettings && (
+        <Sheet label={t('فهرست و نتایج جستجو')} onClose={() => setListSettings(false)}>
+          <ListTextSettings />
+        </Sheet>
+      )}
       <div class="content">
         <div class="chip-row chip-row-pad">
           <Chip selected={book === null} onClick={() => setBook(null)}>

@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useState } from 'preact/hooks'
 import { bookById } from './lib/books'
 import { initialScroll, navigate, routeStore, routes, type Route } from './lib/router'
 import { android } from './lib/native'
-import { settingsStore, useStore, type ThemeMode } from './lib/store'
+import { PERSIAN_FONTS, settingsStore, useStore, type ThemeMode } from './lib/store'
 import { About } from './screens/About'
 import { Bookmarks } from './screens/Bookmarks'
 import { Favorites } from './screens/Favorites'
@@ -77,6 +77,12 @@ export function App() {
     // English menus run left to right; the books' text keeps its own direction (dir="rtl"/"auto").
     root.dir = settings.language === 'en' ? 'ltr' : 'rtl'
   }, [settings.language])
+  // Contents lists and search results (styles/app.css reads these).
+  useLayoutEffect(() => {
+    const style = document.documentElement.style
+    style.setProperty('--list-font', PERSIAN_FONTS.find((f) => f.id === settings.listFont)!.family)
+    style.setProperty('--list-size', settings.listSize + 'px')
+  }, [settings.listFont, settings.listSize])
   useTheme(settings.theme, route.path.length === 0)
   // A new screen starts at the top, or where it was when coming back. The reader positions itself
   // (at a paragraph), and its own effects run before this one.

@@ -742,7 +742,6 @@ function FindBar(props: {
       <div class="find-row">
         <IconButton icon="close" label={t('بستن جستجو')} onClick={props.onClose} />
         <input
-          dir="auto"
           ref={input}
           type="search"
           enterKeyHint="search"

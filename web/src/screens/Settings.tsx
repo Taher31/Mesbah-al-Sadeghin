@@ -4,7 +4,7 @@ import { ANDROID_APK, downloadFile, pickFile, toast } from '../lib/util'
 import { SectionLabel, Segmented, SwitchRow, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
 import { OfflineStatus } from '../ui/PwaUi'
-import { TextSettingsPanel } from '../ui/TextSettings'
+import { ListTextSettings, TextSettingsPanel } from '../ui/TextSettings'
 import { LANGUAGES, t } from '../lib/i18n'
 
 export function SettingsScreen() {
@@ -19,6 +19,10 @@ export function SettingsScreen() {
         <hr />
         <SectionLabel>{t('متن')}</SectionLabel>
         <TextSettingsPanel />
+
+        <hr />
+        <SectionLabel>{t('فهرست و نتایج جستجو')}</SectionLabel>
+        <ListTextSettings />
 
         <hr />
         <SectionLabel>{t('مطالعه')}</SectionLabel>

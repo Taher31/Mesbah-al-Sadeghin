@@ -92,6 +92,27 @@ function Preview({ s }: { s: Settings }) {
   )
 }
 
+/** Font and size of the contents lists and search results (settings page, and the sheets there). */
+export function ListTextSettings() {
+  const s = useStore(settingsStore)
+  return (
+    <div class="text-settings">
+      <p class="field-label">{t('قلم')}</p>
+      <div class="chip-row">
+        {PERSIAN_FONTS.map((f) => (
+          <Chip selected={s.listFont === f.id} onClick={() => setSetting('listFont', f.id)} style={`font-family:${f.family};font-size:16px`}>
+            {f.label}
+          </Chip>
+        ))}
+      </div>
+      <SizeSlider label={t('اندازه')} value={s.listSize} range={RANGES.listSize} onChange={(v) => setSetting('listSize', v)} />
+      <p class="list-preview" style={`font-family:${PERSIAN_FONTS.find((f) => f.id === s.listFont)!.family};font-size:${s.listSize}px`}>
+        تعقیبات مشترکه · اَللّٰهُمَّ اِنّی اَسْأَلُكَ
+      </p>
+    </div>
+  )
+}
+
 /** Updates the preview while dragging but only writes the setting when the finger lifts. */
 function SizeSlider(props: { label: string; value: number; range: readonly [number, number]; decimals?: boolean; onChange: (v: number) => void }) {
   const [dragging, setDragging] = useState(props.value)
