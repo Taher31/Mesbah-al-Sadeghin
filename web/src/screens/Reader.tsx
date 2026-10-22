@@ -663,6 +663,12 @@ function FindBar(props: {
   const { find } = props
   const input = useRef<HTMLInputElement>(null)
   useEffect(() => input.current?.focus(), [])
+  // Escape (or Android's back button) closes the bar, after any sheet open over it.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !document.querySelector('.scrim') && props.onClose()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [props.onClose])
   const status = props.tooShort
     ? 'دست‌کم دو حرف بنویسید'
     : !find.text.trim()
@@ -686,7 +692,7 @@ function FindBar(props: {
             if (e.key === 'Enter') {
               e.preventDefault()
               props.onStep(e.shiftKey ? -1 : 1)
-            } else if (e.key === 'Escape') props.onClose()
+            }
           }}
         />
         <IconButton icon="up" label="مورد قبلی" disabled={props.count < 2} onClick={() => props.onStep(-1)} />

@@ -37,6 +37,21 @@ jobs:
         if: env.HAS_KEYSTORE != 'true'
         run: echo "::notice::ANDROID_KEYSTORE_BASE64 is not set; the APK is not built or published."
 
+      # The APK carries the web app (android/app/build.gradle.kts copies web/dist), built for the root.
+      - uses: actions/setup-node@v7
+        if: env.HAS_KEYSTORE == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build web app for the APK
+        if: env.HAS_KEYSTORE == 'true'
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+
       - uses: actions/setup-java@v4
         if: env.HAS_KEYSTORE == 'true'
         with:

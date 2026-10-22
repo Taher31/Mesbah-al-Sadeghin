@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- The books ship inside the APK; the app needs no permissions at all. -->
+    <!-- The app (the web app and its books) ships inside the APK; it needs no permissions at all. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
@@ -14,7 +14,6 @@
     </queries>
 
     <application
-        android:name=".MesbahApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -27,11 +26,21 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
-            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|uiMode">
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden">
+            <!-- No uiMode: switching the system to dark recreates the activity, so the page's
+                 prefers-color-scheme follows (the reading position is in the restored address). -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Shared links to the website («…/#/r/1/10») can open in the app instead. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="taher31.github.io" android:pathPrefix="/Mesbah-al-Sadeghin" />
             </intent-filter>
         </activity>
     </application>

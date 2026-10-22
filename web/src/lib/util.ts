@@ -1,3 +1,4 @@
+import { android } from './native'
 import { Store } from './store'
 
 export const APP_NAME = 'مصباح الصادقین'
@@ -28,6 +29,10 @@ export function toast(text: string, action?: Toast['action']) {
 }
 
 export async function copyText(text: string): Promise<boolean> {
+  if (android) {
+    android.copy(text)
+    return true
+  }
   try {
     await navigator.clipboard.writeText(text)
     return true
@@ -53,6 +58,10 @@ export async function copyText(text: string): Promise<boolean> {
 
 /** The system share sheet where there is one; otherwise copies. */
 export async function shareText(data: { text?: string; url?: string; title?: string }): Promise<'shared' | 'copied' | 'failed'> {
+  if (android) {
+    android.share([data.text, data.url].filter(Boolean).join('\n'), data.title ?? '')
+    return 'shared'
+  }
   if (navigator.share) {
     try {
       await navigator.share(data)
@@ -66,6 +75,7 @@ export async function shareText(data: { text?: string; url?: string; title?: str
 }
 
 export function downloadFile(name: string, text: string, type = 'application/json') {
+  if (android) return android.saveFile(name, type, text)
   const url = URL.createObjectURL(new Blob([text], { type }))
   const a = document.createElement('a')
   a.href = url

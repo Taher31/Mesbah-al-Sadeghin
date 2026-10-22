@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from 'preact/hooks'
 import { bookById } from './lib/books'
 import { initialScroll, navigate, routeStore, routes, type Route } from './lib/router'
+import { android } from './lib/native'
 import { settingsStore, useStore, type ThemeMode } from './lib/store'
 import { About } from './screens/About'
 import { Bookmarks } from './screens/Bookmarks'
@@ -29,7 +30,9 @@ function useTheme(mode: ThemeMode, onHome: boolean) {
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     // The home screen opens on the dark portrait hero.
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', onHome ? '#04201C' : themeColors[theme])
+    const bar = onHome ? '#04201C' : themeColors[theme]
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bar)
+    android?.systemBars(bar, themeColors[theme])
   }, [theme, onHome])
 }
 

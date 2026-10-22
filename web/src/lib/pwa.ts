@@ -1,3 +1,4 @@
+import { android } from './native'
 import { Store } from './store'
 
 /**
@@ -15,7 +16,8 @@ export interface OfflineState {
   failed: boolean
 }
 
-export const offlineStore = new Store<OfflineState>({ supported: false, done: 0, total: 0, failed: false })
+// The Android app carries everything in its APK: always ready offline.
+export const offlineStore = new Store<OfflineState>({ supported: !!android, done: android ? 1 : 0, total: android ? 1 : 0, failed: false })
 /** A new version has downloaded and is about to take over (the page then reloads by itself). */
 export const updateReady = new Store(false)
 
@@ -25,9 +27,10 @@ const ua = navigator.userAgent
 export const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
 /** Real Safari, as opposed to another browser or an app's built-in browser (Eitaa, Telegram …). */
 export const isIOSSafari = isIOS && /Version\/[\d.]+.*Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua)
-export const isAndroid = /Android/i.test(ua)
+/** A browser on Android, where the app's APK is offered; not the Android app itself. */
+export const isAndroid = /Android/i.test(ua) && !android
 export const isStandalone =
-  window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true
+  !!android || window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true
 
 /** Chrome/Android's own install prompt, captured so the home screen can offer a button. */
 export const installPrompt = new Store<{ prompt: () => Promise<unknown> } | null>(null)
@@ -38,7 +41,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.addEventListener('appinstalled', () => installPrompt.set(null))
 
 export function registerServiceWorker() {
-  if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return
+  // The Android app serves its files from the APK and is updated with it.
+  if (!import.meta.env.PROD || !('serviceWorker' in navigator) || android) return
   const sw = navigator.serviceWorker
   sw.addEventListener('message', (e) => {
     const m = e.data
@@ -112,9 +116,10 @@ document.addEventListener('visibilitychange', () => {
   if (wantWakeLock && document.visibilityState === 'visible') acquire()
 })
 
-export const wakeLockSupported = 'wakeLock' in navigator
+export const wakeLockSupported = !!android || 'wakeLock' in navigator
 
 export function keepScreenOn(on: boolean) {
+  if (android) return android.keepScreenOn(on)
   wantWakeLock = on
   if (on) acquire()
   else {

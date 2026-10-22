@@ -1,3 +1,4 @@
+import { android } from './native'
 import { Store } from './store'
 
 /**
@@ -84,9 +85,15 @@ export function initialScroll(route: Route): number {
   return route.back ? (scrollMemory.get(memoryKey(route)) ?? 0) : 0
 }
 
+/**
+ * The website. Links shared from the Android app lead here, since the app's own address is
+ * internal to the phone; the app's manifest opens such links in the app. Update both on a move.
+ */
+const SITE_URL = 'https://taher31.github.io/Mesbah-al-Sadeghin/'
+
 /** A link that opens `to` in this app, for sharing. */
 export function shareUrl(to: string): string {
-  return location.origin + location.pathname + '#/' + to
+  return (android ? SITE_URL : location.origin + location.pathname) + '#/' + to
 }
 
 export interface SearchOptions {
