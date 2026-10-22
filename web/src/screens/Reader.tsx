@@ -120,6 +120,18 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const { content, error, retry } = useSection(current)
 
   const [chromeHidden, setChromeHidden] = useState(false)
+  // Paragraphs used to open their menu with a tap; say once how it works now.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('mesbah.holdHint')) return
+      localStorage.setItem('mesbah.holdHint', '1')
+    } catch {
+      return
+    }
+    const timer = setTimeout(() => toast(t('برای نشانه‌گذاری، کپی یا اشتراک یک بند، انگشت را روی آن نگه دارید')), 1200)
+    return () => clearTimeout(timer)
+  }, [])
+
   const [sheet, setSheet] = useState<'text' | 'menu' | Paragraph | null>(null)
   const [focused, setFocused] = useState<number | null>(start.focus)
   const pager = useRef<HTMLDivElement>(null)
@@ -191,6 +203,14 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
       window.removeEventListener('wheel', pause)
     }
   }, [autoScroll?.playing, settings.scrollSpeed])
+
+  // Shown bars step aside after a few seconds of reading; a tap brings them back.
+  useEffect(() => {
+    // Not while a sheet is open; using a button in the bar starts the wait again.
+    if (chromeHidden || sheet) return
+    const timer = setTimeout(() => setChromeHidden(true), 4000)
+    return () => clearTimeout(timer)
+  }, [chromeHidden, index, sheet, settings, autoScroll])
 
   const [find, setFind] = useState<{ text: string; whole: boolean } | null>(null)
   const [findAt, setFindAt] = useState(0)
@@ -422,7 +442,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   )
 
   return (
-    <main class={'reader' + (find ? ' is-finding' : '')}>
+    <main class={'reader' + (find ? ' is-finding' : '') + (chromeHidden ? ' chrome-hidden' : '')}>
       {autoScroll && (
         <div class="autoscroll-bar" role="toolbar" aria-label={t('اسکرول خودکار')}>
           <IconButton icon="close" label={t('بستن اسکرول خودکار')} onClick={() => setAutoScroll(null)} />
@@ -458,39 +478,8 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
           onClose={() => setFind(null)}
         />
       )}
-      <TopBar
-        hidden={chromeHidden || !!find}
-        class="reader-bar"
-        actions={
-          <>
-            {book.paired && (
-              // Anis reads phrase by phrase with its translation, or as flowing Arabic without it.
-              <button
-                type="button"
-                class={'tr-toggle' + (settings.showTranslation ? ' is-on' : '')}
-                aria-pressed={settings.showTranslation}
-                title={settings.showTranslation ? t('پنهان کردن ترجمه') : t('نمایش ترجمه')}
-                onClick={() => {
-                  setSetting('showTranslation', !settings.showTranslation)
-                  toast(settings.showTranslation ? t('بدون ترجمه') : t('با ترجمه'))
-                }}
-              >
-                {settings.showTranslation && <Icon name="check" size={16} />}
-                {t('ترجمه')}
-              </button>
-            )}
-            <IconButton
-              icon={favorite ? 'star' : 'starOutline'}
-              class={favorite ? 'gold' : ''}
-              pressed={favorite}
-              label={favorite ? t('حذف از منتخب') : t('افزودن به منتخب')}
-              onClick={() => toast(toggleFavorite(current.book, current.section) ? t('به «منتخب من» اضافه شد') : t('از «منتخب من» حذف شد'))}
-            />
-            <IconButton icon="textFields" label={t('تنظیمات متن')} onClick={() => setSheet('text')} />
-            <IconButton icon="more" label={t('بیشتر')} onClick={() => setSheet('menu')} />
-          </>
-        }
-      >
+      {/* Only the title on top; the tools are in the bar at the bottom, where readers look for them. */}
+      <TopBar hidden={chromeHidden || !!find} class="reader-bar">
         <h1 dir="auto">{title}</h1>
         <p>{favoritesMode ? t('منتخب من · {0}', bookLabel(book)) : bookLabel(book)}</p>
       </TopBar>
@@ -502,6 +491,13 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         onTouchCancel={onTouchEnd}
+        onClick={(e) => {
+          // A tap shows or hides the bars (selecting text to copy doesn't).
+          const selection = window.getSelection()
+          if (selection && !selection.isCollapsed && selection.toString().trim()) return
+          if ((e.target as Element).closest('button, a, input')) return
+          setChromeHidden((h) => !h)
+        }}
       >
         <article class="section" dir="rtl" style={readerStyle(settings, book)}>
           {error && <LoadError retry={retry} />}
@@ -539,20 +535,38 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         </article>
       </div>
 
-      <nav class="reader-bottom" dir="rtl" aria-label={t('پیمایش بخش‌ها')}>
-        <div class="progress progress-line" style={`--value:${((index + 1) / pages.refs.length) * 100}%`} />
+      {/* Right to left like the book, so «قبلی» sits on the right in every language. */}
+      <nav class={'reader-bottom' + (chromeHidden ? ' is-hidden' : '')} dir="rtl" aria-label={t('پیمایش بخش‌ها')}>
         <div class="reader-bottom-row">
-          <button type="button" class="btn btn-text" disabled={!canPrev} onClick={() => turn(-1)}>
-            <Icon name="back" />
-            {t('قبلی')}
-          </button>
-          <span class="page-count">
-            {(favoritesMode ? '★ ' : '') + num(index + 1) + ' / ' + num(pages.refs.length)}
-          </span>
-          <button type="button" class="btn btn-text" disabled={!canNext} onClick={() => turn(1)}>
-            {t('بعدی')}
-            <Icon name="forward" />
-          </button>
+          <IconButton icon="back" label={t('قبلی')} disabled={!canPrev} onClick={() => turn(-1)} />
+          {book.paired && (
+            // Anis reads phrase by phrase with its translation, or as flowing Arabic without it.
+            <IconButton
+              icon="translate"
+              pressed={settings.showTranslation}
+              label={settings.showTranslation ? t('پنهان کردن ترجمه') : t('نمایش ترجمه')}
+              onClick={() => {
+                setSetting('showTranslation', !settings.showTranslation)
+                toast(settings.showTranslation ? t('بدون ترجمه') : t('با ترجمه'))
+              }}
+            />
+          )}
+          <IconButton
+            icon={favorite ? 'star' : 'starOutline'}
+            class={favorite ? 'gold' : ''}
+            pressed={favorite}
+            label={favorite ? t('حذف از منتخب') : t('افزودن به منتخب')}
+            onClick={() => toast(toggleFavorite(current.book, current.section) ? t('به «منتخب من» اضافه شد') : t('از «منتخب من» حذف شد'))}
+          />
+          <IconButton icon="textFields" label={t('تنظیمات متن')} onClick={() => setSheet('text')} />
+          <IconButton
+            icon={autoScroll?.playing ? 'pause' : 'play'}
+            label={t('اسکرول خودکار')}
+            pressed={!!autoScroll}
+            onClick={() => setAutoScroll({ playing: !autoScroll?.playing })}
+          />
+          <IconButton icon="more" label={t('بیشتر')} onClick={() => setSheet('menu')} />
+          <IconButton icon="forward" label={t('بعدی')} disabled={!canNext} onClick={() => turn(1)} />
         </div>
       </nav>
 
@@ -787,11 +801,39 @@ function ParagraphView(props: {
 }) {
   const { p } = props
   const firstFootnote = p.kind === Kind.Footnote && props.previous?.kind !== Kind.Footnote
-  const open = () => {
-    // Selecting text to copy part of it shouldn't pop the menu.
-    const selection = window.getSelection()
-    if (selection && !selection.isCollapsed && selection.toString().trim()) return
-    props.onOpen()
+  // A tap shows or hides the bars (handled by the page); holding a paragraph opens its menu
+  // (bookmark, copy, share). Right-click does the same with a mouse.
+  const hold = useRef<{ timer: ReturnType<typeof setTimeout>; x: number; y: number } | null>(null)
+  const held = useRef(false)
+  const release = () => {
+    if (hold.current) clearTimeout(hold.current.timer)
+    hold.current = null
+  }
+  const onTouchEnd = (e: TouchEvent) => {
+    release()
+    // The finger lifting after a hold is not a tap: no click, so the bars stay as they are.
+    if (held.current && e.cancelable) e.preventDefault()
+    held.current = false
+  }
+  const onTouchStart = (e: TouchEvent) => {
+    release()
+    held.current = false
+    if (e.touches.length !== 1) return
+    const { clientX: x, clientY: y } = e.touches[0]
+    hold.current = {
+      x,
+      y,
+      timer: setTimeout(() => {
+        hold.current = null
+        held.current = true
+        window.getSelection()?.removeAllRanges()
+        props.onOpen()
+      }, 500),
+    }
+  }
+  const onTouchMove = (e: TouchEvent) => {
+    const h = hold.current
+    if (h && Math.hypot(e.touches[0].clientX - h.x, e.touches[0].clientY - h.y) > 10) release()
   }
   const text = <Highlighted text={p.text} needle={props.needle} current={props.currentMatch} arabic={props.arabic} />
   return (
@@ -805,7 +847,15 @@ function ParagraphView(props: {
       }
       data-key={p.key}
       style={`margin-top:${spacing(p, props.previous)}px`}
-      onClick={open}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+      onTouchCancel={release}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        release()
+        props.onOpen()
+      }}
     >
       {p.kind === Kind.Note ? (
         <div class="note-card">

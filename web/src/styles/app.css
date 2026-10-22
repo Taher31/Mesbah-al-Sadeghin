@@ -1240,8 +1240,8 @@ input[type='search']::-webkit-search-cancel-button {
 }
 
 .reader-bar .topbar-title h1 {
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 17px;
+  line-height: 26px;
 }
 
 .reader-pager {
@@ -1432,6 +1432,29 @@ mark.is-current {
   z-index: 20;
   background: var(--sc);
   padding-bottom: env(safe-area-inset-bottom);
+  transition: transform 0.22s ease;
+}
+
+.reader-bottom.is-hidden {
+  transform: translateY(100%);
+}
+
+.reader-bottom .icon-btn[aria-pressed='true']:not(.gold) {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+
+/* Holding a paragraph opens its menu; keep iOS's own callout out of the way. */
+.para {
+  -webkit-touch-callout: none;
+}
+
+.reader.chrome-hidden .autoscroll-bar {
+  bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
+body:has(.reader.chrome-hidden) .snackbar {
+  bottom: calc(16px + env(safe-area-inset-bottom));
 }
 
 .progress-line {
@@ -1453,12 +1476,11 @@ mark.is-current {
   min-height: 52px;
 }
 
-.page-count {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  color: var(--on-surface-variant);
+.reader-bottom-row .icon-btn {
+  width: 46px;
+  height: 46px;
 }
+
 
 .sheet-excerpt {
   margin: 4px 24px 8px;
@@ -2130,29 +2152,7 @@ body:has(.fab) .page {
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Reader: show or hide the Anis translation, right in the top bar. */
-.tr-toggle {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 32px;
-  padding: 0 12px;
-  margin-inline-end: 2px;
-  border-radius: 16px;
-  border: 1px solid var(--outline);
-  color: var(--on-surface-variant);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 18px;
-  white-space: nowrap;
-}
 
-.tr-toggle.is-on {
-  background: var(--secondary-container);
-  border-color: transparent;
-  color: var(--on-secondary-container);
-}
 
 .list-preview {
   margin-top: 12px;
