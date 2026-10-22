@@ -92,8 +92,9 @@ function paragraphsFromNtable3(db: DatabaseSync, sectionId: number): RawParagrap
       case 4: kind = Kind.Footnote; break
       default: kind = result.length === 0 && raw.length < 90 ? Kind.Heading : Kind.Body
     }
-    const text = kind === Kind.Note ? raw.replace(/^«+/, '').replace(/»+$/, '').trim() : raw
-    result.push([Number(r.tpart), kind, text])
+    // Notes keep their «« »»: the book marks the author's own advice with them (as its preface
+    // says), and copied or shared text should still show whose words they are.
+    result.push([Number(r.tpart), kind, raw])
   }
   return result
 }
