@@ -1,7 +1,7 @@
 {
   "name": "mesbah-web",
   "private": true,
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "مصباح الصادقین — نسخهٔ وب (PWA) قابل نصب و آفلاین",
   "type": "module",
   "scripts": {

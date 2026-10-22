@@ -26,13 +26,21 @@ export const LIMIT_PER_BOOK = 150
  * Searches the precomputed normalized paragraphs of `books`. The query is folded the same way the
  * index was built, so «علی», «علي» and «عَلِیّ» all match each other.
  */
-export async function search(needle: Needle, books: BookId[], scope: SearchScope = 'all'): Promise<SearchResult> {
+export async function search(
+  needle: Needle,
+  books: BookId[],
+  scope: SearchScope = 'all',
+  /** The reader hides Anis's translation: don't find it either. */
+  withoutTranslation = false,
+): Promise<SearchResult> {
   let capped = false
   const [anchor, ...others] = needle.terms
   const perBook = await Promise.all(
     books.map(async (book) => {
       const arabicBook = !!bookById(book)?.arabicBody
-      const inScope = (kind: KindCode) => scope === 'all' || (kind === Kind.Arabic || arabicBook) === (scope === 'arabic')
+      const hideTranslation = withoutTranslation && !!bookById(book)?.paired
+      const inScope = (kind: KindCode) =>
+        !(hideTranslation && kind === Kind.Translation) && (scope === 'all' || (kind === Kind.Arabic || arabicBook) === (scope === 'arabic'))
       const [index, toc] = await Promise.all([loadSearchIndex(book), loadToc(book)])
       const found: { section: number; paragraph: number }[] = []
       let from = 0

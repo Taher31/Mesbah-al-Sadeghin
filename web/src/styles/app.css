@@ -1865,6 +1865,49 @@ body:has(.fab) .page {
   margin-top: -10px;
 }
 
+/* The reading page's scroll bar (ScrollBar in Reader.tsx) replaces the phone's thin one. */
+html:has(.reader) {
+  scrollbar-width: none;
+}
+
+html:has(.reader)::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-bar {
+  position: fixed;
+  z-index: 19;
+  right: 0;
+  top: calc(8px + env(safe-area-inset-top));
+  bottom: calc(8px + env(safe-area-inset-bottom));
+  width: 22px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.scroll-bar.is-shown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scroll-thumb {
+  position: absolute;
+  right: 3px;
+  width: 7px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--primary) 80%, transparent);
+  touch-action: none;
+  cursor: grab;
+}
+
+/* A wider area to catch the finger than the bar itself. */
+.scroll-thumb::before {
+  content: '';
+  position: absolute;
+  inset: 0 -8px 0 -12px;
+}
+
 /* Auto-scroll controls, above the reader's bottom bar. */
 .autoscroll-bar {
   position: fixed;

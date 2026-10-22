@@ -479,6 +479,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         />
       )}
       {/* Only the title on top; the tools are in the bar at the bottom, where readers look for them. */}
+      <ScrollBar />
       <TopBar hidden={chromeHidden || !!find} class="reader-bar">
         <h1 dir="auto">{title}</h1>
         <p>{favoritesMode ? t('منتخب من · {0}', bookLabel(book)) : bookLabel(book)}</p>
@@ -917,3 +918,61 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
   )
 }
 
+
+/**
+ * The reading page's own scroll bar: thicker and darker than the phone's, which is hard to see,
+ * and it can be dragged to move quickly through a long section. It fades out when reading stops.
+ */
+function ScrollBar() {
+  const [state, setState] = useState({ top: 0, height: 100, shown: false })
+  const dragging = useRef<{ startY: number; startScroll: number } | null>(null)
+  useEffect(() => {
+    let hide: ReturnType<typeof setTimeout> | undefined
+    const update = () => {
+      const doc = document.documentElement
+      const view = window.innerHeight
+      const total = doc.scrollHeight
+      if (total <= view + 1) return setState((s) => ({ ...s, shown: false }))
+      const height = Math.max(8, (view / total) * 100)
+      const top = (window.scrollY / (total - view)) * (100 - height)
+      setState({ top, height, shown: true })
+      clearTimeout(hide)
+      hide = setTimeout(() => !dragging.current && setState((s) => ({ ...s, shown: false })), 1500)
+    }
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      clearTimeout(hide)
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+  const onPointerDown = (e: PointerEvent) => {
+    e.preventDefault()
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    dragging.current = { startY: e.clientY, startScroll: window.scrollY }
+  }
+  const onPointerMove = (e: PointerEvent) => {
+    const d = dragging.current
+    if (!d) return
+    const doc = document.documentElement
+    const view = window.innerHeight
+    const track = view * (1 - state.height / 100)
+    window.scrollTo(0, d.startScroll + ((e.clientY - d.startY) / Math.max(1, track)) * (doc.scrollHeight - view))
+  }
+  const onPointerUp = () => {
+    dragging.current = null
+  }
+  return (
+    <div class={'scroll-bar' + (state.shown ? ' is-shown' : '')} aria-hidden="true">
+      <div
+        class="scroll-thumb"
+        style={`top:${state.top}%;height:${state.height}%`}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      />
+    </div>
+  )
+}

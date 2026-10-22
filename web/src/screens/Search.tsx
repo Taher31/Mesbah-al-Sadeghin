@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks'
 import { BOOKS, bookById, bookLabel, type BookId } from '../lib/books'
 import { makeNeedle } from '../lib/normalize'
+import { settingsStore, useStore } from '../lib/store'
 import { initialScroll, navigate, replaceSilently, routes, type Route } from '../lib/router'
 import { search, type SearchHit, type SearchResult, type SearchScope } from '../lib/search'
 import { Chip, EmptyState, IconButton, LoadError, Loading, Segmented, Sheet, TopBar } from '../ui/common'
@@ -22,6 +23,7 @@ export function Search({ route }: { route: Route }) {
   const [advanced, setAdvanced] = useState(allWords || scope !== 'all')
   const [state, setState] = useState<State>({ kind: 'idle' })
   const [listSettings, setListSettings] = useState(false)
+  const showTranslation = useStore(settingsStore).showTranslation
   const [attempt, setAttempt] = useState(0)
   const input = useRef<HTMLInputElement>(null)
   const restored = useRef(false)
@@ -42,7 +44,7 @@ export function Search({ route }: { route: Route }) {
     const timer = setTimeout(
       () => {
         setState((s) => (s.kind === 'done' ? s : { kind: 'loading' }))
-        search(needle, book ? [book] : BOOKS.map((b) => b.id), scope).then(
+        search(needle, book ? [book] : BOOKS.map((b) => b.id), scope, !showTranslation).then(
           (result) => alive && setState({ kind: 'done', result }),
           () => alive && setState({ kind: 'error' }),
         )
@@ -53,7 +55,7 @@ export function Search({ route }: { route: Route }) {
       alive = false
       clearTimeout(timer)
     }
-  }, [query, book, whole, allWords, scope, attempt])
+  }, [query, book, whole, allWords, scope, showTranslation, attempt])
 
   useEffect(() => {
     if (state.kind === 'done' && !restored.current) {
