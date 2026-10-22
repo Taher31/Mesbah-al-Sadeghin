@@ -158,6 +158,40 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   }, [content, settings.showTranslation])
 
   // «جستجو در متن جاری»: the matches in the section on screen, visited one at a time.
+  // Auto-scroll: null when off; paused by touching the page or reaching the section's end.
+  const [autoScroll, setAutoScroll] = useState<{ playing: boolean } | null>(null)
+  useEffect(() => {
+    if (!autoScroll?.playing) return
+    // Speed 1–10 → 10–100 px a second; fractions add up, so slow speeds stay smooth.
+    const perSecond = settings.scrollSpeed * 10
+    let last = performance.now()
+    let carry = 0
+    let frame = requestAnimationFrame(function step(now) {
+      carry += ((now - last) / 1000) * perSecond
+      last = now
+      const px = Math.floor(carry)
+      if (px > 0) {
+        carry -= px
+        window.scrollBy(0, px)
+      }
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+        setAutoScroll({ playing: false })
+        toast(t('به پایان این بخش رسید'))
+        return
+      }
+      frame = requestAnimationFrame(step)
+    })
+    // The reader taking over (a touch, the wheel) pauses it.
+    const pause = (e: Event) => !(e.target as Element | null)?.closest?.('.autoscroll-bar') && setAutoScroll({ playing: false })
+    window.addEventListener('touchstart', pause, { passive: true })
+    window.addEventListener('wheel', pause, { passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('touchstart', pause)
+      window.removeEventListener('wheel', pause)
+    }
+  }, [autoScroll?.playing, settings.scrollSpeed])
+
   const [find, setFind] = useState<{ text: string; whole: boolean } | null>(null)
   const [findAt, setFindAt] = useState(0)
   const findNeedle = useMemo(() => (find ? makeNeedle(find.text, { whole: find.whole }) : null), [find?.text, find?.whole])
@@ -268,6 +302,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   /** dir 1 = next (to the left in a right-to-left book), -1 = previous. */
   const turn = (dir: 1 | -1) => {
     if (!pages || (dir === 1 ? !canNext : !canPrev)) return
+    setAutoScroll((a) => a && { playing: false })
     const el = pager.current
     const go = () => {
       pendingEnter.current = dir
@@ -355,6 +390,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const menu = (
     <>
       <ActionRow icon="list" label={t('فهرست مطالب')} onClick={() => (setSheet(null), navigate(routes.toc(current.book)))} />
+      <ActionRow icon="play" label={t('اسکرول خودکار')} onClick={() => (setSheet(null), setAutoScroll({ playing: true }))} />
       <ActionRow icon="search" label={t('جستجو در متن جاری')} onClick={() => (setSheet(null), setFind((f) => f ?? { text: '', whole: false }))} />
       <ActionRow icon="search" label={t('جستجو در این کتاب')} onClick={() => (setSheet(null), navigate(routes.search(current.book)))} />
       <ActionRow
@@ -387,6 +423,30 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
 
   return (
     <main class={'reader' + (find ? ' is-finding' : '')}>
+      {autoScroll && (
+        <div class="autoscroll-bar" role="toolbar" aria-label={t('اسکرول خودکار')}>
+          <IconButton icon="close" label={t('بستن اسکرول خودکار')} onClick={() => setAutoScroll(null)} />
+          <IconButton
+            icon="remove"
+            label={t('آهسته‌تر')}
+            disabled={settings.scrollSpeed <= 1}
+            onClick={() => setSetting('scrollSpeed', settings.scrollSpeed - 1)}
+          />
+          <span class="autoscroll-speed">{t('سرعت {0}', num(settings.scrollSpeed))}</span>
+          <IconButton
+            icon="add"
+            label={t('تندتر')}
+            disabled={settings.scrollSpeed >= 10}
+            onClick={() => setSetting('scrollSpeed', settings.scrollSpeed + 1)}
+          />
+          <IconButton
+            icon={autoScroll.playing ? 'pause' : 'play'}
+            class="autoscroll-play"
+            label={autoScroll.playing ? t('توقف') : t('ادامه')}
+            onClick={() => setAutoScroll({ playing: !autoScroll.playing })}
+          />
+        </div>
+      )}
       {find && (
         <FindBar
           find={find}

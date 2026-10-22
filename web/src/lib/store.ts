@@ -114,6 +114,8 @@ export interface Settings {
   lineHeight: number
   justify: boolean
   keepScreenOn: boolean
+  /** Auto-scroll in the reader, 1 (slowest) to 10. */
+  scrollSpeed: number
   /** Anis: phrase-by-phrase with the Persian translation, or flowing Arabic paragraphs without it. */
   showTranslation: boolean
   safinehEdition: BookId
@@ -131,6 +133,7 @@ export const DEFAULT_SETTINGS: Settings = {
   lineHeight: 1.9,
   justify: true,
   keepScreenOn: true,
+  scrollSpeed: 3,
   showTranslation: true,
   safinehEdition: 3,
 }
@@ -140,6 +143,7 @@ export const RANGES = {
   translationSize: [12, 40],
   arabicSize: [16, 45],
   lineHeight: [1.4, 2.6],
+  scrollSpeed: [1, 10],
 } as const
 
 function clamp(v: unknown, [lo, hi]: readonly [number, number], fallback: number): number {
@@ -172,6 +176,7 @@ export function sanitizeSettings(raw: unknown): Settings {
     lineHeight: clamp(r.lineHeight, RANGES.lineHeight, d.lineHeight),
     justify: typeof r.justify === 'boolean' ? r.justify : d.justify,
     keepScreenOn: typeof r.keepScreenOn === 'boolean' ? r.keepScreenOn : d.keepScreenOn,
+    scrollSpeed: Math.round(clamp(r.scrollSpeed, RANGES.scrollSpeed, d.scrollSpeed)),
     // Someone who used the retired «بدون ترجمه» edition keeps reading without the translation.
     showTranslation: r.anisEdition === RETIRED_ANIS ? false : typeof r.showTranslation === 'boolean' ? r.showTranslation : d.showTranslation,
     safinehEdition: editionOr(r.safinehEdition, 'safineh', d.safinehEdition),

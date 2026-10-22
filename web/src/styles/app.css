@@ -1840,6 +1840,35 @@ body:has(.fab) .page {
   margin-top: -10px;
 }
 
+/* Auto-scroll controls, above the reader's bottom bar. */
+.autoscroll-bar {
+  position: fixed;
+  z-index: 21;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(66px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 28px;
+  background: var(--sc-highest);
+  box-shadow: var(--shadow);
+}
+
+.autoscroll-speed {
+  min-width: 64px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+}
+
+.autoscroll-play {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+
 /* «جستجو در متن جاری» */
 .find-bar {
   position: fixed;
