@@ -1,5 +1,5 @@
 /** The two works, each shipped in two editions. Shared with the data build script. */
-import { t, type Phrase } from './i18n'
+import { t, type Phrase } from './i18n.ts'
 
 export type BookId = 1 | 2 | 3 | 4
 export type WorkId = 'anis' | 'safineh'
