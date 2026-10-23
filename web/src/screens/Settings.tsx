@@ -1,4 +1,4 @@
-import { isAndroid, wakeLockSupported } from '../lib/pwa'
+import { offersApk, wakeLockSupported } from '../lib/pwa'
 import { clearVisits, exportBackup, importBackup, setSetting, settingsStore, useStore } from '../lib/store'
 import { ANDROID_APK, downloadFile, pickFile, toast } from '../lib/util'
 import { SectionLabel, Segmented, SwitchRow, TopBar } from '../ui/common'
@@ -79,7 +79,7 @@ export function SettingsScreen() {
         <SectionLabel>{t('استفاده بدون اینترنت')}</SectionLabel>
         <OfflineStatus detailed />
 
-        {isAndroid && (
+        {offersApk && (
           <>
             <hr />
             <SectionLabel>{t('نسخهٔ اندروید')}</SectionLabel>

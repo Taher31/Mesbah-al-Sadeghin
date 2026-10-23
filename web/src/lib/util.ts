@@ -2,8 +2,8 @@ import { android } from './native'
 import { Store } from './store'
 
 export const CHANNEL_URL = 'https://eitaa.com/sadeghin_ir'
-/** Put next to the site by the deploy workflow; not part of the build or the offline cache. */
-export const ANDROID_APK = import.meta.env.BASE_URL + 'download/mesbah-sadeghin.apk'
+/** The Android app on GitHub (the release is updated with each build); same link as in README.md. */
+export const ANDROID_APK = 'https://github.com/Taher31/Mesbah-al-Sadeghin/releases/download/android-test-3.0.0/mesbah-sadeghin-test.apk'
 
 /** A file shipped in public/, addressed from the site root. */
 export function asset(path: string): string {

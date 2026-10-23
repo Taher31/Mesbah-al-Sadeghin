@@ -5,7 +5,7 @@ import { editionOf, frequentVisits, setSetting, settingsStore, useStore, userSto
 import { ANDROID_APK, CHANNEL_URL, asset } from '../lib/util'
 import { BookCover, SectionLabel, Segmented } from '../ui/common'
 import { Icon } from '../ui/icons'
-import { isAndroid } from '../lib/pwa'
+import { offersApk } from '../lib/pwa'
 import { InstallBanner, OfflineStatus } from '../ui/PwaUi'
 import { num, t } from '../lib/i18n'
 
@@ -109,7 +109,7 @@ export function Home() {
             <Icon name="campaign" />
             <span>{t('کانال صادقین در ایتا')}</span>
           </a>
-          {isAndroid && (
+          {offersApk && (
             <a class="quick-link quick-link-wide" href={ANDROID_APK} download>
               <Icon name="download" />
               <span>{t('دانلود نسخهٔ اندروید')}</span>

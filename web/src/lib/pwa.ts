@@ -29,6 +29,8 @@ export const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'Mac
 export const isIOSSafari = isIOS && /Version\/[\d.]+.*Safari\//.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua)
 /** A browser on Android, where the app's APK is offered; not the Android app itself. */
 export const isAndroid = /Android/i.test(ua) && !android
+/** Where the Android download is offered: not on iPhone, and not inside the app itself. */
+export const offersApk = !android && !isIOS
 export const isStandalone =
   !!android || window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true
 
