@@ -2,6 +2,11 @@
 
 برنامهٔ مطالعهٔ آثار عالم ربانی آیت‌الله حاج سیّد حسین یعقوبی قائنی (قدّس‌سرّه): «انیس الصادقین» و «سفینة الصادقین».
 
+## دانلود و نصب
+
+- **اندروید (نسخهٔ آزمایشی):** [دانلود فایل APK](https://github.com/Taher31/Mesbah-al-Sadeghin/releases/download/android-test-3.0.0/mesbah-sadeghin-test.apk) — [صفحهٔ انتشار](https://github.com/Taher31/Mesbah-al-Sadeghin/releases/tag/android-test-3.0.0). کنار برنامهٔ فعلی نصب می‌شود و جایگزین آن نمی‌شود؛ اندروید ۵ به بالا.
+- **آیفون و سایر دستگاه‌ها (وب‌اپ):** [taher31.github.io/Mesbah-al-Sadeghin](https://taher31.github.io/Mesbah-al-Sadeghin/) — در Safari باز کنید و «Add to Home Screen» را بزنید.
+
 | پوشه | چیست |
 |---|---|
 | `Files/` | متن کتاب‌ها (`1.book` … `4.book`) و منابع مشترک؛ هر دو نسخهٔ جدید کتاب‌ها را از همین‌جا می‌خوانند |
