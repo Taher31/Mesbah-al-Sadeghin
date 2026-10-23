@@ -552,15 +552,19 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
           <IconButton icon="back" label={t('قبلی')} disabled={!canPrev} onClick={() => turn(-1)} />
           {book.paired && (
             // Anis reads phrase by phrase with its translation, or as flowing Arabic without it.
-            <IconButton
-              icon="translate"
-              pressed={settings.showTranslation}
-              label={settings.showTranslation ? t('پنهان کردن ترجمه') : t('نمایش ترجمه')}
+            // A word rather than an icon: readers look for «ترجمه».
+            <button
+              type="button"
+              class="tr-toggle"
+              aria-pressed={settings.showTranslation}
+              title={settings.showTranslation ? t('پنهان کردن ترجمه') : t('نمایش ترجمه')}
               onClick={() => {
                 setSetting('showTranslation', !settings.showTranslation)
                 toast(settings.showTranslation ? t('بدون ترجمه') : t('با ترجمه'))
               }}
-            />
+            >
+              {t('ترجمه')}
+            </button>
           )}
           <IconButton
             icon={favorite ? 'star' : 'starOutline'}

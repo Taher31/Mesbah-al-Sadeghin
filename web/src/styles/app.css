@@ -208,6 +208,11 @@ hr {
   transform: none;
 }
 
+/* The nearest direction counts: the reader's bottom bar stays right to left in English menus. */
+[dir='ltr'] [dir='rtl'] .icon.mirror {
+  transform: scaleX(-1);
+}
+
 .gold {
   color: var(--brand-gold);
 }
@@ -1497,6 +1502,26 @@ html.reading.bars-hidden .snackbar {
 .reader-bottom-row .icon-btn {
   width: 46px;
   height: 46px;
+}
+
+/* «ترجمه» in the bottom bar: a word in a pill, filled while the translation is shown. */
+.tr-toggle {
+  flex: none;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 17px;
+  border: 1px solid var(--outline);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--on-surface-variant);
+  white-space: nowrap;
+}
+
+.tr-toggle[aria-pressed='true'] {
+  background: var(--secondary-container);
+  border-color: transparent;
+  color: var(--on-secondary-container);
 }
 
 
