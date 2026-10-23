@@ -6,10 +6,13 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.WindowManager
+import android.webkit.ServiceWorkerClient
+import android.webkit.ServiceWorkerController
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -102,6 +105,13 @@ class MainActivity : ComponentActivity() {
             setSupportZoom(false)
         }
         web.addJavascriptInterface(AppBridge(this), "MesbahAndroid")
+        // Should the page ever have a service worker, its requests come from the APK as well.
+        if (Build.VERSION.SDK_INT >= 24) {
+            ServiceWorkerController.getInstance().setServiceWorkerClient(object : ServiceWorkerClient() {
+                override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse? =
+                    if (request.url.host == WebAssets.HOST) WebAssets.serve(assets, request.url) else null
+            })
+        }
         web.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? =
                 if (request.url.host == WebAssets.HOST) WebAssets.serve(assets, request.url) else null
@@ -167,8 +177,12 @@ class MainActivity : ComponentActivity() {
     }
 
     fun setBarColors(status: Int, navigation: Int) {
-        statusBar.setBackgroundColor(status)
-        navigationBar.setBackgroundColor(navigation)
+        // Dark icons on the bars came with Android 6 (status) and 8 (navigation); before that the
+        // icons are always white, so a light bar is darkened enough to keep them readable.
+        val light = { c: Int -> ColorUtils.calculateLuminance(c) > 0.5 }
+        val darker = { c: Int -> ColorUtils.blendARGB(c, Color.BLACK, 0.45f) }
+        statusBar.setBackgroundColor(if (Build.VERSION.SDK_INT < 23 && light(status)) darker(status) else status)
+        navigationBar.setBackgroundColor(if (Build.VERSION.SDK_INT < 26 && light(navigation)) darker(navigation) else navigation)
         WindowCompat.getInsetsController(window, window.decorView).apply {
             isAppearanceLightStatusBars = ColorUtils.calculateLuminance(status) > 0.5
             isAppearanceLightNavigationBars = ColorUtils.calculateLuminance(navigation) > 0.5
@@ -205,7 +219,7 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * The web app needs Chrome 87 or newer as the phone's WebView. Phones that never update
+     * The web app needs Chrome 61 (2017) or newer as the phone's WebView. Phones that never update
      * «Android System WebView» can have an older one; say so instead of showing a broken page.
      */
     private fun warnIfWebViewTooOld() {
@@ -227,6 +241,6 @@ class MainActivity : ComponentActivity() {
         const val KEY_STATUS = "status_color"
         const val KEY_NAVIGATION = "navigation_color"
         val SPLASH = Color.rgb(0x04, 0x20, 0x1C)
-        const val MIN_WEBVIEW = 87
+        const val MIN_WEBVIEW = 61
     }
 }

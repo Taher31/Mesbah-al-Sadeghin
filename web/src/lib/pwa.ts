@@ -41,8 +41,13 @@ window.addEventListener('beforeinstallprompt', (e) => {
 window.addEventListener('appinstalled', () => installPrompt.set(null))
 
 export function registerServiceWorker() {
-  // The Android app serves its files from the APK and is updated with it.
-  if (!import.meta.env.PROD || !('serviceWorker' in navigator) || android) return
+  // The Android app serves its files from the APK and is updated with it; it needs no service
+  // worker, and drops any that got registered.
+  if (android) {
+    navigator.serviceWorker?.getRegistrations().then((all) => all.forEach((r) => r.unregister()), () => {})
+    return
+  }
+  if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return
   const sw = navigator.serviceWorker
   sw.addEventListener('message', (e) => {
     const m = e.data

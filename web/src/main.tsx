@@ -1,3 +1,4 @@
+import './lib/polyfills'
 import { render } from 'preact'
 import { App } from './app'
 import { connectAndroid } from './lib/android-app'

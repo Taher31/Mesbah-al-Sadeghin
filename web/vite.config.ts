@@ -66,7 +66,11 @@ export default defineConfig({
     jsxImportSource: 'preact',
   },
   build: {
-    target: ['es2020', 'safari15', 'chrome90', 'firefox90'],
+    // Old phones too: Android WebViews from Chrome 61 (2017, the first with module scripts) and
+    // iOS 11. Syntax is lowered here and CSS gets fallbacks and prefixes; the few newer functions
+    // come from src/lib/polyfills.ts.
+    target: ['es2017', 'chrome61', 'safari11', 'firefox60', 'edge79'],
+    cssTarget: ['chrome61', 'safari11', 'firefox60', 'edge79'],
     assetsInlineLimit: 0,
     modulePreload: { polyfill: false },
     reportCompressedSize: false,

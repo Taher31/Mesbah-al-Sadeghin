@@ -1,3 +1,4 @@
+import { useEffect } from 'preact/hooks'
 import { bookById, bookLabel } from '../lib/books'
 import { useAllTocs } from '../lib/data'
 import { navigate, routes } from '../lib/router'
@@ -18,6 +19,12 @@ export function Favorites() {
         return toc && entry ? [{ fav: f, index, title: entry.title, group: toc.pathTo(f.section).pop()?.title }] : []
       })
     : null
+  // The floating button covers the bottom: the page and snackbar make room (styles/app.css).
+  const hasFab = !!items && items.length > 0
+  useEffect(() => {
+    document.documentElement.classList.toggle('with-fab', hasFab)
+    return () => document.documentElement.classList.remove('with-fab')
+  }, [hasFab])
 
   return (
     <main class="page">

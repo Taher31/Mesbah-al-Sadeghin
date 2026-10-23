@@ -120,6 +120,16 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const { content, error, retry } = useSection(current)
 
   const [chromeHidden, setChromeHidden] = useState(false)
+  // Page-wide classes for styles outside the reader (snackbar position, scroll bar); a class,
+  // not :has(), so old phones get them too.
+  useEffect(() => {
+    const root = document.documentElement.classList
+    root.add('reading')
+    return () => root.remove('reading', 'bars-hidden')
+  }, [])
+  useEffect(() => {
+    document.documentElement.classList.toggle('bars-hidden', chromeHidden)
+  }, [chromeHidden])
   // Paragraphs used to open their menu with a tap; say once how it works now.
   useEffect(() => {
     try {

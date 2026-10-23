@@ -235,6 +235,7 @@ hr {
 
 .icon-btn:hover:not(:disabled),
 .icon-btn:active:not(:disabled) {
+  background: rgba(128, 128, 128, 0.08);
   background: color-mix(in srgb, var(--on-surface) 8%, transparent);
 }
 
@@ -287,6 +288,7 @@ hr {
 
 .btn-text:hover:not(:disabled),
 .btn-outlined:hover:not(:disabled) {
+  background: rgba(128, 128, 128, 0.08);
   background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
@@ -415,6 +417,7 @@ hr {
   display: block;
   height: 4px;
   border-radius: 2px;
+  background: rgba(128, 128, 128, 0.22);
   background: color-mix(in srgb, var(--primary) 22%, transparent);
   overflow: hidden;
   position: relative;
@@ -435,6 +438,7 @@ hr {
   height: 4px;
   margin: 24px 16px;
   border-radius: 2px;
+  background: rgba(128, 128, 128, 0.20);
   background: color-mix(in srgb, var(--primary) 20%, transparent);
   position: relative;
   overflow: hidden;
@@ -476,6 +480,7 @@ hr {
 
 .ornament span {
   width: 48px;
+  border-top: 1px solid currentColor;
   border-top: 1px solid color-mix(in srgb, currentColor 50%, transparent);
 }
 
@@ -484,6 +489,7 @@ hr {
   height: 7px;
   margin: 0 8px;
   transform: rotate(45deg);
+  background: currentColor;
   background: color-mix(in srgb, currentColor 80%, transparent);
 }
 
@@ -687,6 +693,7 @@ hr {
   gap: 12px;
   padding: 0 20px;
   background: var(--sc-lowest);
+  border: 1px solid var(--outline-variant);
   border: 1px solid color-mix(in srgb, var(--outline-variant) 60%, transparent);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
   color: var(--on-surface-variant);
@@ -712,6 +719,7 @@ hr {
   gap: 12px;
   padding: 16px;
   border-radius: 20px;
+  background: var(--secondary-container);
   background: color-mix(in srgb, var(--secondary-container) 60%, transparent);
   color: var(--on-secondary-container);
   font-size: 14px;
@@ -736,10 +744,12 @@ hr {
 }
 
 .fav-row + .fav-row {
+  border-top: 1px solid var(--outline-variant);
   border-top: 1px solid color-mix(in srgb, var(--outline-variant) 50%, transparent);
 }
 
 .fav-row:active {
+  background: rgba(128, 128, 128, 0.06);
   background: color-mix(in srgb, var(--on-surface) 6%, transparent);
 }
 
@@ -1143,6 +1153,7 @@ input[type='search']::-webkit-search-cancel-button {
 }
 
 .toc-row.is-current {
+  background: rgba(128, 128, 128, 0.45);
   background: color-mix(in srgb, var(--primary-container) 45%, transparent);
 }
 
@@ -1172,6 +1183,7 @@ input[type='search']::-webkit-search-cancel-button {
   width: 5px;
   height: 5px;
   border-radius: 50%;
+  background: var(--outline);
   background: color-mix(in srgb, var(--outline) 60%, transparent);
 }
 
@@ -1232,6 +1244,7 @@ input[type='search']::-webkit-search-cancel-button {
 .reader .topbar {
   position: fixed;
   inset-inline: 0;
+  box-shadow: 0 1px 0 var(--outline-variant);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--outline-variant) 50%, transparent);
 }
 
@@ -1388,6 +1401,7 @@ mark.is-current {
   display: block;
   width: 72px;
   margin-bottom: 8px;
+  border-top: 1px solid rgba(128, 128, 128, 0.40);
   border-top: 1px solid color-mix(in srgb, var(--r-footnote) 40%, transparent);
 }
 
@@ -1405,6 +1419,7 @@ mark.is-current {
 .page-marker::after {
   content: '';
   flex: 1;
+  border-top: 1px solid rgba(128, 128, 128, 0.30);
   border-top: 1px solid color-mix(in srgb, var(--outline) 30%, transparent);
 }
 
@@ -1453,7 +1468,7 @@ mark.is-current {
   bottom: calc(16px + env(safe-area-inset-bottom));
 }
 
-body:has(.reader.chrome-hidden) .snackbar {
+html.reading.bars-hidden .snackbar {
   bottom: calc(16px + env(safe-area-inset-bottom));
 }
 
@@ -1608,6 +1623,7 @@ body:has(.reader.chrome-hidden) .snackbar {
 
 .action-row:hover,
 .action-row:active {
+  background: rgba(128, 128, 128, 0.06);
   background: color-mix(in srgb, var(--on-surface) 6%, transparent);
 }
 
@@ -1654,11 +1670,11 @@ body:has(.reader.chrome-hidden) .snackbar {
   color: var(--brand-teal);
 }
 
-body:has(.reader-bottom) .snackbar {
+html.reading .snackbar {
   bottom: calc(68px + env(safe-area-inset-bottom));
 }
 
-body:has(.fab) .snackbar {
+html.with-fab .snackbar {
   bottom: calc(88px + env(safe-area-inset-bottom));
 }
 
@@ -1852,7 +1868,7 @@ body:has(.fab) .snackbar {
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
-body:has(.fab) .page {
+html.with-fab .page {
   padding-bottom: calc(96px + env(safe-area-inset-bottom));
 }
 
@@ -1875,11 +1891,11 @@ body:has(.fab) .page {
 }
 
 /* The reading page's scroll bar (ScrollBar in Reader.tsx) replaces the phone's thin one. */
-html:has(.reader) {
+html.reading {
   scrollbar-width: none;
 }
 
-html:has(.reader)::-webkit-scrollbar {
+html.reading::-webkit-scrollbar {
   display: none;
 }
 
@@ -1905,6 +1921,7 @@ html:has(.reader)::-webkit-scrollbar {
   right: 3px;
   width: 7px;
   border-radius: 4px;
+  background: var(--primary);
   background: color-mix(in srgb, var(--primary) 80%, transparent);
   touch-action: none;
   cursor: grab;
@@ -1954,6 +1971,7 @@ html:has(.reader)::-webkit-scrollbar {
   z-index: 21;
   background: var(--surface);
   padding: env(safe-area-inset-top) 4px 4px;
+  box-shadow: 0 1px 0 var(--outline-variant);
   box-shadow: 0 1px 0 color-mix(in srgb, var(--outline-variant) 50%, transparent);
 }
 
@@ -2164,6 +2182,7 @@ html:has(.reader)::-webkit-scrollbar {
 }
 
 .contact + .contact {
+  border-top: 1px solid var(--outline-variant);
   border-top: 1px solid color-mix(in srgb, var(--outline-variant) 50%, transparent);
 }
 
