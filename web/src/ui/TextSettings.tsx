@@ -106,6 +106,7 @@ export function ListTextSettings() {
         ))}
       </div>
       <SizeSlider label={t('اندازه')} value={s.listSize} range={RANGES.listSize} onChange={(v) => setSetting('listSize', v)} />
+      <SizeSlider label={t('فاصله')} value={s.listSpacing} range={RANGES.listSpacing} onChange={(v) => setSetting('listSpacing', v)} />
       <p class="list-preview" style={`font-family:${PERSIAN_FONTS.find((f) => f.id === s.listFont)!.family};font-size:${s.listSize}px`}>
         تعقیبات مشترکه · اَللّٰهُمَّ اِنّی اَسْأَلُكَ
       </p>

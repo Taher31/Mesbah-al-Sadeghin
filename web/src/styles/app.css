@@ -1183,7 +1183,7 @@ input[type='search']::-webkit-search-cancel-button {
 .toc-main {
   flex: 1;
   min-width: 0;
-  padding: 12px 0;
+  padding: var(--list-gap, 12px) 0;
   display: flex;
   flex-direction: column;
 }
@@ -1729,6 +1729,15 @@ body:has(.fab) .snackbar {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* Search results follow the contents' spacing setting. */
+.hits {
+  gap: calc(var(--list-gap, 12px) - 2px);
+}
+
+.hits .hit {
+  padding-block: calc(var(--list-gap, 12px) + 4px);
 }
 
 .hit,

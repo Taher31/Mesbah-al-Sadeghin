@@ -117,6 +117,8 @@ export interface Settings {
   /** Font and size of the contents lists and search results. */
   listFont: PersianFont
   listSize: number
+  /** Space between rows of the contents and between search results, in px. */
+  listSpacing: number
   /** Auto-scroll in the reader, 1 (slowest) to 10. */
   scrollSpeed: number
   /** Anis: phrase-by-phrase with the Persian translation, or flowing Arabic paragraphs without it. */
@@ -139,6 +141,7 @@ export const DEFAULT_SETTINGS: Settings = {
   scrollSpeed: 3,
   listFont: 'vazirmatn',
   listSize: 16,
+  listSpacing: 12,
   showTranslation: true,
   safinehEdition: 3,
 }
@@ -150,6 +153,7 @@ export const RANGES = {
   lineHeight: [1.4, 2.6],
   scrollSpeed: [1, 10],
   listSize: [12, 30],
+  listSpacing: [2, 30],
 } as const
 
 function clamp(v: unknown, [lo, hi]: readonly [number, number], fallback: number): number {
@@ -184,6 +188,7 @@ export function sanitizeSettings(raw: unknown): Settings {
     keepScreenOn: typeof r.keepScreenOn === 'boolean' ? r.keepScreenOn : d.keepScreenOn,
     listFont: oneOf(r.listFont, PERSIAN_FONTS, d.listFont),
     listSize: clamp(r.listSize, RANGES.listSize, d.listSize),
+    listSpacing: clamp(r.listSpacing, RANGES.listSpacing, d.listSpacing),
     scrollSpeed: Math.round(clamp(r.scrollSpeed, RANGES.scrollSpeed, d.scrollSpeed)),
     // Someone who used the retired «بدون ترجمه» edition keeps reading without the translation.
     showTranslation: r.anisEdition === RETIRED_ANIS ? false : typeof r.showTranslation === 'boolean' ? r.showTranslation : d.showTranslation,

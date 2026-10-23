@@ -82,7 +82,8 @@ export function App() {
     const style = document.documentElement.style
     style.setProperty('--list-font', PERSIAN_FONTS.find((f) => f.id === settings.listFont)!.family)
     style.setProperty('--list-size', settings.listSize + 'px')
-  }, [settings.listFont, settings.listSize])
+    style.setProperty('--list-gap', settings.listSpacing + 'px')
+  }, [settings.listFont, settings.listSize, settings.listSpacing])
   useTheme(settings.theme, route.path.length === 0)
   // A new screen starts at the top, or where it was when coming back. The reader positions itself
   // (at a paragraph), and its own effects run before this one.
