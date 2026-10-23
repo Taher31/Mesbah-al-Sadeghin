@@ -1,12 +1,12 @@
 {
   "name": "mesbah-web",
   "private": true,
-  "version": "1.10.2",
+  "version": "1.11.0",
   "description": "مصباح الصادقین — نسخهٔ وب (PWA) قابل نصب و آفلاین",
   "type": "module",
   "scripts": {
     "data": "node scripts/build-data.ts",
-    "assets": "node scripts/convert-fonts.mjs && python -I scripts/prepare-images.py",
+    "assets": "node scripts/convert-fonts.mjs && python -I scripts/make-icons.py",
     "dev": "vite",
     "typecheck": "tsc --noEmit",
     "build": "npm run data && npm run build:web",
