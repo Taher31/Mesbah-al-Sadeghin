@@ -141,7 +141,7 @@ export const DEFAULT_SETTINGS: Settings = {
   scrollSpeed: 3,
   listFont: 'vazirmatn',
   listSize: 16,
-  listSpacing: 12,
+  listSpacing: 5,
   showTranslation: true,
   safinehEdition: 3,
 }
@@ -188,7 +188,8 @@ export function sanitizeSettings(raw: unknown): Settings {
     keepScreenOn: typeof r.keepScreenOn === 'boolean' ? r.keepScreenOn : d.keepScreenOn,
     listFont: oneOf(r.listFont, PERSIAN_FONTS, d.listFont),
     listSize: clamp(r.listSize, RANGES.listSize, d.listSize),
-    listSpacing: clamp(r.listSpacing, RANGES.listSpacing, d.listSpacing),
+    // 12 was the default before 5; a reader who never moved the slider gets the new one.
+    listSpacing: r.listSpacing === 12 ? d.listSpacing : clamp(r.listSpacing, RANGES.listSpacing, d.listSpacing),
     scrollSpeed: Math.round(clamp(r.scrollSpeed, RANGES.scrollSpeed, d.scrollSpeed)),
     // Someone who used the retired «بدون ترجمه» edition keeps reading without the translation.
     showTranslation: r.anisEdition === RETIRED_ANIS ? false : typeof r.showTranslation === 'boolean' ? r.showTranslation : d.showTranslation,
