@@ -805,7 +805,8 @@ hr {
 }
 
 .continue-card {
-  width: min(300px, calc(100vw - 56px));
+  width: 300px;
+  max-width: calc(100vw - 56px);
   display: flex;
   align-items: center;
   gap: 14px;
@@ -1264,6 +1265,7 @@ input[type='search']::-webkit-search-cancel-button {
   min-height: 100dvh;
   touch-action: pan-y pinch-zoom;
   transition: transform 0.22s ease, opacity 0.22s ease;
+  overflow-x: hidden;
   overflow-x: clip;
 }
 
@@ -1391,6 +1393,7 @@ mark.is-current {
 
 .k-footnote p {
   font-family: var(--fa-font), Vazirmatn, serif;
+  font-size: calc(var(--text-size) * 0.74);
   font-size: max(12px, calc(var(--text-size) * 0.74));
   line-height: 1.6;
   color: var(--r-footnote);
@@ -1749,6 +1752,7 @@ html.with-fab .snackbar {
 
 /* Search results follow the contents' spacing setting. */
 .hits {
+  flex-direction: column;
   gap: calc(var(--list-gap, 12px) - 2px);
 }
 

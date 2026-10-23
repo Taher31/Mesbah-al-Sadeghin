@@ -6,11 +6,15 @@ import { Icon } from './icons'
 import { decimal, num, t } from '../lib/i18n'
 
 /** Theme, fonts and sizes with a live preview; used in the reader's sheet and on the settings page. */
-export function TextSettingsPanel() {
+export function TextSettingsPanel({ translationSwitch = false }: { translationSwitch?: boolean } = {}) {
   const s = useStore(settingsStore)
   return (
     <div class="text-settings">
       <Preview s={s} />
+      {/* In the reader of انیس, besides the «ترجمه» button in the bottom bar. */}
+      {translationSwitch && (
+        <SwitchRow label={t('نمایش ترجمه')} checked={s.showTranslation} onChange={(v) => setSetting('showTranslation', v)} />
+      )}
 
       <p class="field-label">{t('پوسته')}</p>
       <Segmented label={t('پوسته')} options={themes()} value={s.theme} onChange={(v) => setSetting('theme', v)} />

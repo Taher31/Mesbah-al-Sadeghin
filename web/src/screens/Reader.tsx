@@ -583,7 +583,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
 
       {sheet === 'text' && (
         <Sheet label={t('تنظیمات متن')} onClose={() => setSheet(null)}>
-          <TextSettingsPanel />
+          <TextSettingsPanel translationSwitch={book.paired} />
         </Sheet>
       )}
       {sheet === 'menu' && (

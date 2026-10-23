@@ -43,4 +43,16 @@ if (typeof MediaQueryList !== 'undefined' && !('addEventListener' in MediaQueryL
   })
 }
 
+// Layout on WebViews before Chrome 87: scripts/legacy-css.ts adds physical-property fallbacks
+// under html.no-logical, and margins for flex gaps (Chrome 84) under html.no-flex-gap.
+const root = document.documentElement.classList
+if (!(window.CSS && CSS.supports('inset-inline-start', '0'))) root.add('no-logical')
+const probe = document.createElement('div')
+probe.style.cssText = 'display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden'
+probe.appendChild(document.createElement('div'))
+probe.appendChild(document.createElement('div'))
+document.body.appendChild(probe)
+if (probe.scrollHeight !== 1) root.add('no-flex-gap')
+probe.remove()
+
 export {}

@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { join, relative, resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
+import { legacyCss } from './scripts/legacy-css.ts'
 
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
 
@@ -55,6 +56,19 @@ function serviceWorker(): Plugin {
   }
 }
 
+/** Physical-property and flex-gap fallbacks for old WebViews, see scripts/legacy-css.ts. */
+function oldPhones(): Plugin {
+  return {
+    name: 'mesbah-old-phones',
+    apply: 'build',
+    generateBundle(_, bundle) {
+      for (const file of Object.values(bundle)) {
+        if (file.type === 'asset' && file.fileName.endsWith('.css')) file.source = legacyCss(String(file.source))
+      }
+    },
+  }
+}
+
 export default defineConfig({
   // Site root by default (the cPanel subdomain). GitHub Pages serves from /<repo>/: BASE_PATH=/<repo>/ npm run build
   base: process.env.BASE_PATH || '/',
@@ -75,5 +89,5 @@ export default defineConfig({
     modulePreload: { polyfill: false },
     reportCompressedSize: false,
   },
-  plugins: [serviceWorker()],
+  plugins: [oldPhones(), serviceWorker()],
 })

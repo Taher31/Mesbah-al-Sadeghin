@@ -71,7 +71,7 @@ export function Search({ route }: { route: Route }) {
 
   return (
     <main class="page">
-      <TopBar>
+      <TopBar actions={<IconButton icon="textFields" label={t('فهرست و نتایج جستجو')} onClick={() => setListSettings(true)} />}>
         <form
           class="search-field"
           role="search"
@@ -90,7 +90,6 @@ export function Search({ route }: { route: Route }) {
           />
           {query && <IconButton icon="close" label={t('پاک کردن')} onClick={() => (setQuery(''), input.current?.focus())} />}
         </form>
-        <IconButton icon="textFields" label={t('فهرست و نتایج جستجو')} onClick={() => setListSettings(true)} />
       </TopBar>
       {listSettings && (
         <Sheet label={t('فهرست و نتایج جستجو')} onClose={() => setListSettings(false)}>
