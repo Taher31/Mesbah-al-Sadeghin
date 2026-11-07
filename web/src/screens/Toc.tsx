@@ -22,9 +22,17 @@ interface Row {
 function buildRows(toc: TableOfContents, open: Set<number>, filter: string): Row[] {
   const needle = normalize(filter)
   if (needle) {
-    return toc.entries
-      .filter((e) => normalize(e.title).includes(needle))
-      .map((e) => ({ entry: e, open: false, path: toc.pathTo(e.id).map((p) => p.title).join(' › ') || undefined }))
+    // A matching group still opens its contents, even when the child titles don't match the
+    // filter. Direct matches remain visible independently of their ancestors' open state.
+    const rows: Row[] = []
+    const expanded = new Set<number>()
+    for (const e of toc.entries) {
+      if (!normalize(e.title).includes(needle) && (e.parentId == null || !expanded.has(e.parentId))) continue
+      const isOpen = open.has(e.id)
+      rows.push({ entry: e, open: isOpen, path: toc.pathTo(e.id).map((p) => p.title).join(' › ') || undefined })
+      if (e.hasChildren && isOpen) expanded.add(e.id)
+    }
+    return rows
   }
   // Entries are in reading order; skip everything nested under a collapsed parent.
   const rows: Row[] = []
@@ -70,7 +78,11 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
       if (!s) return s
       const open = new Set(s.open)
       if (open.has(id)) open.delete(id)
-      else open.add(id)
+      else {
+        open.add(id)
+        // Clearing a search should keep the branch the reader just opened visible.
+        if (filtering && toc) for (const parent of toc.pathTo(id)) open.add(parent.id)
+      }
       return { ...s, open }
     })
 
@@ -159,7 +171,7 @@ function TocRow(props: { row: Row; filtering: boolean; current: boolean; favorit
   return (
     <li class={'toc-row' + (props.current ? ' is-current' : '') + (e.hasContent ? '' : ' is-group')} style={`--depth:${depth}`}>
       <span class="toc-lead">
-        {e.hasChildren && !filtering ? (
+        {e.hasChildren ? (
           <button type="button" class={'toc-chevron' + (open ? ' is-open' : '')} aria-expanded={open} aria-label={open ? t('بستن') : t('باز کردن')} onClick={props.onToggle}>
             <Icon name="chevronEnd" />
           </button>
