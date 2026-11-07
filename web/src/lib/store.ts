@@ -70,6 +70,7 @@ function persisted<T>(key: string, load: (raw: unknown) => T): Store<T> {
 
 export type ThemeMode = 'system' | 'light' | 'sepia' | 'dark'
 export type PersianFont = 'vazirmatn' | 'nazanin' | 'lotus' | 'mitra' | 'zar'
+export type TranslationColor = 'neutral' | 'blue' | 'purple' | 'green' | 'brown'
 export type ArabicFont = 'naskh' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'mitra' | 'zar' | 'vazirmatn'
 
 /** Labels in the menus' language, so read them when rendering. */
@@ -78,6 +79,14 @@ export const themes = (): { id: ThemeMode; label: string }[] => [
   { id: 'light', label: t('روشن') },
   { id: 'sepia', label: t('کاغذی') },
   { id: 'dark', label: t('شب') },
+]
+
+export const translationColors = (): { id: TranslationColor; label: string }[] => [
+  { id: 'neutral', label: t('خاکستری') },
+  { id: 'blue', label: t('آبی') },
+  { id: 'purple', label: t('بنفش') },
+  { id: 'green', label: t('سبز') },
+  { id: 'brown', label: t('قهوه‌ای') },
 ]
 
 export const PERSIAN_FONTS: { id: PersianFont; label: string; family: string }[] = [
@@ -107,6 +116,7 @@ export interface Settings {
   persianFont: PersianFont
   arabicFont: ArabicFont
   arabicBold: boolean
+  translationColor: TranslationColor
   /** Persian text: the author's explanations, notes and the Safineh books. */
   textSize: number
   /** Anis's translation, sized on its own so it can be made small without shrinking the explanations. */
@@ -133,6 +143,7 @@ export const DEFAULT_SETTINGS: Settings = {
   persianFont: 'vazirmatn',
   arabicFont: 'naskh',
   arabicBold: true,
+  translationColor: 'neutral',
   textSize: 18,
   translationSize: 17,
   arabicSize: 23,
@@ -182,6 +193,7 @@ export function sanitizeSettings(raw: unknown): Settings {
     persianFont: oneOf(r.persianFont, PERSIAN_FONTS, d.persianFont),
     arabicFont: oneOf(mergedNaskh ? 'naskh' : r.arabicFont, ARABIC_FONTS, d.arabicFont),
     arabicBold: mergedNaskh || (typeof r.arabicBold === 'boolean' ? r.arabicBold : d.arabicBold),
+    translationColor: oneOf(r.translationColor, translationColors(), d.translationColor),
     textSize: clamp(r.textSize, RANGES.textSize, d.textSize),
     // Before it had its own size the translation followed the text size, a little smaller.
     translationSize: clamp(r.translationSize ?? (typeof r.textSize === 'number' ? Math.round(r.textSize - 1) : undefined), RANGES.translationSize, d.translationSize),
@@ -218,6 +230,7 @@ export function resetTextSettings() {
     persianFont: d.persianFont,
     arabicFont: d.arabicFont,
     arabicBold: d.arabicBold,
+    translationColor: d.translationColor,
     textSize: d.textSize,
     translationSize: d.translationSize,
     arabicSize: d.arabicSize,

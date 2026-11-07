@@ -29,7 +29,12 @@
   --outline-variant: #cdc7ba;
 
   --r-arabic: #0e4536;
-  --r-translation: #34546c;
+  --translation-neutral: #4f4b43;
+  --translation-blue: #34546c;
+  --translation-purple: #594466;
+  --translation-green: #245d4b;
+  --translation-brown: #704b2f;
+  --r-translation: var(--translation-neutral);
   --r-heading: #85652b;
   --r-note-bg: #f3ebdc;
   --r-on-note: #3b3427;
@@ -60,7 +65,11 @@
   --outline-variant: #d3c4a6;
 
   --r-arabic: #2d3f1c;
-  --r-translation: #594466;
+  --translation-neutral: #5a4c38;
+  --translation-blue: #34546c;
+  --translation-purple: #594466;
+  --translation-green: #245d4b;
+  --translation-brown: #704b2f;
   --r-heading: #7a5a24;
   --r-note-bg: #e8dabd;
   --r-on-note: #3a2f21;
@@ -92,17 +101,26 @@
   --outline-variant: #33443f;
 
   --r-arabic: #ebd3a8;
-  --r-translation: #c0dcf0;
+  --translation-neutral: #b6c4be;
+  --translation-blue: #c0dcf0;
+  --translation-purple: #e3c9ec;
+  --translation-green: #b8e0c9;
+  --translation-brown: #f0d0ad;
   --r-heading: #d9b77e;
   --r-note-bg: #102c27;
   --r-on-note: #cfd8d3;
   --r-footnote: #8e9c96;
-  --r-highlight: #725a22;
+  --r-highlight: #624b1b;
   --r-focus: rgba(217, 183, 126, 0.13);
 
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   color-scheme: dark;
 }
+
+:root[data-translation-color='blue'] { --r-translation: var(--translation-blue); }
+:root[data-translation-color='purple'] { --r-translation: var(--translation-purple); }
+:root[data-translation-color='green'] { --r-translation: var(--translation-green); }
+:root[data-translation-color='brown'] { --r-translation: var(--translation-brown); }
 
 /* ------------------------------------------------------------------ base */
 
@@ -2287,4 +2305,14 @@ html.reading::-webkit-scrollbar {
 /* All font choices visible at once in the text settings. */
 .text-settings .chip-row {
   flex-wrap: wrap;
+}
+
+.translation-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-inline-end: 6px;
+  border: 1px solid var(--outline);
+  vertical-align: middle;
 }
