@@ -132,7 +132,7 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   persianFont: 'vazirmatn',
   arabicFont: 'naskh',
-  arabicBold: false,
+  arabicBold: true,
   textSize: 18,
   translationSize: 17,
   arabicSize: 23,
