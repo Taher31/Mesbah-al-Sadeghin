@@ -23,6 +23,7 @@ import {
   type UserData,
 } from '../lib/store'
 import { copyText, shareText, toast } from '../lib/util'
+import { citedPassage, passagePages, passageReference, selectedPassage, type SelectedPassage } from '../lib/excerpts'
 import { ActionRow, Chip, EmptyState, IconButton, LoadError, Loading, Ornament, Sheet, TopBar } from '../ui/common'
 import { Icon } from '../ui/icons'
 import { TextSettingsPanel } from '../ui/TextSettings'
@@ -130,15 +131,15 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   useEffect(() => {
     document.documentElement.classList.toggle('bars-hidden', chromeHidden)
   }, [chromeHidden])
-  // Paragraphs used to open their menu with a tap; say once how it works now.
+  // Holding text now uses the phone's own selection handles.
   useEffect(() => {
     try {
-      if (localStorage.getItem('mesbah.holdHint')) return
-      localStorage.setItem('mesbah.holdHint', '1')
+      if (localStorage.getItem('mesbah.selectionHint')) return
+      localStorage.setItem('mesbah.selectionHint', '1')
     } catch {
       return
     }
-    const timer = setTimeout(() => toast(t('برای نشانه‌گذاری، کپی یا اشتراک یک بند، انگشت را روی آن نگه دارید')), 1200)
+    const timer = setTimeout(() => toast(t('متن دلخواه را با نگه داشتن انگشت انتخاب کنید؛ سپس کپی، اشتراک یا نشانه‌گذاری کنید')), 1200)
     return () => clearTimeout(timer)
   }, [])
 
@@ -146,6 +147,16 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const [focused, setFocused] = useState<number | null>(start.focus)
   const [arrivalHighlighted, setArrivalHighlighted] = useState(!!start.needle)
   const pager = useRef<HTMLDivElement>(null)
+  const [selected, setSelected] = useState<SelectedPassage | null>(null)
+  useEffect(() => {
+    setSelected(null)
+    const update = () => {
+      const root = pager.current?.querySelector('.section')
+      setSelected(root && !sheet ? selectedPassage(root, window.getSelection()) : null)
+    }
+    document.addEventListener('selectionchange', update)
+    return () => document.removeEventListener('selectionchange', update)
+  }, [content?.key, sheet])
   const pendingEnter = useRef<0 | 1 | -1>(0)
   const visited = useRef(new Set<string>())
 
@@ -193,6 +204,9 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   // «جستجو در متن جاری»: the matches in the section on screen, visited one at a time.
   // Auto-scroll: null when off; paused by touching the page or reaching the section's end.
   const [autoScroll, setAutoScroll] = useState<{ playing: boolean } | null>(null)
+  useEffect(() => {
+    if (selected) setAutoScroll((state) => state?.playing ? { playing: false } : state)
+  }, [selected])
   useEffect(() => {
     if (!autoScroll?.playing) return
     // Speed 1–10 → 10–100 px a second; fractions add up, so slow speeds stay smooth.
@@ -404,7 +418,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   // Swipe between sections. Next page lies to the left, so dragging right turns forward.
   const drag = useRef<{ x: number; y: number; t: number; axis: 'x' | 'y' | null; dx: number } | null>(null)
   const onTouchStart = (e: TouchEvent) => {
-    if (e.touches.length !== 1) {
+    if (e.touches.length !== 1 || window.getSelection()?.isCollapsed === false) {
       drag.current = null
       return
     }
@@ -414,6 +428,12 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
     const d = drag.current
     const el = pager.current
     if (!d || !el || e.touches.length !== 1) return
+    // Selection handles and a long press must never turn the page.
+    if (window.getSelection()?.isCollapsed === false || (Date.now() - d.t > 400 && !d.axis)) {
+      drag.current = null
+      el.style.transform = ''
+      return
+    }
     const dx = e.touches[0].clientX - d.x
     const dy = e.touches[0].clientY - d.y
     if (!d.axis) {
@@ -460,6 +480,16 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const path = content ? content.toc.pathTo(current.section).map((e) => e.title) : []
   const title = entry?.title ?? ''
   const favorite = isFavorite(user, current.book, current.section)
+  const referenceFor = (first: number, last = first) => passageReference(
+    book, title, passagePages(content?.paragraphs ?? [], first, last, entry?.page),
+  )
+  const excerptText = (selection: SelectedPassage) => citedPassage(
+    selection.text, referenceFor(selection.first, selection.last), sectionLink(current, selection.first),
+  )
+  const clearSelection = () => {
+    window.getSelection()?.removeAllRanges()
+    setSelected(null)
+  }
 
   const sectionText = () =>
     [
@@ -468,7 +498,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         .filter((p) => p.kind !== Kind.PageMarker)
         .map((p) => p.text)
         .join('\n\n'),
-      '— ' + t('مصباح الصادقین') + '\n' + sectionLink(current),
+      '— ' + referenceFor(-Infinity, Infinity) + '\n' + sectionLink(current),
     ].join('\n\n')
 
   const menu = (
@@ -498,7 +528,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         label={t('اشتراک‌گذاری پیوند این بخش')}
         onClick={async () => {
           setSheet(null)
-          const result = await shareText({ title, text: title + ' — ' + t('مصباح الصادقین'), url: sectionLink(current) })
+          const result = await shareText({ title, text: referenceFor(-Infinity, Infinity), url: sectionLink(current) })
           if (result === 'copied') toast('پیوند کپی شد')
         }}
       />
@@ -564,7 +594,14 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
           setChromeHidden((h) => !h)
         }}
       >
-        <article class="section" dir="rtl" style={readerStyle(settings, book)}>
+        <article class="section" dir="rtl" style={readerStyle(settings, book)}
+          onCopy={(e) => {
+            const selection = selectedPassage(e.currentTarget, window.getSelection())
+            if (!selection || !e.clipboardData) return
+            e.clipboardData.setData('text/plain', excerptText(selection))
+            e.preventDefault()
+          }}
+        >
           {error && <LoadError retry={retry} />}
           {!error && !content && <Loading />}
           {content && content.paragraphs === null && (
@@ -590,7 +627,6 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
                   arrivalOffset={!find && arrivalHighlighted && arrival?.key === p.key ? arrival.offset : null}
                   focused={isStart && !arrival?.header && p.key === focusedKey(visible, focused)}
                   bookmarked={bookmarksIn(user, current.book, current.section, p.key, p.last ?? p.key).length > 0}
-                  onOpen={() => setSheet(p)}
                 />
               ))}
               <div class="section-end">
@@ -640,6 +676,29 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         </div>
       </nav>
 
+      {selected && !sheet && (
+        <div class="reader-selection" role="toolbar" aria-label={t('متن انتخاب‌شده')}
+          onPointerDown={(e) => e.preventDefault()} onMouseDown={(e) => e.preventDefault()}>
+          <p dir="auto">{referenceFor(selected.first, selected.last)}</p>
+          <div class="reader-selection-actions">
+            <button type="button" class="btn btn-outlined" onClick={async () => {
+              const text = excerptText(selected)
+              toast((await copyText(text)) ? t('کپی شد') : t('کپی نشد'))
+            }}><Icon name="copy" size={20} />{t('کپی')}</button>
+            <button type="button" class="btn btn-filled" onClick={async () => {
+              const text = excerptText(selected)
+              if ((await shareText({ title, text })) === 'copied') toast('متن کپی شد')
+            }}><Icon name="share" size={20} />{t('اشتراک‌گذاری')}</button>
+            <IconButton icon="bookmarkAdd" label={t('نشانه‌گذاری این بند')} onClick={() => {
+              const p = visible?.find((p) => p.key === selected.first)
+              clearSelection()
+              if (p) setSheet(p)
+            }} />
+            <IconButton icon="close" label={t('بستن')} onClick={clearSelection} />
+          </div>
+        </div>
+      )}
+
       {sheet === 'text' && (
         <Sheet label={t('تنظیمات متن')} onClose={() => setSheet(null)}>
           <TextSettingsPanel translationSwitch={book.paired} />
@@ -656,6 +715,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
           user={user}
           current={current}
           link={sectionLink(current, sheet.key)}
+          reference={referenceFor(sheet.key, sheet.last ?? sheet.key)}
           onClose={() => setSheet(null)}
         />
       )}
@@ -891,44 +951,9 @@ function ParagraphView(props: {
   arrivalOffset: number | null
   focused: boolean
   bookmarked: boolean
-  onOpen: () => void
 }) {
   const { p } = props
   const firstFootnote = p.kind === Kind.Footnote && props.previous?.kind !== Kind.Footnote
-  // A tap shows or hides the bars (handled by the page); holding a paragraph opens its menu
-  // (bookmark, copy, share). Right-click does the same with a mouse.
-  const hold = useRef<{ timer: ReturnType<typeof setTimeout>; x: number; y: number } | null>(null)
-  const held = useRef(false)
-  const release = () => {
-    if (hold.current) clearTimeout(hold.current.timer)
-    hold.current = null
-  }
-  const onTouchEnd = (e: TouchEvent) => {
-    release()
-    // The finger lifting after a hold is not a tap: no click, so the bars stay as they are.
-    if (held.current && e.cancelable) e.preventDefault()
-    held.current = false
-  }
-  const onTouchStart = (e: TouchEvent) => {
-    release()
-    held.current = false
-    if (e.touches.length !== 1) return
-    const { clientX: x, clientY: y } = e.touches[0]
-    hold.current = {
-      x,
-      y,
-      timer: setTimeout(() => {
-        hold.current = null
-        held.current = true
-        window.getSelection()?.removeAllRanges()
-        props.onOpen()
-      }, 500),
-    }
-  }
-  const onTouchMove = (e: TouchEvent) => {
-    const h = hold.current
-    if (h && Math.hypot(e.touches[0].clientX - h.x, e.touches[0].clientY - h.y) > 10) release()
-  }
   const text = <Highlighted text={p.text} needle={props.needle} current={props.currentMatch} arabic={props.arabic} arrivalOffset={props.arrivalOffset} />
   return (
     <div
@@ -941,15 +966,6 @@ function ParagraphView(props: {
       }
       data-key={p.key}
       style={`margin-top:${spacing(p, props.previous)}px`}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-      onTouchCancel={release}
-      onContextMenu={(e) => {
-        e.preventDefault()
-        release()
-        props.onOpen()
-      }}
     >
       {p.kind === Kind.Note ? (
         <div class="note-card">
@@ -968,7 +984,7 @@ function ParagraphView(props: {
   )
 }
 
-function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; link: string; onClose: () => void }) {
+function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; link: string; reference: string; onClose: () => void }) {
   const { p, current } = props
   // A joined paragraph counts as bookmarked if any of its phrases is.
   const marks = bookmarksIn(props.user, current.book, current.section, p.key, p.last ?? p.key)
@@ -976,6 +992,7 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
   return (
     <Sheet label={t('بند')} onClose={props.onClose}>
       <p class="sheet-excerpt" dir="auto">{p.text}</p>
+      <p class="sheet-reference" dir="auto">{props.reference}</p>
       <ActionRow
         icon={bookmarked ? 'bookmark' : 'bookmarkAdd'}
         label={bookmarked ? t('حذف نشانه') : t('نشانه‌گذاری این بند')}
@@ -995,7 +1012,7 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
         label={t('کپی')}
         onClick={async () => {
           props.onClose()
-          toast((await copyText(p.text)) ? t('کپی شد') : t('کپی نشد'))
+          toast((await copyText(citedPassage(p.text, props.reference, props.link))) ? t('کپی شد') : t('کپی نشد'))
         }}
       />
       <ActionRow
@@ -1003,7 +1020,7 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
         label={t('اشتراک‌گذاری')}
         onClick={async () => {
           props.onClose()
-          const result = await shareText({ text: p.text + '\n\n— ' + t('مصباح الصادقین') + '\n' + props.link })
+          const result = await shareText({ text: citedPassage(p.text, props.reference, props.link) })
           if (result === 'copied') toast('متن کپی شد')
         }}
       />

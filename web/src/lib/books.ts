@@ -111,6 +111,8 @@ export type RawTocEntry = [number, number, string, 0 | 1, number]
 
 export interface RawToc {
   e: RawTocEntry[]
+  /** Printed page carried over from the preceding section (Safineh). */
+  p?: Record<string, string>
   /** Chunk file names, relative to the book's data folder. */
   c: string[]
 }

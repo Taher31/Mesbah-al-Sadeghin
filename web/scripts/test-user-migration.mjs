@@ -124,21 +124,3 @@ assert.equal(normalFontBackupApi.settingsStore.get().arabicFont, 'naskh')
 assert.equal(normalFontBackupApi.settingsStore.get().arabicBold, false)
 console.log('PASS: paragraph migration, old/current backups, repeated restore, note preservation and unaffected books')
 console.log('PASS: merged Naskh font choice, legacy settings, normal/bold toggle and backup restoration')
-
-// Translation colors survive reloads/backups, while old settings keep a neutral default.
-assert.equal(api.sanitizeSettings({ arabicSize: 31 }).translationColor, 'neutral')
-assert.equal(api.sanitizeSettings({ translationColor: 'invalid' }).translationColor, 'neutral')
-for (const { id } of api.translationColors()) {
-  const colorApi = loadStore(undefined, { translationColor: id, arabicSize: 31 })
-  assert.equal(colorApi.settingsStore.get().translationColor, id)
-  assert.equal(colorApi.settingsStore.get().arabicSize, 31)
-  colorApi.setSetting('translationColor', id)
-  const colorBackupApi = loadStore()
-  assert.equal(colorBackupApi.importBackup(colorApi.exportBackup()), true)
-  assert.equal(colorBackupApi.settingsStore.get().translationColor, id)
-  colorBackupApi.setSetting('language', 'en')
-  colorBackupApi.resetTextSettings()
-  assert.equal(colorBackupApi.settingsStore.get().translationColor, 'neutral')
-  assert.equal(colorBackupApi.settingsStore.get().language, 'en')
-}
-console.log('PASS: all translation colors, saved settings, old defaults, backup restoration and text reset')

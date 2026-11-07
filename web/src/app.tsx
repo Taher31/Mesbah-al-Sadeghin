@@ -74,10 +74,9 @@ export function App() {
   useLayoutEffect(() => {
     const root = document.documentElement
     root.lang = settings.language
-    root.dataset.translationColor = settings.translationColor
     // English menus run left to right; the books' text keeps its own direction (dir="rtl"/"auto").
     root.dir = settings.language === 'en' ? 'ltr' : 'rtl'
-  }, [settings.language, settings.translationColor])
+  }, [settings.language])
   // Contents lists and search results (styles/app.css reads these).
   useLayoutEffect(() => {
     const style = document.documentElement.style

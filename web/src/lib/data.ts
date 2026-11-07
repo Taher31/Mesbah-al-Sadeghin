@@ -15,6 +15,7 @@ export interface TocEntry {
   parentId: number | null
   hasChildren: boolean
   chunk: number
+  page?: string
 }
 
 export class TableOfContents {
@@ -104,7 +105,7 @@ const tocs = memo(async (book: BookId) => {
     const parentId = stack.length ? stack[stack.length - 1].id : null
     stack.push({ level, id })
     const nextLevel = raw.e[i + 1]?.[1] ?? 0
-    return { id, level, title, hasContent: hasContent === 1, parentId, hasChildren: nextLevel > level, chunk }
+    return { id, level, title, hasContent: hasContent === 1, parentId, hasChildren: nextLevel > level, chunk, page: raw.p?.[id] }
   })
   return new TableOfContents(book, entries, raw.c)
 })

@@ -283,6 +283,16 @@ function buildBook(book: Book, manifest: DataManifest) {
       e: toc.map((e): RawTocEntry => [e.id, e.level, persianDigits(e.title), e.hasContent ? 1 : 0, chunkOf.get(e.id) ?? -1]),
       c: chunkFiles,
     }
+    if (!book.hasParagraphTable) {
+      // A chapter can begin mid-page, before its first explicit page marker.
+      const pages: Record<string, string> = {}
+      let page: string | undefined
+      for (const [id, list] of sections) {
+        if (page && list.some((p) => p[1] === Kind.PageMarker)) pages[id] = persianDigits(page)
+        for (const p of list) if (p[1] === Kind.PageMarker) page = p[2]
+      }
+      rawToc.p = pages
+    }
     const tocJson = JSON.stringify(rawToc)
     const tocName = `toc.${hash(tocJson)}.json`
     writeFileSync(join(dir, tocName), tocJson)

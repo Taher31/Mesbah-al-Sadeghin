@@ -1,5 +1,5 @@
 {
-  "version": "c16f90974a",
+  "version": "d07b8a95a7",
   "books": {
     "1": {
       "toc": "data/1/toc.d6692e353d.json",
@@ -7,12 +7,12 @@
       "sections": 372
     },
     "2": {
-      "toc": "data/2/toc.b6309d9db1.json",
+      "toc": "data/2/toc.0b9c3899e8.json",
       "search": "data/2/search.0053bc2344.json",
       "sections": 91
     },
     "3": {
-      "toc": "data/3/toc.7b691ed985.json",
+      "toc": "data/3/toc.9c16e1960e.json",
       "search": "data/3/search.2ee0682bc7.json",
       "sections": 85
     }

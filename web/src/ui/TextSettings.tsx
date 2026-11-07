@@ -1,4 +1,4 @@
-import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, resetTextSettings, themes, translationColors, setSetting, settingsStore, useStore, type Settings } from '../lib/store'
+import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, resetTextSettings, themes, setSetting, settingsStore, useStore, type Settings } from '../lib/store'
 import { toast } from '../lib/util'
 import { Chip, Segmented, SwitchRow } from './common'
 import { Icon } from './icons'
@@ -38,16 +38,6 @@ export function TextSettingsPanel({ translationSwitch = false }: { translationSw
         {PERSIAN_FONTS.map((f) => (
           <Chip selected={s.persianFont === f.id} onClick={() => setSetting('persianFont', f.id)} style={`font-family:${f.family};font-size:16px`}>
             {f.label}
-          </Chip>
-        ))}
-      </div>
-
-      <p class="field-label">{t('رنگ ترجمه')}</p>
-      <div class="chip-row translation-colors" role="group" aria-label={t('رنگ ترجمه')}>
-        {translationColors().map((color) => (
-          <Chip selected={s.translationColor === color.id} onClick={() => setSetting('translationColor', color.id)}>
-            <span class="translation-swatch" aria-hidden="true" style={`background:var(--translation-${color.id})`} />
-            {color.label}
           </Chip>
         ))}
       </div>
