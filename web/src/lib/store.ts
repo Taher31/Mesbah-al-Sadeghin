@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks'
 import { RETIRED_ANIS, bookById, type BookId, type WorkId } from './books'
 import { LANGUAGES, t, type Language } from './i18n'
+import anisMigrationJson from '../generated/anis-paragraph-migration.json'
 
 /** A value with listeners; the whole app's state is a handful of these. */
 export class Store<T> {
@@ -69,7 +70,7 @@ function persisted<T>(key: string, load: (raw: unknown) => T): Store<T> {
 
 export type ThemeMode = 'system' | 'light' | 'sepia' | 'dark'
 export type PersianFont = 'vazirmatn' | 'nazanin' | 'lotus' | 'mitra' | 'zar'
-export type ArabicFont = 'naskh' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'mitra' | 'zar' | 'vazirmatn'
+export type ArabicFont = 'naskh' | 'naskh93' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'mitra' | 'zar' | 'vazirmatn'
 
 /** Labels in the menus' language, so read them when rendering. */
 export const themes = (): { id: ThemeMode; label: string }[] => [
@@ -89,6 +90,7 @@ export const PERSIAN_FONTS: { id: PersianFont; label: string; family: string }[]
 
 export const ARABIC_FONTS: { id: ArabicFont; label: string; family: string }[] = [
   { id: 'naskh', label: 'نسخ قرآنی', family: 'NaskhQurani' },
+  { id: 'naskh93', label: 'نسخ قرآنی ۹۳ (نیمه‌پررنگ)', family: 'NaskhQurani93' },
   { id: 'uthman', label: 'عثمان طه', family: 'UthmanTaha' },
   { id: 'badr', label: 'بدر', family: 'Badr' },
   // Persian-style naskh: the familiar shapes of Iranian print, often easier to read than Quranic styles.
@@ -253,6 +255,8 @@ export interface Bookmark {
   /** SECTION_LEVEL when the whole section is bookmarked rather than one paragraph. */
   paragraph: number
   excerpt: string
+  /** Original paragraph identity when a text revision leaves only a section-level target. */
+  sourceKey?: string
   note: string | null
   created: number
 }
@@ -261,6 +265,8 @@ export const SECTION_LEVEL = -1
 const MAX_EXCERPT = 400
 
 export interface UserData {
+  /** Travels with backups so paragraph keys are migrated only once. */
+  textRevision: string
   /** One per book, most recent first. */
   progress: Progress[]
   /** In the reader's own order. */
@@ -278,13 +284,38 @@ const fromRetired = (v: unknown) => v === RETIRED_ANIS
 const list = (v: unknown): Record<string, unknown>[] =>
   Array.isArray(v) ? v.filter((x) => x && typeof x === 'object') : []
 
+const anisMigration = anisMigrationJson as {
+  revision: string
+  sections: Record<string, { paragraphs: Record<string, number | null>; progress?: Record<string, number> }>
+}
+
+function migrateAnisParagraph(book: unknown, section: number, paragraph: number, bookmark: boolean): number {
+  if (book !== 1 || paragraph < 0) return paragraph
+  const changes = anisMigration.sections[section]
+  if (!changes || !Object.prototype.hasOwnProperty.call(changes.paragraphs, paragraph)) return paragraph
+  // Changed/deleted text has no safe bookmark target. Keep its saved excerpt and note at the
+  // section level; reading progress can use the nearest surviving paragraph instead.
+  return changes.paragraphs[paragraph] ?? (bookmark ? SECTION_LEVEL : (changes.progress?.[paragraph] ?? 0))
+}
+
+const bookmarkKey = (b: Pick<Bookmark, 'book' | 'section' | 'paragraph' | 'excerpt' | 'sourceKey'>) =>
+  `${b.book}:${b.section}:${b.paragraph}` + (b.paragraph === SECTION_LEVEL ? `:${b.sourceKey ?? ''}:${b.excerpt}` : '')
+
 export function sanitizeUserData(raw: unknown): UserData {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+  const migrateText = r.textRevision !== anisMigration.revision
   // Paragraph keys of the retired edition don't exist in book 1, so its positions and bookmarks
   // fall back to the start of their section.
   const progress = list(r.progress)
     .filter((p) => isBook(p.book) && isInt(p.section) && isInt(p.paragraph))
-    .map((p) => ({ book: asBook(p.book), section: p.section as number, paragraph: fromRetired(p.book) ? 0 : (p.paragraph as number), updated: Number(p.updated) || 0 }))
+    .map((p) => ({
+      book: asBook(p.book),
+      section: p.section as number,
+      paragraph: fromRetired(p.book) ? 0 : migrateText
+        ? migrateAnisParagraph(p.book, p.section as number, p.paragraph as number, false)
+        : p.paragraph as number,
+      updated: Number(p.updated) || 0,
+    }))
   const favorites = list(r.favorites)
     .filter((f) => isBook(f.book) && isInt(f.section))
     .map((f) => ({ book: asBook(f.book), section: f.section as number }))
@@ -293,15 +324,27 @@ export function sanitizeUserData(raw: unknown): UserData {
     .map((v) => ({ book: asBook(v.book), section: v.section as number, count: v.count as number, last: Number(v.last) || 0 }))
   const bookmarks = list(r.bookmarks)
     .filter((b) => isBook(b.book) && isInt(b.section) && isInt(b.paragraph))
-    .map((b, i) => ({
-      id: isInt(b.id) ? b.id : Date.now() + i,
-      book: asBook(b.book),
-      section: b.section as number,
-      paragraph: fromRetired(b.book) ? SECTION_LEVEL : (b.paragraph as number),
-      excerpt: typeof b.excerpt === 'string' ? b.excerpt.slice(0, MAX_EXCERPT) : '',
-      note: typeof b.note === 'string' && b.note.trim() ? b.note : null,
-      created: Number(b.created) || 0,
-    }))
+    .map((b, i) => {
+      const paragraph = fromRetired(b.book) ? SECTION_LEVEL : migrateText
+        ? migrateAnisParagraph(b.book, b.section as number, b.paragraph as number, true)
+        : b.paragraph as number
+      // Different passages can have identical excerpts. Preserve their original identities too,
+      // so converting both to section-level bookmarks never merges away either one's note.
+      const sourceKey = paragraph !== SECTION_LEVEL ? undefined : typeof b.sourceKey === 'string'
+        ? b.sourceKey.slice(0, 100)
+        : (b.paragraph as number) >= 0 ? `${b.book}:${b.section}:${b.paragraph}`
+        : isInt(b.id) ? `bookmark:${b.id}` : undefined
+      return {
+        id: isInt(b.id) ? b.id : Date.now() + i,
+        book: asBook(b.book),
+        section: b.section as number,
+        paragraph,
+        ...(sourceKey ? { sourceKey } : {}),
+        excerpt: typeof b.excerpt === 'string' ? b.excerpt.slice(0, MAX_EXCERPT) : '',
+        note: typeof b.note === 'string' && b.note.trim() ? b.note : null,
+        created: Number(b.created) || 0,
+      }
+    })
   const visitTotals = new Map<string, Visit>()
   for (const v of visits) {
     const k = `${v.book}:${v.section}`
@@ -309,11 +352,12 @@ export function sanitizeUserData(raw: unknown): UserData {
     visitTotals.set(k, cur ? { ...cur, count: cur.count + v.count, last: Math.max(cur.last, v.last) } : v)
   }
   return {
+    textRevision: anisMigration.revision,
     progress: dedupe(progress.sort((a, b) => b.updated - a.updated), (p) => `${p.book}`),
     favorites: dedupe(favorites, (f) => `${f.book}:${f.section}`),
     visits: [...visitTotals.values()],
-    // Section-level bookmarks (from the retired edition) may share a section; their excerpts differ.
-    bookmarks: dedupe(bookmarks, (b) => `${b.book}:${b.section}:${b.paragraph}` + (b.paragraph === SECTION_LEVEL ? `:${b.excerpt}` : '')).sort(
+    // Section-level bookmarks may share a section and even the same excerpt.
+    bookmarks: dedupe(bookmarks, bookmarkKey).sort(
       (a, b) => b.created - a.created,
     ),
   }
@@ -482,12 +526,13 @@ export function importBackup(text: string): boolean {
   }
   const bookmarks = [...mine.bookmarks]
   for (const b of incoming.bookmarks) {
-    const cur = bookmarks.findIndex((x) => same(x, b.book, b.section) && x.paragraph === b.paragraph)
+    const cur = bookmarks.findIndex((x) => bookmarkKey(x) === bookmarkKey(b))
     if (cur < 0) bookmarks.push(bookmarks.some((x) => x.id === b.id) ? { ...b, id: Date.now() + bookmarks.length } : b)
     else if (!bookmarks[cur].note && b.note) bookmarks[cur] = { ...bookmarks[cur], note: b.note }
   }
   userStore.set(
     sanitizeUserData({
+      textRevision: anisMigration.revision,
       progress: [...newer.values()],
       favorites: [...mine.favorites, ...incoming.favorites],
       visits: [...visits.values()],

@@ -34,6 +34,7 @@ const FONTS = {
   'w_badr.ttf': 'badr',
   'w_badr bold.ttf': 'badr_bold',
   'wm_naskh qurani.ttf': 'naskh_qurani',
+  'wm_Naskh Qurani 93 Semi Bold.ttf': 'naskh_qurani_93',
   'autaha.ttf': 'uthman_taha',
 }
 
