@@ -2,8 +2,8 @@ import { android } from './native'
 import { Store } from './store'
 
 export const CHANNEL_URL = 'https://eitaa.com/sadeghin_ir'
-/** The Android app on GitHub (the release is updated with each build); same link as in README.md. */
-export const ANDROID_APK = 'https://github.com/Taher31/Mesbah-al-Sadeghin/releases/download/android-test-3.0.0/mesbah-sadeghin-test.apk'
+/** The downloadable Android test app on GitHub; shared by all download buttons and README.md. */
+export const ANDROID_APK = 'https://github.com/Taher31/Mesbah-al-Sadeghin/releases/download/android-test-3.1.0/mesbah-sadeghin-test.apk'
 
 /** A file shipped in public/, addressed from the site root. */
 export function asset(path: string): string {
