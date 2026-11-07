@@ -30,6 +30,8 @@
 
   --r-arabic: #0e4536;
   --r-translation: #4f4b43;
+  --r-translation-bg: #eef2ec;
+  --r-translation-accent: #b1c1b4;
   --r-heading: #85652b;
   --r-note-bg: #f3ebdc;
   --r-on-note: #3b3427;
@@ -61,6 +63,8 @@
 
   --r-arabic: #2d3f1c;
   --r-translation: #5a4c38;
+  --r-translation-bg: #e9ddc5;
+  --r-translation-accent: #b8a17a;
   --r-heading: #7a5a24;
   --r-note-bg: #e8dabd;
   --r-on-note: #3a2f21;
@@ -93,6 +97,8 @@
 
   --r-arabic: #ebd3a8;
   --r-translation: #b4c2bc;
+  --r-translation-bg: #102d27;
+  --r-translation-accent: #47685b;
   --r-heading: #d9b77e;
   --r-note-bg: #102c27;
   --r-on-note: #cfd8d3;
@@ -1337,9 +1343,11 @@ input[type='search']::-webkit-search-cancel-button {
 
 .k-translation,
 .preview .p-translation {
-  border: 1px solid var(--outline);
-  border-radius: 12px;
-  padding: 10px 14px;
+  background: var(--r-translation-bg);
+  border: 0;
+  border-right: 2px solid var(--r-translation-accent);
+  border-radius: 10px;
+  padding: 12px 16px;
 }
 
 .k-translation p {
@@ -1348,6 +1356,11 @@ input[type='search']::-webkit-search-cancel-button {
   line-height: calc(var(--lh) * 0.95);
   text-align: var(--align);
   color: var(--r-translation);
+}
+
+.k-translation.is-focused {
+  background: var(--r-translation-bg);
+  box-shadow: inset 0 0 0 1px var(--r-translation-accent);
 }
 
 /* Numbers inside Arabic text, set apart in Persian digits (see `withNumbers` in Reader.tsx). */
