@@ -144,6 +144,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
 
   const [sheet, setSheet] = useState<'text' | 'menu' | Paragraph | null>(null)
   const [focused, setFocused] = useState<number | null>(start.focus)
+  const [arrivalHighlighted, setArrivalHighlighted] = useState(!!start.needle)
   const pager = useRef<HTMLDivElement>(null)
   const pendingEnter = useRef<0 | 1 | -1>(0)
   const visited = useRef(new Set<string>())
@@ -169,7 +170,10 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
     const join = !!bookById(current.book)?.paired && !settings.showTranslation
     const out: Paragraph[] = []
     for (const p of content.paragraphs) {
-      if (p.kind === Kind.Translation && !settings.showTranslation) continue
+      // A direct search link may point at a translation hidden by the reader's saved preference.
+      // Reveal that one hit locally, without changing the preference or later shifting the page.
+      const searchTranslation = isStart && !!start.needle && p.key === start.focus
+      if (p.kind === Kind.Translation && !settings.showTranslation && !searchTranslation) continue
       if (p.kind === Kind.Heading && shown.has(normalize(p.text))) continue
       const prev = out[out.length - 1]
       if (join && p.kind === Kind.Arabic && !p.start && prev?.kind === Kind.Arabic) {
@@ -177,7 +181,14 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
       } else out.push(p)
     }
     return out
-  }, [content, settings.showTranslation])
+  }, [content, settings.showTranslation, isStart])
+
+  const arrival = useMemo(
+    () => isStart && start.needle && visible && content?.paragraphs
+      ? searchArrival(content.paragraphs, visible, start.focus, start.needle)
+      : null,
+    [isStart, content, visible],
+  )
 
   // «جستجو در متن جاری»: the matches in the section on screen, visited one at a time.
   // Auto-scroll: null when off; paused by touching the page or reaching the section's end.
@@ -260,6 +271,10 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   // Arriving at a section: position, visit count, address bar.
   useLayoutEffect(() => {
     if (!content || !current || !visible) return
+    let alive = true
+    let canPosition = true
+    let userMoved = false
+    let timer: ReturnType<typeof setTimeout> | undefined
     const el = pager.current
     if (el && pendingEnter.current) {
       // Slide the new section in from the side the reader swiped towards.
@@ -276,18 +291,56 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
     }
     const target = isStart ? (start.focus ?? start.at) : null
     const scrollToTarget = () => {
-      const node = target == null ? null : findParagraphNode(target)
+      // A joined Arabic paragraph can be very long and contain earlier occurrences of the same
+      // word. This mark belongs to the original hit's fragment, not merely its containing block.
+      const mark = arrival && arrivalHighlighted ? document.querySelector<HTMLElement>('.reader mark[data-arrival]') : null
+      const node = mark ?? (target == null ? null : findParagraphNode(target))
       window.scrollTo(0, node ? Math.max(0, node.getBoundingClientRect().top + window.scrollY - 120) : 0)
     }
+    const noteIntent = () => { userMoved = true }
+    const noteKey = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) noteIntent()
+    }
+    window.addEventListener('touchstart', noteIntent, { passive: true })
+    window.addEventListener('pointerdown', noteIntent, { passive: true })
+    window.addEventListener('wheel', noteIntent, { passive: true })
+    window.addEventListener('keydown', noteKey)
     scrollToTarget()
-    if (target != null) {
+    if (target != null || arrival) {
       // Web fonts arriving later reflow the text; settle on the target again unless the reader moved.
       const y = window.scrollY
-      document.fonts?.ready.then(() => window.scrollY === y && scrollToTarget())
+      document.fonts?.ready.then(() => alive && canPosition && !userMoved && window.scrollY === y && scrollToTarget())
     }
-    if (isStart && start.focus != null) {
-      const timer = setTimeout(() => setFocused(null), 2500)
-      return () => clearTimeout(timer)
+    const clearHighlight = () => {
+      canPosition = false
+      setFocused(null)
+      if (start.needle) setArrivalHighlighted(false)
+    }
+    // Search arrival is a brief locator, separate from the persistent «find in this section» bar.
+    // Keep it for five seconds, or at most 2.5 seconds after the reader begins scrolling.
+    let expires = Date.now() + 5000
+    const onScroll = () => {
+      if (!userMoved || !isStart || !start.needle || !arrivalHighlighted) return
+      const earlier = Math.min(expires, Date.now() + 2500)
+      if (earlier >= expires) return
+      expires = earlier
+      clearTimeout(timer)
+      timer = setTimeout(clearHighlight, Math.max(0, expires - Date.now()))
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    if (isStart && (start.focus != null || start.needle)) timer = setTimeout(clearHighlight, start.needle ? 5000 : 2500)
+    if (!isStart) {
+      setArrivalHighlighted(false)
+      setFocused(null)
+    }
+    return () => {
+      alive = false
+      clearTimeout(timer)
+      window.removeEventListener('touchstart', noteIntent)
+      window.removeEventListener('pointerdown', noteIntent)
+      window.removeEventListener('wheel', noteIntent)
+      window.removeEventListener('keydown', noteKey)
+      window.removeEventListener('scroll', onScroll)
     }
   }, [content?.key, !!visible])
 
@@ -338,6 +391,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
       pendingEnter.current = dir
       setChromeHidden(false)
       setFocused(null)
+      setArrivalHighlighted(false)
       setIndex((i) => i + dir)
     }
     if (!el) return go()
@@ -522,7 +576,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
           )}
           {content && visible && (
             <>
-              <SectionTitle title={title} path={path} bookLabel={favoritesMode ? bookLabel(book) : null} />
+              <SectionTitle title={title} path={path} bookLabel={favoritesMode ? bookLabel(book) : null} needle={!find && arrivalHighlighted && arrival?.header ? start.needle : null} />
               {visible.length === 0 && <p class="empty-section">{t('این بخش متنی ندارد')}</p>}
               {visible.map((p, i) => (
                 <ParagraphView
@@ -531,9 +585,10 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
                   previous={visible[i - 1]}
                   paired={book.paired && settings.showTranslation}
                   arabic={p.kind === Kind.Arabic || (book.arabicBody && p.kind !== Kind.Footnote)}
-                  needle={find ? findNeedle : isStart ? start.needle : null}
+                  needle={find ? findNeedle : isStart && arrivalHighlighted ? start.needle : null}
                   currentMatch={currentMatch?.key === p.key ? currentMatch.nth : null}
-                  focused={isStart && p.key === focusedKey(visible, focused)}
+                  arrivalOffset={!find && arrivalHighlighted && arrival?.key === p.key ? arrival.offset : null}
+                  focused={isStart && !arrival?.header && p.key === focusedKey(visible, focused)}
                   bookmarked={bookmarksIn(user, current.book, current.section, p.key, p.last ?? p.key).length > 0}
                   onOpen={() => setSheet(p)}
                 />
@@ -617,6 +672,26 @@ function ReaderShell({ children }: { children: ComponentChildren }) {
   )
 }
 
+/** Exact location of a result in the displayed text, including phrases joined without translation. */
+function searchArrival(paragraphs: Paragraph[], visible: Paragraph[], key: number | null, needle: Needle): { key: number | null; offset: number; header?: boolean } | null {
+  const source = key == null
+    ? paragraphs.find((p) => needleRanges(p.text, needle).length > 0)
+    : paragraphs.find((p) => p.key === key)
+  if (!source) return null
+  const first = needleRanges(source.text, needle)[0]
+  if (!first) return null
+  const shown = visible.find((p) => p.key <= source.key && (p.last ?? p.key) >= source.key)
+  // Duplicate headings are rendered by SectionTitle instead of as body paragraphs.
+  if (!shown) return source.kind === Kind.Heading ? { key: null, offset: first[0], header: true } : null
+  let offset = first[0]
+  if (shown.key !== source.key) {
+    for (const p of paragraphs) {
+      if (p.key >= shown.key && p.key < source.key && p.kind === Kind.Arabic) offset += p.text.length + 1
+    }
+  }
+  return { key: shown.key, offset }
+}
+
 /**
  * The paragraph to highlight for `key`: the one containing it (a joined paragraph spans several
  * keys, and a hidden translation belongs to the Arabic above it), else the next one shown.
@@ -668,12 +743,13 @@ function readerStyle(s: Settings, book: Book): string {
 }
 
 /** Title block at the top of each section: breadcrumb, title and a small ornament. */
-function SectionTitle({ title, path, bookLabel }: { title: string; path: string[]; bookLabel: string | null }) {
+function SectionTitle({ title, path, bookLabel, needle = null }: { title: string; path: string[]; bookLabel: string | null; needle?: Needle | null }) {
   const crumbs = [...(bookLabel ? [bookLabel] : []), ...path]
+  const text = (s: string) => <Highlighted text={s} needle={needle} current={null} arabic={false} arrivalOffset={needle ? needleRanges(s, needle)[0]?.[0] ?? null : null} />
   return (
     <header class="section-title">
-      {crumbs.length > 0 && <p class="crumbs">{crumbs.join('  ›  ')}</p>}
-      <h2>{title}</h2>
+      {crumbs.length > 0 && <p class="crumbs">{text(crumbs.join('  ›  '))}</p>}
+      <h2>{text(title)}</h2>
       <Ornament />
     </header>
   )
@@ -725,14 +801,15 @@ function withNumbers(text: string, arabic: boolean): ComponentChildren {
   return out
 }
 
-function Highlighted({ text, needle, current, arabic }: { text: string; needle: Needle | null; current: number | null; arabic: boolean }) {
+function Highlighted({ text, needle, current, arabic, arrivalOffset = null }: { text: string; needle: Needle | null; current: number | null; arabic: boolean; arrivalOffset?: number | null }) {
   const ranges = needle ? needleRanges(text, needle) : []
   if (ranges.length === 0) return <>{withNumbers(text, arabic)}</>
   const out: ComponentChildren[] = []
   let at = 0
   ranges.forEach(([a, b], nth) => {
     if (a > at) out.push(withNumbers(text.slice(at, a), arabic))
-    out.push(<mark class={nth === current ? 'is-current' : undefined}>{withNumbers(text.slice(a, b), arabic)}</mark>)
+    const arrival = arrivalOffset != null && a <= arrivalOffset && arrivalOffset < b
+    out.push(<mark class={nth === current || arrival ? 'is-current' : undefined} data-arrival={arrival ? 'true' : undefined}>{withNumbers(text.slice(a, b), arabic)}</mark>)
     at = b
   })
   if (at < text.length) out.push(withNumbers(text.slice(at), arabic))
@@ -810,6 +887,8 @@ function ParagraphView(props: {
   needle: Needle | null
   /** Which of this paragraph's matches is the current one of «جستجو در متن جاری». */
   currentMatch: number | null
+  /** Start of the clicked search result inside a possibly joined Arabic paragraph. */
+  arrivalOffset: number | null
   focused: boolean
   bookmarked: boolean
   onOpen: () => void
@@ -850,7 +929,7 @@ function ParagraphView(props: {
     const h = hold.current
     if (h && Math.hypot(e.touches[0].clientX - h.x, e.touches[0].clientY - h.y) > 10) release()
   }
-  const text = <Highlighted text={p.text} needle={props.needle} current={props.currentMatch} arabic={props.arabic} />
+  const text = <Highlighted text={p.text} needle={props.needle} current={props.currentMatch} arabic={props.arabic} arrivalOffset={props.arrivalOffset} />
   return (
     <div
       class={

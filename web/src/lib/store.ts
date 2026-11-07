@@ -70,7 +70,7 @@ function persisted<T>(key: string, load: (raw: unknown) => T): Store<T> {
 
 export type ThemeMode = 'system' | 'light' | 'sepia' | 'dark'
 export type PersianFont = 'vazirmatn' | 'nazanin' | 'lotus' | 'mitra' | 'zar'
-export type ArabicFont = 'naskh' | 'naskh93' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'mitra' | 'zar' | 'vazirmatn'
+export type ArabicFont = 'naskh' | 'uthman' | 'badr' | 'nazanin' | 'lotus' | 'mitra' | 'zar' | 'vazirmatn'
 
 /** Labels in the menus' language, so read them when rendering. */
 export const themes = (): { id: ThemeMode; label: string }[] => [
@@ -90,7 +90,6 @@ export const PERSIAN_FONTS: { id: PersianFont; label: string; family: string }[]
 
 export const ARABIC_FONTS: { id: ArabicFont; label: string; family: string }[] = [
   { id: 'naskh', label: 'نسخ قرآنی', family: 'NaskhQurani' },
-  { id: 'naskh93', label: 'نسخ قرآنی ۹۳ (نیمه‌پررنگ)', family: 'NaskhQurani93' },
   { id: 'uthman', label: 'عثمان طه', family: 'UthmanTaha' },
   { id: 'badr', label: 'بدر', family: 'Badr' },
   // Persian-style naskh: the familiar shapes of Iranian print, often easier to read than Quranic styles.
@@ -175,12 +174,14 @@ function editionOr(v: unknown, work: WorkId, fallback: BookId): BookId {
 export function sanitizeSettings(raw: unknown): Settings {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
   const d = DEFAULT_SETTINGS
+  // The former standalone Semi Bold face is now the bold face of Naskh Qurani.
+  const mergedNaskh = r.arabicFont === 'naskh93'
   return {
     language: oneOf(r.language, LANGUAGES, d.language),
     theme: oneOf(r.theme, themes(), d.theme),
     persianFont: oneOf(r.persianFont, PERSIAN_FONTS, d.persianFont),
-    arabicFont: oneOf(r.arabicFont, ARABIC_FONTS, d.arabicFont),
-    arabicBold: typeof r.arabicBold === 'boolean' ? r.arabicBold : d.arabicBold,
+    arabicFont: oneOf(mergedNaskh ? 'naskh' : r.arabicFont, ARABIC_FONTS, d.arabicFont),
+    arabicBold: mergedNaskh || (typeof r.arabicBold === 'boolean' ? r.arabicBold : d.arabicBold),
     textSize: clamp(r.textSize, RANGES.textSize, d.textSize),
     // Before it had its own size the translation followed the text size, a little smaller.
     translationSize: clamp(r.translationSize ?? (typeof r.textSize === 'number' ? Math.round(r.textSize - 1) : undefined), RANGES.translationSize, d.translationSize),

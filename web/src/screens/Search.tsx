@@ -9,7 +9,7 @@ import { ListTextSettings } from '../ui/TextSettings'
 import { Icon } from '../ui/icons'
 import { num, t } from '../lib/i18n'
 
-type State = { kind: 'idle' } | { kind: 'loading' } | { kind: 'error' } | { kind: 'done'; result: SearchResult }
+type State = { kind: 'idle' } | { kind: 'loading' } | { kind: 'error' } | { kind: 'done'; result: SearchResult; query: string; whole: boolean; allWords: boolean }
 
 export function Search({ route }: { route: Route }) {
   const [query, setQuery] = useState(route.query.get('q') ?? '')
@@ -45,7 +45,7 @@ export function Search({ route }: { route: Route }) {
       () => {
         setState((s) => (s.kind === 'done' ? s : { kind: 'loading' }))
         search(needle, book ? [book] : BOOKS.map((b) => b.id), scope, !showTranslation).then(
-          (result) => alive && setState({ kind: 'done', result }),
+          (result) => alive && setState({ kind: 'done', result, query, whole, allWords }),
           () => alive && setState({ kind: 'error' }),
         )
       },
@@ -65,8 +65,11 @@ export function Search({ route }: { route: Route }) {
   }, [state])
 
   const open = (hit: SearchHit) => {
+    if (state.kind !== 'done') return
     input.current?.blur()
-    navigate(routes.reader(hit.book, hit.section, { paragraph: hit.paragraph, query, whole, allWords }))
+    // Old hits stay visible while a changed query is being debounced. Open them with the query
+    // that actually produced their snippet, so the reader can locate and highlight that match.
+    navigate(routes.reader(hit.book, hit.section, { paragraph: hit.paragraph, query: state.query, whole: state.whole, allWords: state.allWords }))
   }
 
   return (

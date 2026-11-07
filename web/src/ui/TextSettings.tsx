@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'preact/hooks'
 import { ARABIC_FONTS, PERSIAN_FONTS, RANGES, resetTextSettings, themes, setSetting, settingsStore, useStore, type Settings } from '../lib/store'
 import { toast } from '../lib/util'
 import { Chip, Segmented, SwitchRow } from './common'
 import { Icon } from './icons'
-import { decimal, num, t } from '../lib/i18n'
+import { t } from '../lib/i18n'
+import { SizeSlider } from './SizeSlider'
 
 /** Theme, fonts and sizes with a live preview; used in the reader's sheet and on the settings page. */
 export function TextSettingsPanel({ translationSwitch = false }: { translationSwitch?: boolean } = {}) {
@@ -114,34 +114,6 @@ export function ListTextSettings() {
       <p class="list-preview" style={`font-family:${PERSIAN_FONTS.find((f) => f.id === s.listFont)!.family};font-size:${s.listSize}px`}>
         تعقیبات مشترکه · اَللّٰهُمَّ اِنّی اَسْأَلُكَ
       </p>
-    </div>
-  )
-}
-
-/** Updates the preview while dragging but only writes the setting when the finger lifts. */
-function SizeSlider(props: { label: string; value: number; range: readonly [number, number]; decimals?: boolean; onChange: (v: number) => void }) {
-  const [dragging, setDragging] = useState(props.value)
-  useEffect(() => setDragging(props.value), [props.value])
-  const step = props.decimals ? 0.1 : 1
-  // Persian writes the decimal point as «٫».
-  const shown = props.decimals ? dragging.toFixed(1) : String(Math.round(dragging))
-  return (
-    <div class="slider">
-      <div class="slider-head">
-        <span>{props.label}</span>
-        <b>{decimal(num(shown))}</b>
-      </div>
-      <input
-        type="range"
-        min={props.range[0]}
-        max={props.range[1]}
-        step={step}
-        value={dragging}
-        aria-label={props.label}
-        style={`--fill:${((dragging - props.range[0]) / (props.range[1] - props.range[0])) * 100}%`}
-        onInput={(e) => setDragging(Number((e.target as HTMLInputElement).value))}
-        onChange={(e) => props.onChange(Number(Number((e.target as HTMLInputElement).value).toFixed(props.decimals ? 1 : 0)))}
-      />
     </div>
   )
 }

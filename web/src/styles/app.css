@@ -2106,6 +2106,24 @@ html.reading::-webkit-scrollbar {
   color: var(--primary);
 }
 
+.slider-control {
+  position: relative;
+}
+
+/* Let vertical gestures scroll the settings sheet before a horizontal drag adjusts a value. */
+.slider-gesture {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  touch-action: pan-y pinch-zoom;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+
 .slider input {
   -webkit-appearance: none;
   appearance: none;

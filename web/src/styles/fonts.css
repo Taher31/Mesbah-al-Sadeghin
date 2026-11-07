@@ -14,10 +14,11 @@
 @font-face { font-family: Zar; src: url('/fonts/zar.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: Zar; src: url('/fonts/zar_bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }
 
-/* Naskh Qurani has no bold face (the browser thickens it for «پررنگ»); Uthman Taha is bold already. */
-@font-face { font-family: NaskhQurani; src: url('/fonts/naskh_qurani.woff2') format('woff2'); font-display: swap; }
-/* The supplied Naskh Qurani 93 face is Semi Bold (600); keep its complete shaping tables. */
-@font-face { font-family: NaskhQurani93; src: url('/fonts/naskh_qurani_93.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+/* Naskh Qurani's bold slot uses the supplied 93 Semi Bold face as-is, without faux thickening.
+   The app requests 700 for its bold toggle; the font's actual glyphs retain their natural 600 weight. */
+@font-face { font-family: NaskhQurani; src: url('/fonts/naskh_qurani.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: NaskhQurani; src: url('/fonts/naskh_qurani_93.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+/* Uthman Taha is bold already. */
 @font-face { font-family: UthmanTaha; src: url('/fonts/uthman_taha.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: Badr; src: url('/fonts/badr.woff2') format('woff2'); font-weight: 400; font-display: swap; }
 @font-face { font-family: Badr; src: url('/fonts/badr_bold.woff2') format('woff2'); font-weight: 700; font-display: swap; }

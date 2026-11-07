@@ -97,4 +97,29 @@ const unchanged = api.sanitizeUserData({ bookmarks: [bookmark(20, 405, 90, 'Safi
 assert.equal(unchanged.bookmarks[0].paragraph, 90)
 const removedProgress = api.sanitizeUserData({ progress: [{ book: 1, section: 14, paragraph: 2, updated: 1 }] })
 assert.equal(removedProgress.progress[0].paragraph, 1)
+
+// The former standalone Semi Bold choice becomes Naskh Qurani with the bold switch on.
+for (const arabicBold of [false, true, undefined]) {
+  const settings = api.sanitizeSettings({ arabicFont: 'naskh93', arabicBold })
+  assert.equal(settings.arabicFont, 'naskh')
+  assert.equal(settings.arabicBold, true)
+  assert.equal(JSON.stringify(api.sanitizeSettings(settings)), JSON.stringify(settings))
+}
+for (const arabicBold of [false, true]) {
+  assert.equal(api.sanitizeSettings({ arabicFont: 'naskh', arabicBold }).arabicBold, arabicBold)
+}
+assert.equal(api.ARABIC_FONTS.filter((f) => f.id === 'naskh').length, 1)
+assert.equal(api.ARABIC_FONTS.some((f) => f.id === 'naskh93'), false)
+const oldFontBackupApi = loadStore()
+assert.equal(oldFontBackupApi.importBackup(JSON.stringify({
+  app: 'mesbah-al-sadeqin', format: 1, settings: { arabicFont: 'naskh93', arabicBold: false },
+})), true)
+assert.equal(oldFontBackupApi.settingsStore.get().arabicFont, 'naskh')
+assert.equal(oldFontBackupApi.settingsStore.get().arabicBold, true)
+oldFontBackupApi.setSetting('arabicBold', false)
+const normalFontBackupApi = loadStore()
+assert.equal(normalFontBackupApi.importBackup(oldFontBackupApi.exportBackup()), true)
+assert.equal(normalFontBackupApi.settingsStore.get().arabicFont, 'naskh')
+assert.equal(normalFontBackupApi.settingsStore.get().arabicBold, false)
 console.log('PASS: paragraph migration, old/current backups, repeated restore, note preservation and unaffected books')
+console.log('PASS: merged Naskh font choice, legacy settings, normal/bold toggle and backup restoration')
