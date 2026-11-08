@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
         val navigationColor = prefs.getInt(KEY_NAVIGATION, SPLASH)
         statusBar = View(this)
         navigationBar = View(this)
-        web = WebView(this)
+        web = CitationWebView(this)
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             addView(statusBar, LinearLayout.LayoutParams(MATCH_PARENT, 0))

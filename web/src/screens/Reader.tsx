@@ -282,6 +282,32 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const sectionLink = (ref: Ref, paragraph?: number) =>
     shareUrl(routes.reader(ref.book, ref.section, paragraph != null ? { paragraph } : {}))
 
+  // Android's selection menu otherwise shares WebView's plain selected text, bypassing our toolbar.
+  // Read the live selection before Android dismisses its handles and attach the same source as Copy.
+  useLayoutEffect(() => {
+    if (!current || !content?.paragraphs) return
+    const host = window as Window & { mesbahShareSelection?: () => boolean }
+    const shareSelection = () => {
+      const root = pager.current?.querySelector('.section')
+      const selection = root ? selectedPassage(root, window.getSelection()) : null
+      const book = bookById(current.book)
+      const entry = content.toc.get(current.section)
+      if (!selection || !book || !entry) return false
+      const reference = passageReference(book, entry.title, passagePages(
+        content.paragraphs!, selection.first, selection.last, entry.page,
+      ))
+      const text = citedPassage(selection.text, reference, sectionLink(current, selection.first))
+      void shareText({ title: entry.title, text }).then((result) => {
+        if (result === 'copied') toast('متن کپی شد')
+      })
+      return true
+    }
+    host.mesbahShareSelection = shareSelection
+    return () => {
+      if (host.mesbahShareSelection === shareSelection) delete host.mesbahShareSelection
+    }
+  }, [current, content])
+
   // Arriving at a section: position, visit count, address bar.
   useLayoutEffect(() => {
     if (!content || !current || !visible) return
@@ -688,7 +714,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
             <button type="button" class="btn btn-filled" onClick={async () => {
               const text = excerptText(selected)
               if ((await shareText({ title, text })) === 'copied') toast('متن کپی شد')
-            }}><Icon name="share" size={20} />{t('اشتراک‌گذاری')}</button>
+            }}><Icon name="share" size={20} />{t('اشتراک‌گذاری با منبع')}</button>
             <IconButton icon="bookmarkAdd" label={t('نشانه‌گذاری این بند')} onClick={() => {
               const p = visible?.find((p) => p.key === selected.first)
               clearSelection()
