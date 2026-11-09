@@ -28,8 +28,8 @@ android {
         // The B4A release was versionCode 3. CI numbers each release after its run, so every
         // published APK installs as an update of the one before.
         val ciRun = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()
-        versionCode = if (ciRun != null) 100 + ciRun else 23
-        versionName = if (ciRun != null) "3.1.$ciRun" else "3.1.1"
+        versionCode = if (ciRun != null) 100 + ciRun else 24
+        versionName = if (ciRun != null) "3.1.$ciRun" else "3.1.2"
     }
 
     val storePath = signingValue("storeFile", "ANDROID_KEYSTORE_PATH")

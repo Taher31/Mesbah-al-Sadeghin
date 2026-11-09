@@ -4,7 +4,7 @@
 
 ## دانلود و نصب
 
-- **اندروید (نسخهٔ آزمایشی):** [دانلود فایل APK](https://github.com/Taher31/Mesbah-al-Sadeghin/releases/download/android-test-3.1.1/mesbah-sadeghin-test.apk) — [صفحهٔ انتشار](https://github.com/Taher31/Mesbah-al-Sadeghin/releases/tag/android-test-3.1.1). کنار برنامهٔ فعلی نصب می‌شود و جایگزین آن نمی‌شود؛ اندروید ۵ به بالا.
+- **اندروید (نسخهٔ آزمایشی):** [دانلود فایل APK](https://github.com/Taher31/Mesbah-al-Sadeghin/releases/download/android-test-3.1.2/mesbah-sadeghin-test.apk) — [صفحهٔ انتشار](https://github.com/Taher31/Mesbah-al-Sadeghin/releases/tag/android-test-3.1.2). کنار برنامهٔ فعلی نصب می‌شود و جایگزین آن نمی‌شود؛ اندروید ۵ به بالا.
 - **آیفون و سایر دستگاه‌ها (وب‌اپ):** [taher31.github.io/Mesbah-al-Sadeghin](https://taher31.github.io/Mesbah-al-Sadeghin/) — در Safari باز کنید و «Add to Home Screen» را بزنید.
 
 | پوشه | چیست |

@@ -1226,6 +1226,7 @@ input[type='search']::-webkit-search-cancel-button {
   font-family: var(--list-font, Vazirmatn), Vazirmatn, sans-serif;
   font-size: var(--list-size, 16px);
   line-height: 1.75;
+  color: var(--on-surface);
 }
 
 .toc-title.is-top {
@@ -1235,7 +1236,6 @@ input[type='search']::-webkit-search-cancel-button {
 
 .toc-row.is-group .toc-title {
   font-weight: 700;
-  color: var(--primary);
 }
 
 .toc-star {
