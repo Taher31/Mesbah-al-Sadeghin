@@ -44,7 +44,7 @@ function screen(route: Route) {
       return <Home />
     case 'toc': {
       const book = bookById(Number(a))
-      return book ? <Toc route={route} book={book} /> : null
+      return book ? <Toc key={book.id} route={route} book={book} /> : null
     }
     case 'r': {
       const book = bookById(Number(a))

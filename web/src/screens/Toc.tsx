@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'preact/hooks'
-import { workOf, type Book, type BookId } from '../lib/books'
+import { workOf, type Book } from '../lib/books'
 import { useToc, type TableOfContents, type TocEntry } from '../lib/data'
 import { normalize } from '../lib/normalize'
 import { initialScroll, navigate, routes, type Route } from '../lib/router'
@@ -8,9 +8,6 @@ import { BookCover, EmptyState, IconButton, LoadError, Loading, Sheet, TopBar } 
 import { ListTextSettings } from '../ui/TextSettings'
 import { Icon } from '../ui/icons'
 import { t } from '../lib/i18n'
-
-/** Open branches and the filter survive going into the reader and back. */
-const memory = new Map<BookId, { open: Set<number>; filter: string }>()
 
 interface Row {
   entry: TocEntry
@@ -52,18 +49,8 @@ export function Toc({ route, book }: { route: Route; book: Book }) {
   const user = useStore(userStore)
   const progress = progressFor(user, book.id)
 
-  const [state, setState] = useState(() => memory.get(book.id))
+  const [state, setState] = useState<{ open: Set<number>; filter: string }>(() => ({ open: new Set(), filter: '' }))
   const [listSettings, setListSettings] = useState(false)
-  // First visit: open the branch the reader is currently in, so they land where they left off.
-  useEffect(() => {
-    if (toc && !state) {
-      const initial = { open: new Set(progress ? toc.pathTo(progress.section).map((e) => e.id) : []), filter: '' }
-      setState(initial)
-    }
-  }, [toc])
-  useEffect(() => {
-    if (state) memory.set(book.id, state)
-  }, [state])
 
   const rows = useMemo(() => (toc && state ? buildRows(toc, state.open, state.filter) : null), [toc, state])
   const filtering = !!state && normalize(state.filter).length > 0
