@@ -176,8 +176,8 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
     const entry = content.toc.get(current.section)!
     // The first line usually repeats the title (or its group) already shown in the header.
     const shown = new Set([...content.toc.pathTo(current.section).map((e) => e.title), entry.title].map(normalize))
-    // Without the translation, Anis's phrase-by-phrase Arabic is joined into the paragraphs of the
-    // edition without translation (marked at build time); the words themselves are untouched.
+    // Without the translation, join Anis's Arabic phrases using breaks derived from the translated
+    // edition at build time; the words themselves are untouched.
     const join = !!bookById(current.book)?.paired && !settings.showTranslation
     const out: Paragraph[] = []
     for (const p of content.paragraphs) {
@@ -295,8 +295,8 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
       if (!selection || !book || !entry) return false
       const reference = passageReference(book, entry.title, passagePages(
         content.paragraphs!, selection.first, selection.last, entry.page,
-      ))
-      const text = citedPassage(selection.text, reference, sectionLink(current, selection.first))
+      ), content.toc.pathTo(current.section).map((e) => e.title))
+      const text = citedPassage(selection.text, reference)
       void shareText({ title: entry.title, text }).then((result) => {
         if (result === 'copied') toast('متن کپی شد')
       })
@@ -507,10 +507,10 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
   const title = entry?.title ?? ''
   const favorite = isFavorite(user, current.book, current.section)
   const referenceFor = (first: number, last = first) => passageReference(
-    book, title, passagePages(content?.paragraphs ?? [], first, last, entry?.page),
+    book, title, passagePages(content?.paragraphs ?? [], first, last, entry?.page), path,
   )
   const excerptText = (selection: SelectedPassage) => citedPassage(
-    selection.text, referenceFor(selection.first, selection.last), sectionLink(current, selection.first),
+    selection.text, referenceFor(selection.first, selection.last),
   )
   const clearSelection = () => {
     window.getSelection()?.removeAllRanges()
@@ -524,7 +524,7 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
         .filter((p) => p.kind !== Kind.PageMarker)
         .map((p) => p.text)
         .join('\n\n'),
-      '— ' + referenceFor(-Infinity, Infinity) + '\n' + sectionLink(current),
+      '— ' + referenceFor(-Infinity, Infinity),
     ].join('\n\n')
 
   const menu = (
@@ -740,7 +740,6 @@ export function Reader({ route, book: startBook, section: startSection }: { rout
           p={sheet}
           user={user}
           current={current}
-          link={sectionLink(current, sheet.key)}
           reference={referenceFor(sheet.key, sheet.last ?? sheet.key)}
           onClose={() => setSheet(null)}
         />
@@ -1010,7 +1009,7 @@ function ParagraphView(props: {
   )
 }
 
-function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; link: string; reference: string; onClose: () => void }) {
+function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; reference: string; onClose: () => void }) {
   const { p, current } = props
   // A joined paragraph counts as bookmarked if any of its phrases is.
   const marks = bookmarksIn(props.user, current.book, current.section, p.key, p.last ?? p.key)
@@ -1038,7 +1037,7 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
         label={t('کپی')}
         onClick={async () => {
           props.onClose()
-          toast((await copyText(citedPassage(p.text, props.reference, props.link))) ? t('کپی شد') : t('کپی نشد'))
+          toast((await copyText(citedPassage(p.text, props.reference))) ? t('کپی شد') : t('کپی نشد'))
         }}
       />
       <ActionRow
@@ -1046,7 +1045,7 @@ function ParagraphSheet(props: { p: Paragraph; user: UserData; current: Ref; lin
         label={t('اشتراک‌گذاری')}
         onClick={async () => {
           props.onClose()
-          const result = await shareText({ text: citedPassage(p.text, props.reference, props.link) })
+          const result = await shareText({ text: citedPassage(p.text, props.reference) })
           if (result === 'copied') toast('متن کپی شد')
         }}
       />

@@ -48,8 +48,7 @@ export const WORKS: Work[] = [
 
 /**
  * What the search chips and edition switches list. Anis is one book (1.book): its translation is
- * shown or hidden by a setting, and 4.book (the edition without translation) only lends it paragraph
- * breaks at build time. Old links and saved data that name book 4 are read as book 1.
+ * shown or hidden by a setting. Old links and saved data that name book 4 are read as book 1.
  */
 export const BOOKS: Book[] = [
   { id: 1, work: 'anis', edition: '', cover: 'img/cover_anis_tr.jpg', hasParagraphTable: true, arabicBody: false, paired: true },

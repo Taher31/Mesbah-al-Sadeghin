@@ -28,8 +28,7 @@ function loadTs(filename) {
 const { citedPassage, passageReference } = loadTs(resolve(root, 'src/lib/excerpts.ts'))
 const { bookById } = loadTs(resolve(root, 'src/lib/books.ts'))
 const reference = passageReference(bookById(3), 'در کسوت روحانیت', ['۸۰'])
-const link = 'https://taher31.github.io/Mesbah-al-Sadeghin/#/r/3/8?p=20'
-const text = citedPassage('فقط در این فکر بودم که اگر با این آلودگی‌ها بمیرم چه خواهد شد!', reference, link)
+const text = citedPassage('فقط در این فکر بودم که اگر با این آلودگی‌ها بمیرم چه خواهد شد!', reference)
 assert.equal(reference, 'سفینة الصادقین، در کسوت روحانیت، ص ۸۰')
 
 function loadSharing({ android = null, share, copy } = {}) {
@@ -57,7 +56,7 @@ const nativeShare = loadSharing({ android: { share: (...args) => nativeCalls.pus
 assert.equal(await nativeShare({ text }), 'shared')
 assert.deepEqual(nativeCalls, [[text, '']])
 assert.equal(nativeCalls[0][0].split(reference).length - 1, 1, 'native payload includes one source reference')
-assert.equal(nativeCalls[0][0].endsWith(link), true, 'native text also retains its location link')
+assert.equal(nativeCalls[0][0].includes('https://'), false, 'native sharing does not append a link')
 
 const browserCalls = []
 const browserShare = loadSharing({ share: async (data) => browserCalls.push(JSON.parse(JSON.stringify(data))) })

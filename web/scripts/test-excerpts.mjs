@@ -48,7 +48,7 @@ assert.deepEqual(pages(safineh, -Infinity, Infinity), Array.from({ length: 19 },
 const ref = passageReference(bookById(3), safineh.title, pages(safineh, 19))
 assert.equal(ref, 'سفینة الصادقین، در کسوت روحانیت، ص ۸۰')
 assert.equal(passageReference(bookById(3), safineh.title, pages(safineh, 17, 19)), 'سفینة الصادقین، در کسوت روحانیت، ص ۷۹–۸۰')
-assert.equal(citedPassage('  متن انتخاب‌شده  ', ref, 'https://example.test/#/r/3/8?p=19'), 'متن انتخاب‌شده\n\n— ' + ref + '\nhttps://example.test/#/r/3/8?p=19')
+assert.equal(citedPassage('  متن انتخاب‌شده  ', ref), 'متن انتخاب‌شده\n\n— ' + ref)
 
 // These chapters begin in the middle of a page, before their own first page marker.
 assert.deepEqual(pages(section(3, 14), 1), ['۱۲۴'])
@@ -63,5 +63,18 @@ assert.deepEqual(pages(safineh, footnote.key), [], 'collected footnotes do not i
 const anis = section(1, 10)
 assert.deepEqual(pages(anis, -Infinity, Infinity), [])
 assert.equal(passageReference(bookById(1), anis.title, []), 'انیس الصادقین، ' + anis.title)
+// Use an actual fourth-level Anis prayer to verify that no parent category is omitted.
+const toc = JSON.parse(readFileSync(resolve(root, 'public', manifest.books[1].toc), 'utf8'))
+const parents = []
+let deepEntry
+for (const entry of toc.e) {
+  while (parents.length && parents.at(-1)[1] >= entry[1]) parents.pop()
+  if (entry[0] === 228) { deepEntry = entry; break }
+  parents.push(entry)
+}
+assert.equal(deepEntry[1], 4)
+assert.equal(passageReference(bookById(1), deepEntry[2], [], parents.map((e) => e[2])),
+  'انیس الصادقین، نمازها، * ۷. نماز شب، دعاهای پس از هشت رکعت نافلۀ شب، * الف) دعای حضرت آدم (ع) (یا رَبّاهُ یا رَبّاهُ یا رَبّاهُ)')
+assert.equal(passageReference(bookById(1), 'صلوات', [], ['انیس الصّادقین', 'صلوات']), 'انیس الصادقین، صلوات')
 assert.deepEqual(pages(section(2, 8), -Infinity, Infinity), [])
 console.log('PASS: real Safineh single/multiple pages, mid-page chapter starts, exact citation footer and editions without page markers')

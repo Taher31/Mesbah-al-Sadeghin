@@ -1,6 +1,7 @@
 import { Kind, workOf, type Book } from './books'
 import type { Paragraph } from './data'
 import { num, t } from './i18n'
+import { normalize } from './normalize'
 
 /** Page markers start a printed page; sections can also start on the preceding section's page. */
 export function passagePages(paragraphs: Paragraph[], first: number, last: number, initialPage?: string): string[] {
@@ -15,13 +16,19 @@ export function passagePages(paragraphs: Paragraph[], first: number, last: numbe
   return [...pages]
 }
 
-export function passageReference(book: Book, title: string, pages: string[]): string {
+export function passageReference(book: Book, title: string, pages: string[], path: string[] = []): string {
   const page = pages.length > 1 ? `${num(pages[0])}–${num(pages[pages.length - 1])}` : pages[0] && num(pages[0])
-  return [workOf(book).title, title, page ? t('ص {0}', page) : ''].filter(Boolean).join('، ')
+  const parts: string[] = []
+  for (const part of [workOf(book).title, ...path, title]) {
+    const value = part.trim()
+    if (value && (!parts.length || normalize(parts[parts.length - 1]) !== normalize(value))) parts.push(value)
+  }
+  if (page) parts.push(t('ص {0}', page))
+  return parts.join('، ')
 }
 
-export function citedPassage(text: string, reference: string, link: string): string {
-  return `${text.trim()}\n\n— ${reference}\n${link}`
+export function citedPassage(text: string, reference: string): string {
+  return `${text.trim()}\n\n— ${reference}`
 }
 
 export interface SelectedPassage {
