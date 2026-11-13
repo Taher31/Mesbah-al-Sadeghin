@@ -101,7 +101,7 @@ export function InstallBanner() {
         <h3>
           <Icon name="install" size={20} /> {t('نسخهٔ اندروید')}
         </h3>
-        <p>{t('برای گوشی‌های اندروید، برنامهٔ مصباح الصادقین را دانلود و نصب کنید؛ بدون اینترنت هم کار می‌کند.')}</p>
+        <p>{t('برای گوشی‌های اندروید، می‌توانید برنامهٔ مصباح الصادقین را دانلود و نصب کنید.')}</p>
         <div class="banner-actions">
           <a class="btn btn-filled" href={ANDROID_APK} download>
             <Icon name="download" size={18} /> {t('دانلود نسخهٔ اندروید')}

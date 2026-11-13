@@ -35,6 +35,7 @@ function loadSharing({ android = null, share, copy } = {}) {
   const module = { exports: {} }
   const source = readFileSync(resolve(root, 'src/lib/util.ts'), 'utf8')
     .replaceAll('import.meta.env.BASE_URL', "'/'")
+    .replaceAll('import.meta.env.VITE_ANDROID_APK_URL', 'undefined')
   const code = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText

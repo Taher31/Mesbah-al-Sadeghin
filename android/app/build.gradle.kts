@@ -1,3 +1,4 @@
+import groovy.json.JsonSlurper
 import java.util.Properties
 
 plugins {
@@ -14,6 +15,17 @@ val signing = Properties().apply {
 }
 fun signingValue(key: String, env: String): String? = signing.getProperty(key) ?: System.getenv(env)?.takeIf { it.isNotBlank() }
 
+val webPackage = JsonSlurper().parse(rootProject.file("../web/package.json")) as Map<*, *>
+val appVersion = webPackage["version"] as String
+val versionParts = requireNotNull(Regex("""(\d+)\.(\d{1,3})\.(\d{1,3})""").matchEntire(appVersion)) {
+    "Use a major.minor.patch version in web/package.json, with minor and patch below 1000."
+}.groupValues.drop(1).map { it.toLong() }
+val (major, minor, patch) = versionParts
+require(major <= 2099) { "The major version is too large for an Android versionCode." }
+// Reserve three digits each for minor and patch so later releases can update earlier APKs.
+val appVersionCode = major * 1_000_000 + minor * 1_000 + patch
+require(appVersionCode > 0) { "The Android versionCode must be positive." }
+
 android {
     namespace = "ir.sadeghin.mesbah"
     compileSdk = 36
@@ -25,11 +37,8 @@ android {
         applicationId = "MesbahoSadeghin.App"
         minSdk = 21
         targetSdk = 36
-        // The B4A release was versionCode 3. CI numbers each release after its run, so every
-        // published APK installs as an update of the one before.
-        val ciRun = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()
-        versionCode = if (ciRun != null) 100 + ciRun else 24
-        versionName = if (ciRun != null) "3.1.$ciRun" else "3.1.2"
+        versionCode = appVersionCode.toInt()
+        versionName = appVersion
     }
 
     val storePath = signingValue("storeFile", "ANDROID_KEYSTORE_PATH")
@@ -48,7 +57,6 @@ android {
         debug {
             // Lets the dev build sit next to the installed B4A build on a test phone.
             applicationIdSuffix = ".dev"
-            versionNameSuffix = "-dev"
         }
         release {
             signingConfig = signingConfigs.findByName("release")

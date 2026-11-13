@@ -163,7 +163,7 @@ function FavoritesShelf({ items }: { items: ShelfItem[] }) {
       {items.length === 0 ? (
         <div class="hint-card">
           <Icon name="starOutline" />
-          <p>{t('دعاهای روزانه‌تان را با ستاره ☆ منتخب کنید تا همیشه یک لمس فاصله داشته باشند.')}</p>
+          <p>{t('می‌توانید دعاهای دلخواه خود را با انتخاب علامت ستاره ☆ به فهرست «منتخب من» اضافه کنید.')}</p>
         </div>
       ) : (
         <div class="card fav-card">

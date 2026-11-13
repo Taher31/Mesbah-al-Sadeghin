@@ -5,7 +5,7 @@ import aboutText from '../about.txt?raw'
 import { num, t } from '../lib/i18n'
 
 const ADMIN_EMAIL = 'Yaghobi01@gmail.com'
-const DEVELOPER_EMAIL = 'Anisbook@iran.ir'
+const TECHNICAL_EMAIL = 'anis@sadeghin.ir'
 
 export function About() {
   return (
@@ -21,7 +21,7 @@ export function About() {
         <div class="card contacts">
           <Contact icon="campaign" title={t('کانال صادقین در ایتا')} value="eitaa.com/sadeghin_ir" href={CHANNEL_URL} />
           <Contact icon="mail" title={t('مدیر کانال')} value={ADMIN_EMAIL} href={`mailto:${ADMIN_EMAIL}`} />
-          <Contact icon="mail" title={t('برنامه‌نویس')} value={DEVELOPER_EMAIL} href={`mailto:${DEVELOPER_EMAIL}`} />
+          <Contact icon="mail" title={t('ایمیل فنی')} value={TECHNICAL_EMAIL} href={`mailto:${TECHNICAL_EMAIL}`} />
         </div>
       </div>
     </main>

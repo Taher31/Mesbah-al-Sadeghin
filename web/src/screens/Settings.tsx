@@ -83,7 +83,7 @@ export function SettingsScreen() {
           <>
             <hr />
             <SectionLabel>{t('نسخهٔ اندروید')}</SectionLabel>
-            <p class="help">{t('برنامهٔ اندروید مصباح الصادقین را می‌توانید مستقیم نصب کنید.')}</p>
+            <p class="help">{t('برای گوشی‌های اندروید، می‌توانید برنامهٔ مصباح الصادقین را دانلود و نصب کنید.')}</p>
             <a class="btn btn-tonal btn-block" href={ANDROID_APK} download>
               <Icon name="download" size={18} />
               {t('دانلود نسخهٔ اندروید')}

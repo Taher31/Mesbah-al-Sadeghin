@@ -1,26 +1,17 @@
 import { Kind, type RawParagraph } from './books.ts'
 
-/** Group short Arabic phrases from the translated edition into readable paragraphs. */
+/** Start a new Arabic paragraph after a full stop, or at the start of an Arabic passage. */
 export function paragraphStarts(paragraphs: RawParagraph[]): Set<number> {
   const starts = new Set<number>()
-  let previousArabic = false
-  let length = 0
-  let endsSentence = false
+  let startsParagraph = true
   for (const [key, kind, text] of paragraphs) {
     if (kind === Kind.Translation) continue
     if (kind !== Kind.Arabic) {
-      previousArabic = false
-      length = 0
-      endsSentence = false
+      startsParagraph = true
       continue
     }
-    if (!previousArabic || endsSentence || length >= 320) {
-      starts.add(key)
-      length = 0
-    }
-    length += text.length + 1
-    endsSentence = /[.!؟؛۔۞](?:\s*\([\d۰-۹٠-٩]+\))?\s*$/.test(text)
-    previousArabic = true
+    if (startsParagraph) starts.add(key)
+    startsParagraph = /[.۔](?:\s*\([\d۰-۹٠-٩]+\))?\s*$/.test(text)
   }
   return starts
 }
